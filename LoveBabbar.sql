@@ -17,7 +17,7 @@
 -- Data is a collection of facts, while information puts those facts into context.
 -- While data is raw and unorganized, information is organized.
 -- Data points are individual and sometimes unrelated. Information maps out that data to provide a big-picture view of how it all fits together.
--- Data does not depend on information; however, information depends on data.
+-- Data does not depend on information, however information depends on data.
 -- Data isn’t sufficient for decision-making, but you can make decisions based on information.
 
 -- Suppose do log hai P1 and P2 and they both opening a restraunt, and both are selling 10 dishes, jisme se one is just selling without keeping the track of the data, on the other hand P2 is collecting data and extracting info from it, like agar usko dikh rha hai ki konsi dishes zyada bik rhi ha toh vo baaki remaining dishes ke liye raw material layega hi nhi isse uski cost bachegi and P2 will earn more wheras P1 is just selling and P1 has no idea of how to grow his business! so that how data is used!
@@ -86,7 +86,7 @@
 --                     : Each view schema describes the database part that a particular user group is interested and hides the remaining database from that user group.
 --                     : At the external level, a database contains several schemas that sometimes called as subschema. The subschema is used to describe the different view of the database.
 --                     : At views also provide a security mechanism to prevent users from accessing certain parts of DB.
---                     : To view the view level schema of the database, you need to furst create a view! and then you can view it!
+--                     : To view the view level schema of the database, you need to first create a view! and then you can view it!
 
 -- Instances and Schemas : The collection of information stored in the DB at a particular moment is called an instance of DB.
 --                       : The overall design of the DB is called the DB schema. DB Schema ko hum logical level schema bhi boldete hai log so this is used very interchangebly
@@ -115,10 +115,44 @@
 --                                                      : Updating existing information stored in DB.
 --                         : Query language, a part of DML to specify statement requesting the retrieval of information.
 
--- Now the question is that, How Database accessed from Application Program : Apps (written in host languages, C/C++, Java) interacts with DB.
---                                                                          : Now ab humne jo apps likhe hai banaye hai vo sab humne programming languages like C/C++ and other me likhi hai and DB banaa hua hai SQl me, toh ab inn dono me aapas me communicate kaise krenge, for that there we use an Interface which is called API (Application Program Interface). 
---                                                                          : And that interface, there are some interfaces like in Java there is JDBC and in C++ there is ODBC, these APIs helps in interaction with the Databases! like ye APIs convert krti hai Java (for JDBC) ya C++ (for ODBC) ke instructions ko SQL Queries me! and then in return, DB jo output deta hai vo vaapis user ya app ke paas aati hai and isme bhi JDBC help krta hai (agar app Java se bani hai, and ODBC help krega agar app C++ se bani hogi toh).
---                                                                          : So what happened is maanlo koi app hai Java se bani hui hai and usme maine ek Data structure me SQL ki koi quesry likh ke JDBC ke through bhej di and then vahaa se jo output aaya uss query ka vo bhi maine JDBC ke through retrieve krli! and thats how it works!
+-- Now the question is that, How Database accessed from Application Program : To understand how an application (written in languages like C, C++, Java, etc.) interacts with a database (like SQL databases), we need to focus on database connectivity using APIs (Application Programming Interfaces). This is crucial because applications and databases are developed in different systems or languages, and APIs help bridge that gap.
+-- When we write an app in programming languages such as Java or C++, the instructions or commands are specific to that language. But databases like SQL use SQL queries to interact with data. So, the question arises: how can an application in one language (like Java or C++) communicate with a database that understands SQL?
+-- The answer lies in APIs such as: JDBC (Java Database Connectivity) for Java applications
+--                                : ODBC (Open Database Connectivity) for C and C++ applications
+--                                : These APIs act as a translator between the application and the database, converting language-specific commands into SQL queries, sending them to the database, and then retrieving the results.
+
+-- Step 1: Application Sends a Request
+-- When an application (let's say written in Java) needs to access or modify data in a database, it sends a request. This request could be anything, like:
+-- 1) Fetching data (using SQL SELECT queries)
+-- 2) Inserting new records (using SQL INSERT queries)
+-- 3) Updating existing records (using SQL UPDATE queries)
+-- 4) Example Scenario: You have a Java application where a user fills out a form to add new customer data to a database. In the background, the app will need to communicate with the database to save this information.
+
+-- Step 2: JDBC/ODBC Interfaces as Middlemen
+-- Here, the API comes into play. Let's assume the app is written in Java, so the API we'll use is JDBC (Java Database Connectivity).
+-- 1) JDBC takes the Java commands or requests from the app.
+-- 2) It then translates these commands into SQL queries that the database can understand.
+-- For example, the user input for adding a new customer could be in the form of Java data structures. JDBC converts this data into an SQL INSERT query that can be executed on the database.
+-- Similarly, for C or C++ applications, ODBC (Open Database Connectivity) does the same job. ODBC is a more general API that works across multiple languages.
+
+-- Step 3: API Sends the SQL Query to the Database
+-- After translating the commands into SQL, JDBC/ODBC acts as a connector between the application and the database. The SQL query is sent to the database (for example, a MySQL or PostgreSQL database).
+-- Example: If the user enters customer details in the Java app, JDBC might generate an SQL query like:
+-- Code: "INSERT INTO customers (name, email, address) VALUES ('John Doe', 'john@example.com', '123 Street');"
+
+-- Step 4: Database Executes the Query
+-- Once the database receives the SQL query, it processes it. Depending on the type of query (like SELECT, INSERT, UPDATE, or DELETE), the database will:
+-- 1) Retrieve the requested data (for SELECT queries)
+-- 2) Insert or update records (for INSERT or UPDATE queries)
+-- 3) Delete records (for DELETE queries)
+-- The database performs the actual operations on the data stored in it.
+
+-- Step 6: JDBC/ODBC Converts the Response
+-- Once the API receives the response from the database, it translates the response from SQL to the programming language format (Java, C++, etc.).
+-- For example, if the database sends back customer data after a SELECT query, JDBC converts it into Java objects or arrays that the application can use.
+
+-- Step 7: Application Receives and Processes the Response
+-- Finally, the application receives the response from the API, and the data can now be displayed or further processed. In our example of adding a new customer, once the database confirms the insertion, the Java app may display a success message to the user.
 
 -- Database Administrator : A person who has central control of both the data and the programs that access those data.
 --                        : Functions of DBA : Schema Definition
@@ -164,7 +198,7 @@
 
 -- Entity Set : Jab humare paas bhot saare entities ho of same type, then unn sab entities ko ek set bnaa dete hai tab usko hum ek entity set kehte hai!
 --            : It is a set of entities of the same type that share the same properties, or attributes.
---            : Eg - Student is an entity set, Customer of a bank
+--            : Eg - Student is an entity set, Customer of a bank.
 --            : Entity set and table are not same things, entity set is like in case of students, entity set is the whole group or gang of students! but the table is a structured way of storing information about that every single instance of that entity! overall, the entity set is the idea of a group, and the table is the way we organize and store information about each member of that group in a database.
 
 -- Attributes : Kisi bhi entity ko describe krne ke liye jo properties hoti hai usko hum attributes kehte hai!
@@ -201,7 +235,7 @@
 --                                        : Ternary relationship, three entities participates. E.g, Employee works-on branch, employee works-on job.
 --                                        : Binary are common.
 
--- Now ab dekho jo attributes hote hai, unke kuch constraints bhi hote hai, like as we have seen earlier ki like kisi student ke database me kisi student ke attribute me student name vaala attribute kabhi bhi null nhi ho sakta! ya even student ID bhi, vo toh humesha unique hogi, also like mai ek aisa constraont lgaa sakta hoon ki jaise kisi customer ka name numeric nhi ho sakta
+-- Now ab dekho jo attributes hote hai, unke kuch constraints bhi hote hai, like as we have seen earlier ki like kisi student ke database me kisi student ke attribute me student name vaala attribute kabhi bhi null nhi ho sakta! ya even student ID bhi, vo toh humesha unique hogi, also like mai ek aisa constraint lgaa sakta hoon ki jaise kisi customer ka name numeric nhi ho sakta
 
 -- Relationship Constraints : They are of two types, Mapping Cardinality and another is Participation Constraints.
 
@@ -213,13 +247,12 @@
 
 -- Participation Constraints : Aka, Minimum cardinality constraint.
 --                           : There are two types of participation constraints, Partial Participation and Total Participation!
---                           : Partial Constraints : not all entities are involved in the relationship instance. Denoted with single line.
---                           : Total Participation : each entity must be involved in at least one relationship instance. saari ki saari entities uss entity set ki atleast ek relation instance se judi hongi! Denoted with double line.
+--                           : Partial Constraints : Not all entities are involved in the relationship instance. Denoted with single line.
+--                           : Total Participation : Each entity must be involved in at least one relationship instance. saari ki saari entities uss entity set ki atleast ek relation instance se judi hongi! Denoted with double line.
 --                           : Customer borrow loan, loan has total participation as it can’t exist without customer entity. And customer has partial participation.
 --                           : Weak entity has total participation constraint, but strong may not have total.
 
 -- For ER Diagram Notations, refer the notes!
-
 
 -- ----------------------------------------------------------------------- Lecture 4 : Extended ER Features --------------------------------------------------------------------------------------------------->
 -- 1) Speciallization : When we divide a particular entity into sub entities to avoid redudancy! like suppose we have an entity name as person and in a company a person can be an employee and a customer, but maanlo jab hum ek DB design kr rhe hai toh agar hum ek single entity person naam se bnaa ke usko saare attributes dede like salary, customer id, profile pic, name address and job role,
@@ -254,7 +287,6 @@
 -- So for that we will treat the whole Employee-JobRole-Eranch ternary relation into a single entity! and that we will form an external relation of this entity with another manager entity! and that's we apply aggregation!
 -- Formal Defintion : How to show relationships among relationships? - Aggregation is the technique, Abstraction is applied to treat relationships as higher-level entities. We can call it Abstract entity, Avoid redundancy.
 -- Go to the hand written notes! for more details and diagram!
-
 
 -- ----------------------------------------------------------------------- Lecture 5 : Making of ER Diagram - Banking System ER Model --------------------------------------------------------------------------------------------------->
 -- Go to hand written notes! for the whole lecture!
@@ -323,7 +355,6 @@
 --                 : CHECK : It is one of the integrity constraints in DBMS. It keeps the check that integrity of data is maintained before and after the completion of the CRUD. like age ? 18 honi chahiye college me admission lene ke liye! and similar cheeze!
 --                 : PRIMARY KEY : This is an attribute or set of attributes that can uniquely identify each entity in the entity set. The primary key must contain unique as well as not null values. it is NOT NULL, UNIQUE and every entity contain only 1 PK!
 --                 : FOREIGN KEY : Keeps the relations between 2 tables! Whenever there is some relationship between two entities, there must be some common attribute between them. This common attribute must be the primary key of an entity set and will become the foreign key of another entity set. This key will prevent every action which can result in loss of connection between tables.
-
 
 -- ----------------------------------------------------------------------- Lecture 8 : Transform ER Model to Relational Model --------------------------------------------------------------------------------------------------------------------------------->
 -- ER Diagram Notations to Relations!
