@@ -482,7 +482,7 @@
 -- ----------------------------------------------------------------------- Lecture 10.1 : SQL Questions --------------------------------------------------------------------------------------------------------------------------------->
 -- These question will be practiced on MySQL, so there wont be any notes, if there is something important then visit the vdo again!
 -- Some importante concepts and keywords you need to try and search for it later...
--- Substring Keyword : Substring(String,Starting point, ending point).
+-- Substring Keyword : Substring(String, Starting point, Ending point).
 -- Upper and Lower case keyword : Upper(string) / Lower(string).
 -- instr keyword : Tells the position of character in a string, syntax : INSTR(string, 'character'). and it is case-insensitive.
 -- Rtrim and Ltrim keywords : It helps in removing the white spaces from right and left side, syntax is simple, Ltrim(string) / Rtrim(string).
@@ -601,7 +601,7 @@ select w.* from worker as w inner join title as t on w.worker_id = t.worker_ref_
 select worker_title, count(*) as count from title group by worker_title having count > 1;
 
 -- Q-26. Write an SQL query to show only odd rows from a table.
--- select * from worker where MOD (WORKER_ID, 2) != 0; 
+select * from worker where MOD (WORKER_ID, 2) != 0; -- or --
 select * from worker where MOD (WORKER_ID, 2) <> 0;
 
 -- Q-27. Write an SQL query to show only even rows from a table. 
@@ -673,7 +673,7 @@ select * from worker where worker_id = (select min(worker_id) from worker);
 
 -- Q-45. Write an SQL query to print the name of employees having the highest salary in each department.
 select w.department, w.first_name, w.salary from
- (select max(salary) as maxsal, department from worker group by department) temp
+(select max(salary) as maxsal, department from worker group by department) temp
 inner join worker w on temp.department = w.department and temp.maxsal = w.salary;
 
 -- Q-46. Write an SQL query to fetch three max salaries from a table using co-related subquery
