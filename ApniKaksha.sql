@@ -107,27 +107,27 @@ Select * from Employee;
 	-- Foreign Key : A foreign key is a column (or set of columns) in a table that refers to the primary key of some another table! There can be multiple foreign keys! FKs can have duplicate and null values!
 
 -- Constraints : SQL Constraints are used to specify rules for a data in a table!
-	-- Not Null : If this is a constraint means that column cannot have null value!
-    -- Unique : All values in column are different
-    -- Primary Key : Makes a column unique and not null but used for one column only! Hum according to our usage 2 column ke combination ko bhi primary key bnaa sakte hai!
-    -- Foreign Key : Prevents actions that would destroy links between tables!
-					-- Syntax will be like -> Create Table temp1 (
-										-- cust_id int,
-                                        -- Foreign Key (cust_id) refrences customer(id) -- Here we can see koi aur table hogi customer naam se uski ek PK hogi id, usko as a foreign key ki tarah use kiya temp1 table me with a new name which is cust_id!
-										-- );
-    -- Default : Sets the default values for a column!
-				-- Syntax will be like -> salary int default 25000
-	-- Check : It can limit the values allowed in column!
-			-- Syntax will be like -> Create Table City (
-										-- id int primary key,
-                                        -- city varchar(50),
-                                        -- age int,
-                                        -- constraint age_check check (age>=18 and city="delhi") -- This line will always the check the entry and according to that it will add it into the column!
-										-- );
-                                        -- OR --
-								-- -> Create Table newTab (
-										-- age int check (age>=18)
-										-- );
+-- Not Null : If this is a constraint means that column cannot have null value!
+-- Unique : All values in column are different
+-- Primary Key : Makes a column unique and not null but used for one column only! Hum according to our usage 2 column ke combination ko bhi primary key bnaa sakte hai!
+-- Foreign Key : Prevents actions that would destroy links between tables!
+--             : Syntax will be like -> Create Table temp1 (
+--                                          cust_id int,
+--                                          Foreign Key (cust_id) refrences customer(id) -- Here we can see koi aur table hogi customer naam se uski ek PK hogi id, usko as a foreign key ki tarah use kiya temp1 table me with a new name which is cust_id!
+--                                          );
+-- Default : Sets the default values for a column!
+--         : Syntax will be like -> salary int default 25000
+-- Check : It can limit the values allowed in column!
+--       : Syntax will be like -> Create Table City (
+--                                  id int primary key,
+--                                  city varchar(50),
+--                                  age int,
+--                                  constraint age_check check (age>=18 and city="delhi") -- This line will always the check the entry and according to that it will add it into the column!
+--                                );
+--                                  -- OR --
+--                             -> Create Table newTab (
+--                                  age int check (age>=18)
+--                                );
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- First Creating a table for the below commands to run!
@@ -184,15 +184,15 @@ Select distinct city from Student; -- It will only display pune mumbai and delhi
 -- Select col1, col2 from Table_name
 -- Where Condition
 -- Example : Select * from Student where marks > 80;
-		-- : Select * from Student where city="Delhi";
+--         : Select * from Student where city="Delhi";
 Select * from Student where marks > 80;
 Select * from Student where marks > 80 and city="Mumbai"; -- Here we have used the logical operater and, similarly we can use or not and rest of them!
 
 -- Operators in SQL : Arithmatic Operators, Logical Operators, Bitwise Operators and Relational Operators!
-	-- Arithematic Operators : +, -, *, / and %(modulo)
-	-- Relational Operators : =, !=, >, >=, <, <=
-	-- Logical Operators : And, Or, Not, In, Between, All, Like, Any
-	-- Bitwise Operator : & and |
+-- Arithematic Operators : +, -, *, / and %(modulo)
+-- Relational Operators : =, !=, >, >=, <, <=
+-- Logical Operators : And, Or, Not, In, Between, All, Like, Any
+-- Bitwise Operator : & and |
 
 -- We have seen the use of and operator, now we will look for others....
 Select * from Student where marks>80 or city="Mumbai";
@@ -207,7 +207,7 @@ limit 4; -- It will put limit upto 4 students
 
 -- Order By Clause : This clause is used to sort the data in acsending order or descending order!
 -- Syntax -> Select col1, col2 from Table_name
-		-- Order by col_name(s) asc;
+--           Order by col_name(s) asc;
 Select * from Student
 order by city asc;
 
@@ -290,7 +290,7 @@ order by grade asc;
 Select city, count(rollno)
 from Student
 group by city
-having max(marks) >90;
+having max(marks) > 90;
 
 -- Now after studying all these clauses, we need to keep in mind the order of it and that is :
 -- Select -> From -> Where -> Group By -> Having -> Order By
@@ -448,12 +448,11 @@ DATE_FORMAT(date, format) -- This is the syntax!
 -- Now there are 4 different types of joins, as we have studied in maths, like...Inner Join (Intersection) and Outer Join (Left Join -> A+(A Intersection B), Right Join -> B+(B Intersection A), Full Join -> AUB)!
 
 -- 1) Inner Join : Returns records that are having matching values in both the tables!
-	-- Syntax : 
-			-- Select column(s)
-			-- From TableA
-			-- Inner Join TableB -- Yahaa konsa table left ya right hai isse fark nhi padta, toh upar neeche likhne se bhi result me koi fark nhi padega! but as per rules jo pehle likha hota hai that is left table and baad vaala right table!
-			-- On TableA.col_name = TableB.col_name; 
-	-- Example :
+-- Syntax : Select column(s)
+--          From TableA
+--          Inner Join TableB -> Yahaa konsa table left ya right hai isse fark nhi padta, toh upar neeche likhne se bhi result me koi fark nhi padega! but as per rules jo pehle likha hota hai that is left table and baad vaala right table!
+--          On TableA.col_name = TableB.col_name; 
+-- Example :
 Create Table Student2 (
 	student_id int,
     name varchar(50)
@@ -485,43 +484,37 @@ From Student2 as s2 -- Here as is used to provide aliases to the table names or 
 Inner Join Course as c
 On Student2.student_id = Course.student_id;
 
-
 -- Left Join : Returns all the records from the left table and matching records from the right table!
-	-- Syntax : 
-			-- Select column(s)
-			-- From TableA
-			-- Left Join TableB -- This line simply means that Table A ka Table B se left join krna hai! and jo pehle likha hua hai vo left hai and jo baad me vo right hai!
-			-- On TableA.col_name = TableB.col_name;
-	-- Example :
+-- Syntax : Select column(s)
+--          From TableA
+--          Left Join TableB -- This line simply means that Table A ka Table B se left join krna hai! and jo pehle likha hua hai vo left hai and jo baad me vo right hai!
+--          On TableA.col_name = TableB.col_name;
+-- Example :
 Select *
 From Student2
 Left Join Course
 On Student2.student_id = Course.student_id;
 
-
 -- Right Join : Returns all the records from the right table and matching records from the left table!
-	-- Syntax :
-			-- Select column(s)
-			-- From TableA
-			-- Right Join TableB -- This line simply means that Table A ka Table B se right join krna hai! and jo pehle likha hua hai vo left hai and jo baad me vo right hai!
-			-- On TableA.col_name = TableB.col_name;
-	-- Example :
+-- Syntax : Select column(s)
+--          From TableA
+--          Right Join TableB -- This line simply means that Table A ka Table B se right join krna hai! and jo pehle likha hua hai vo left hai and jo baad me vo right hai!
+--          On TableA.col_name = TableB.col_name;
+-- Example :
 Select *
 From Student2
 Right Join Course
 On Student2.student_id = Course.student_id;
 
-
 -- Full Join : Returns all the record when there is a match in either right or left table! Also In MySQL full join jaisa koi keyword exist nhi krta, so yahaa pr hum left join and right join ka union use krte hai!
-	-- Syntax in mySQL :
-			-- Select * from tableA
-            -- left join tableB
-            -- on tableA.col_name = tableB.col_name
-            -- Union
-            -- Select * from tableA
-            -- right join tableB
-            -- on tableA.col_name = tableB.col_name
-	-- Example :
+-- Syntax in mySQL : Select * from tableA
+--                   Left join tableB
+--                   On tableA.col_name = tableB.col_name
+--                   Union
+--                   Select * from tableA
+--                   Right join tableB
+--                   On tableA.col_name = tableB.col_name
+-- Example :
 Select * from Student2 as s2
 left join Course as c
 on s2.student_id = c.student_id
@@ -530,7 +523,6 @@ Select * from student2 as s2
 right join Course as c
 on s2.student_id = c.student_id;
 -- So in MySQL we indirectly perform Full Join!
-
 
 -- Now there are some more extra joins in MySQL, and they are : Left Exclusive Join, Right Exclusive Join and Full Exclusive Join
 -- Left Exclusive Join : Which is same as A-B, hence....
@@ -566,7 +558,7 @@ Select *
 from Student2 as a
 join Student2 as b -- Yahaa hum alias use krte hai, so hum ek table ko ek baar a naam dedete hai and ek baar b and then dono ko join krdete hai!
 on a.student_id = b.student_id;
-	-- Example : lets understand the use of Self Join!, first lets create a table
+-- Example : lets understand the use of Self Join!, first lets create a table
 Create table  Employee2 (
 	id int primary key,
     name varchar(50),
@@ -614,23 +606,20 @@ on a.id = b.manager_id;
 
 -- ---------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Unions : It is used to combine the result records of the 2 or more select statements, and it gives a unique value! mathematically it is AUB!
--- To use it :
-			-- every select statement should have same number of columns
-            -- columns must have similar datatypes
-            -- columns in every select should have same order!
--- Syntax :
-		-- Select column(s) from Table A
-        -- Union
-        -- Select column(s) from Table B
+-- To use it : every select statement should have same number of columns
+--           : columns must have similar datatypes
+--           : columns in every select should have same order!
+-- Syntax : Select column(s) from Table A
+--        : Union
+--        : Select column(s) from Table B
 -- Also jaise union hota hai, jo saari duplicate/repeated values ko hataa deta hai, vaise hi ek union all hota hai jo saari duplicate/repeated values ko bhi allow krta hai!
 
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------->
 -- SQL Sub Queries : A Sub Query, a nested query or an inner query is a query within another SQL query! and it invloves 2 select statements!
--- Syntax :
-		-- Select column(s)
-        -- from table_name
-        -- where column_name operator
-        -- (sub query);
+-- Syntax : Select column(s)
+--        : From table_name
+--        : Where column_name operator
+--        : (sub query);
 -- Sub queries ko likhne ke 3 tareeke hote hai, inko hum Select, From and Where Clause ke andar likh sakte hai, and the above syntax is the third one jahaa humne where clause ke andar likha hua hai sub query!
 -- Example (Writing sub queries inside the where clause) : get the names of all the students who have scored more than the class average!
 -- First we will write the query to get the average of all the marks!

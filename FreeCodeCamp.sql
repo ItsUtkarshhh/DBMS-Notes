@@ -17,11 +17,11 @@
 -- Another is a candidate key, where hum kisi ek ya zyada rows ko uniquely identify kraate hai with the unique keyword constraint!
 
 -- Difference between Candidate and Primary key! :
-	-- A Candidate key is a set of one or more column in a table that can uniquely identify a record! BUT Primary key is a specific candidate key that is uniquely identify each record in a table!
-    -- There can be multiple Candidate keys but only single primary key!
-    -- In Summary, all primary keys are candidate keys, but not all candidate key are a primary key!
-    -- The primary key is the selected candidate key that is used to uniquely identify records in a table. Other candidate keys, though not chosen as the primary key, still have the property of uniqueness and can be used to enforce uniqueness through unique constraints.
-	-- Candidate key unique hoti hai, aur Primary key unique and not-null dono hoti hai! So primary key is more restricted than candidate key! Also mtlb ki candidate key me jab data daaloge toh vo unique hoga, pr primary me agar data daaloge toh vo unique toh hoga uske saath not-null bhi hoga!
+-- A Candidate key is a set of one or more column in a table that can uniquely identify a record! BUT Primary key is a specific candidate key that is uniquely identify each record in a table!
+-- There can be multiple Candidate keys but only single primary key!
+-- In Summary, all primary keys are candidate keys, but not all candidate key are a primary key!
+-- The primary key is the selected candidate key that is used to uniquely identify records in a table. Other candidate keys, though not chosen as the primary key, still have the property of uniqueness and can be used to enforce uniqueness through unique constraints.
+-- Candidate key unique hoti hai, aur Primary key unique and not-null dono hoti hai! So primary key is more restricted than candidate key! Also mtlb ki candidate key me jab data daaloge toh vo unique hoga, pr primary me agar data daaloge toh vo unique toh hoga uske saath not-null bhi hoga!
 
 -- In SQL we have another keyword named as "Describe" which is used to describe table, but it is not that mostly used, rather than "Show" is used for the "Describe" purposes!
 -- Talking about constraints, we have learnt various constraints in the apni kaksha tutorial, but now there are some more, one of them is "Default" where we give a column a default value, example :
@@ -62,13 +62,13 @@ SELECT * FROM Student3;
 -- The two primary wildcard characters used in SQL are the percent sign (%) and the underscore (_).
 
 -- Percentage Sign (%) : The percent sign is used to represent zero or more characters. or can say in short "any number of characters!"
-	-- For Example : If you want to find all names that start with "J," you can use % as a wildcard, it will be like :
-					-- SELECT * FROM employees WHERE employee_name LIKE 'J%'; -> This query will return rows where employee name starts with letter "J". and here "J%" means first letter should be J and then any number of characters, but it should start with J!
-					-- Similarly, agar ye likha hota "%J%", then it means ki J ke pehle any number of characters and J ke baad any number of charcaters! and similarly agar "%J" likha hota tab iska mtlb hota ki J ke pehle any number of characters and last me J hona chahiye!
+-- For Example : If you want to find all names that start with "J," you can use % as a wildcard, it will be like :
+--			   : SELECT * FROM employees WHERE employee_name LIKE 'J%'; -> This query will return rows where employee name starts with letter "J". and here "J%" means first letter should be J and then any number of characters, but it should start with J!
+--			   : Similarly, agar ye likha hota "%J%", then it means ki J ke pehle any number of characters and J ke baad any number of charcaters! and similarly agar "%J" likha hota tab iska mtlb hota ki J ke pehle any number of characters and last me J hona chahiye!
 -- Underscore (_) : The Underscore sign is used to represent a single character, or in short "one character!"
-	-- For Example :  if you want to find all four-letter names that start with "J" you can use four underscores, it will be like :
-					-- SELECT * FROM employees WHERE employee_name LIKE 'J _ _ _'; -> This query will return all rows where the employee_name starts with "J" and is followed by exactly three more characters. And here J _ _ _ means first letter should be J and then there should be only 3 characters after that!
-                    -- Similarly, agar "_ _ _ J" likha hota toh mtlb hai ki J ke pehle 3 letters hone chahiye only and J should be the last letter of the string! ya agar aise likha hota "_ _ J _" meant ki J ke pehle 2 character hone chahiye and J ke baad 1 character hona chahiye only!
+-- For Example : If you want to find all four-letter names that start with "J" you can use four underscores, it will be like :
+--			   : SELECT * FROM employees WHERE employee_name LIKE 'J _ _ _'; -> This query will return all rows where the employee_name starts with "J" and is followed by exactly three more characters. And here J _ _ _ means first letter should be J and then there should be only 3 characters after that!
+--			   : Similarly, agar "_ _ _ J" likha hota toh mtlb hai ki J ke pehle 3 letters hone chahiye only and J should be the last letter of the string! ya agar aise likha hota "_ _ J _" meant ki J ke pehle 2 character hone chahiye and J ke baad 1 character hona chahiye only!
 -- So that's how this Wildcards works!
 
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -97,13 +97,12 @@ SELECT * FROM Student3;
 -- Triggers in SQL!
 -- So triggers are the SQL Codes that automatically gets executed in response to a certain events on a particular table, it is used to maintain the inetgrity of the data!
 -- Suppose koi employee hai jiska kaam hai jab bhi koi fresher company me aaye toh usko ek welcome email send krde, agar 2-3 freshers aa rhe hai toh koi dikkat nhi hai, ye kaam manually bhi ho jayega, pr agar 1000s of freshers aayenge toh sabko itne saare mails bhejna feasible nhi rahega! toh in this case we use triggers, jab bhi koi nayaa freshers ka name and id company ke database ke employee table me aayega, tab uss employee ek welcome email chlaa jayega triggers ke through! This is what the actual use of triggers!
--- Syntax of Triggers :
-						-- CREATE TRIGGER trigger_name
-						-- ( BEFORE | AFTER )
-						-- [ INSERT | UPDATE | DELETE ]
-						-- on [ table_name ]
-						-- [ FOR EACH ROW | FOR EACH COLUMN ] BEGIN
-						-- [ trigger_body ]
+-- Syntax of Triggers : CREATE TRIGGER trigger_name
+-- 						( BEFORE | AFTER )
+--						[ INSERT | UPDATE | DELETE ]
+-- 						On [ table_name ]
+--						[ FOR EACH ROW | FOR EACH COLUMN ] BEGIN
+--						[ trigger_body ]
 -- Example of use of Triggers :
 -- Create a trigger table, and as humne upar ek student table banaya tha, so ab jab bhi koi new entry ayegi student table me ek then trigger will activate and trigger table jo humne banaya hai usme ye information update hojayegi ki ek nayaa student add hua hai student table me!
 -- It will be done like :
@@ -163,6 +162,8 @@ FOR EACH ROW BEGIN
 		INSERT INTO Trigger_Table2 VALUES ("Added a topper student");
 	ELSEIF NEW.Marks < 95 THEN
 		INSERT INTO Trigger_Table2 VALUES ("Added an average student");
+	ELSE
+		INSERT INTO Trigger_Table2 VALUES ("Added a new student");
 	END IF;
 END $$
 DELIMITER ;

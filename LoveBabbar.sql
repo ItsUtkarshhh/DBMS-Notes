@@ -46,7 +46,6 @@
 
 
 -- ----------------------------------------------------------------------- Lecture 2 : DBMS Architecture --------------------------------------------------------------------------------------------------->
-
 -- There is a word which changed the tech world, which is "Abstraction".
 -- Isko aise samajh sakte hai jaise ki maanlo car driving hai! ab jo insaan drive kr rha hota hai car ko usko mainly bss 3-4 cheezo ke baare me hi knowledge honi zaruri hai! and those are, Accelarator, Brake, Clutch and Gear, baaki cheeze like brake dabaane pr kaise brake lg rha hai and kaise gear kaam kr rhe hai ye sab ke baare me jaanna important nhi hai usko! So this is what is Abstraction!
 -- Now this is what abstract means, and DBMS ka kaam hi yhi hota hai ki Database ka ek abstract view provide kre!
@@ -75,7 +74,7 @@
 --                         : Goal : we must define the algorithms, that will allow efficient access of data.
 --                         : To view the physical schema of the DB tables, write SHOW TABLE STATUS; it will show all the low level relevant information about all the tables present in that DB!
 
--- Logical/Conceptual level : This tells ki jo physically jo data stored hai, vo actually dikhta kaisa hai! like agar physically data aise stored hai ki bss Utkarsh,CSE,O,2,6, ki like bss aise likha hua hai but hume nhi ptaa na ki konsa kya likha hai, hume koi idea nhi hai uska, so here logical/conceptual schema comes in role jahaa vo define krta hai ki kis cheez ka kya mtlb hai, like ko physical data ko logical data me map krta hai taai jo physical data hai uska koi sense bane!
+-- Logical/Conceptual level : This tells ki jo physically jo data stored hai, vo actually dikhta kaisa hai! like agar physically data aise stored hai ki bss Utkarsh,CSE,O,2,6, ki like bss aise likha hua hai but hume nhi ptaa na ki konsa kya likha hai, hume koi idea nhi hai uska, so here logical/conceptual schema comes in role jahaa vo define krta hai ki kis cheez ka kya mtlb hai, like ko physical data ko logical data me map krta hai taaki jo physical data hai uska koi sense bane!
 --                          : The conceptual schema describes the design of a database at the conceptual level, describes what data are stored in DB, and what relationships exist among those data.
 --                          : User at logical level does not need to be aware about physical-level structures.
 --                          : DBA, who must decide what information to keep in the DB use the logical level of abstraction.
@@ -167,7 +166,7 @@
 -- The Server Machine is that jahaa pr actual DBMS run kr rha hai!
 
 -- Ab now ye dono kaise arrange hote hai uss basis pr hi 3 tiers bane hue hai!
--- Tier 1 Architecture : Where all the three Client Database and Server, teeno ek hi machine pr hote hai, like agar hum koi Web app bnaate hai tab client bhi hum hi hai, and uske liye hum seedha koi AWS ka server nhi khareed lete uske liye we have a local host, jo local host krke likha hota hai that is our own remote server and then DB bhi humare hi machine pr hota hai! so that is Tier 1 architecture!
+-- Tier 1 Architecture : Where all the three Client, Database and Server, teeno ek hi machine pr hote hai, like agar hum koi Web app bnaate hai tab client bhi hum hi hai, and uske liye hum seedha koi AWS ka server nhi khareed lete uske liye we have a local host, jo local host krke likha hota hai that is our own remote server and then DB bhi humare hi machine pr hota hai! so that is Tier 1 architecture!
 -- Tier 2 Architecture : Isme kya hota hai ki, hum ek PC pr client and app hote hai and kisi aur remote PC pr Server hota hai jisme DB stored hai, and ye dono Network ke through connected hote hai! and now and inse hum communicate kr paate hai JDBC ya ODBC ke through taaki data retrieve kr sake! and that's how it works! so this is Tier 2 Architecture!
 --                     : Client machine, which invokes DB system functionality at server end through query language statements.
 --                     : API standards like ODBC & JDBC are used to interact between client and server.
@@ -273,17 +272,14 @@
 -- “is-a” relationship is present between subclass and super class.
 -- e.g., Car, Jeep and Bus all have some common attributes, to avoid data repetition for the common attributes. DB designer may consider to Generalise to a new entity set “Vehicle”.
 -- Why Generalisation? : Makes DB more refined and simpler, Common attributes are not repeated.
-
  
--- 4) Attribute Inheritance : Parent ke jo attribute honge vo sub entities inherit krengi hi krengi!
+-- 3) Attribute Inheritance : Parent ke jo attribute honge vo sub entities inherit krengi hi krengi!
 -- The attributes of higher level entity sets are inherited by lower level entity sets.
 -- E.g., Customer & Employee inherit the attributes of Person.
 
+-- 4) Participation Inheritance : If a parent entity set participates in a relationship then its child entity sets will also participate in that relationship.
 
--- 5) Participation Inheritance : If a parent entity set participates in a relationship then its child entity sets will also participate in that relationship.
-
-
--- 6) Aggregation : Suppose a case where we have an employee, a job role and a branch and we have a relation of all of it! means ek employee hai jo kisi particular branch me kaam krta hai kisi particular job role me! now we want a manager! who will manage that employee who works in a branch in a particular job role! toh ab hum yaa tohg aisa kr sakte hai ki iss ternary relation ko quartenary relation bnaa dete hai ek manager enitity add krke! but that will not be feasible kyunki fir uss manager entity ke paas saari knowledge ajayegi uss employee table ki bhi branch table ki bhi and job role table ki bhi! but hume sirf uss particular employee jo ek particular branch me kaam krta hai ek particular job role me! sirf uske saath relation bnaana hai!
+-- 5) Aggregation : Suppose a case where we have an employee, a job role and a branch and we have a relation of all of it! means ek employee hai jo kisi particular branch me kaam krta hai kisi particular job role me! now we want a manager! who will manage that employee who works in a branch in a particular job role! toh ab hum yaa toh aisa kr sakte hai ki iss ternary relation ko quartenary relation bnaa dete hai ek manager enitity add krke! but that will not be feasible kyunki fir uss manager entity ke paas saari knowledge ajayegi uss employee table ki bhi branch table ki bhi and job role table ki bhi! but hume sirf uss particular employee jo ek particular branch me kaam krta hai ek particular job role me! sirf uske saath relation bnaana hai!
 -- So for that we will treat the whole Employee-JobRole-Eranch ternary relation into a single entity! and that we will form an external relation of this entity with another manager entity! and that's we apply aggregation!
 -- Formal Defintion : How to show relationships among relationships? - Aggregation is the technique, Abstraction is applied to treat relationships as higher-level entities. We can call it Abstract entity, Avoid redundancy.
 -- Go to the hand written notes! for more details and diagram!
@@ -319,7 +315,7 @@
 
 -- Relational Keys : Super Keys : Any P&C of attributes present in a table which can uniquely identify each tuple. like suppose agar kisi table me multiple attributes hai and hum unn sab attributes ki jitni bhi combinations possible hai jo kisi tuple ko uniquely identify krenge, That will be a super key!
 --                 : Candidate Keys : Minimum subset of super keys, which can uniquely identify each tuple. It contains no redundant attribute. Superkeys me vo saare possible combinations hote hai, but in case of Candidate keys, hum super keys ka hi subset lete hai jo kisi tuple ko uniquely identify kr sake and usme koi redudant attribute na ho! redudant attribute means jahaa values same nhi ho sakti!
---                                  : CK value shouldn’t be NULL 
+--                                  : CK value shouldn’t be NULL.
 --                 : Primary Key : Selected out of CK set, has the least no. of attributes.
 --                 : Alternate Keys : All CK except PK. It is also called Secondary Key.
 --                 : Foreign Keys : It creates relation between two tables.
@@ -346,7 +342,7 @@
 --                        : ON DELETE/UPDATE SET NULL : If a record in the parent table is deleted, the foreign key column(s) in the child table are set to NULL. and If a primary key value in the parent table is updated, the foreign key column(s) in the child table are set to NULL.
 --                        : ON DELETE/UPDATE CASCADE : If a record in the parent table is deleted, all corresponding records in the child table are automatically deleted. and If a primary key value in the parent table is updated, all corresponding foreign key values in the child table are automatically updated to match.
 --                        : ON DELETE/UPDATE RESTRICT : Prevents the deletion of a record in the parent table if there are corresponding records in the child table. and Prevents the update of the primary key value in the parent table if there are corresponding foreign key values in the child table.
---                        : ON DELETE/UPDATE NO ACTION : Similar to RESTRICT, it prevents the deletion or update of records in the parent table if there are corresponding records in the child table. There is no very signifcant difference between the two apart from terminologies and intentions,  NO ACTION explicitly states that no action will be taken, while RESTRICT implies a restriction on the action.
+--                        : ON DELETE/UPDATE NO ACTION : Similar to RESTRICT, it prevents the deletion or update of records in the parent table if there are corresponding records in the child table. There is no very signifcant difference between the two apart from terminologies and intentions, NO ACTION explicitly states that no action will be taken, while RESTRICT implies a restriction on the action.
 --                        : ON DELETE/UPDATE SET DEFAULT : If a record in the parent table is deleted, the foreign key column(s) in the child table are set to their default values. and If a primary key value in the parent table is updated, the foreign key column(s) in the child table are set to their default values.
 
 -- Key Constraints : NOT NULL : By default an attribute/Column can be null but using this keyword, it cannot be null! Enforce a column to not to accept NULL.
@@ -413,10 +409,10 @@
 --     CONSTRAINT Check_age CHECK (Age>18) -> This is how we create the constraint CHECK
 -- )
 
--- Now in DML Commands we have studies some commands like INSERT, UPDATE, DELETE, now there is another command and that is "REPLACE"...
+-- Now in DML Commands we have studied some commands like INSERT, UPDATE, DELETE, now there is another command and that is "REPLACE"...
 -- This command is used when we want to replace some row from the table, if the row we want to replace exist in the table then we this command replaces it and if that row does not exist then this command works as Insert command!
 -- Syntax...
--- REPLACE INTO Customer(id, City) VALUES (101,Ghaziabad); If this row with ID 101 exist in the table (table has 4 attributes, id, name, age and city and we are replacing only two attributes id and city) then this command will replace that row where ID is 101 (id is imp to inlcude for replacing vrna kyunki vhi ek hai jo uniquely identify krta hai each row ko) also jab replace hoga vo row, tab humne toh bss id and city replace ki hai toh baaki dono attributes ki jagah NULL store hojayega! and abhi toh chalo vo row with ID 101 exist krti thi agar nhi krti hoti toh ye INSERT ki tarah act krta and ek nayi row insert hojaati!
+-- REPLACE INTO Customer(id, City) VALUES (101,Ghaziabad); If this row with ID 101 exist in the table (table has 4 attributes, id, name, age and city and we are replacing only two attributes id and city) then this command will replace that row where ID is 101 (id is imp to include for replacing vrna kyunki vhi ek hai jo uniquely identify krta hai each row ko) also jab replace hoga vo row, tab humne toh bss id and city replace ki hai toh baaki dono attributes ki jagah NULL store hojayega! and abhi toh chalo vo row with ID 101 exist krti thi agar nhi krti hoti toh ye INSERT ki tarah act krta and ek nayi row insert hojaati!
 -- Another syntax...
 -- REPLACE INTO Customer(id, City) SET ID = 101, City = "Ghaziabad"; Does the same thing as above bss syntax thora alag hai and iska bhi same functionality jaisa above vaale ka!
 
@@ -473,12 +469,11 @@
 
 -- Join vs SubQuery : Joins are Faster and SubQueries are Slower, Joins maximize calculation burden on DBMS and Sub Queries keeps responsibility of calculations on user, Joins are difficult to understand and implement but subQueries are relatively easier, chhosing optimal join for optimal result is difficult but subQueries are easy!
 
-
 -- Views in Tables : A view is a database object that has no values. Its contents are based on the base table. It contains rows and columns similar to the real table.
 --                 : In MySQL, the View is a virtual table created by a query by joining one or more tables. It is operated similarly to the base table but does not contain any data of its own.
 --                 : The View and table have one main difference that the views are definitions built on top of other tables (or views). If any changes occur in the underlying table, the same changes reflected in the View also.
 --                 : CREATE VIEW view_name AS SELECT columns FROM tables [WHERE conditions];
---                 : ALTER VIEW view_name AS SELECT columns FROM table WHERE conditions;
+--                 : ALTER VIEW view_name AS SELECT columns FROM table [WHERE conditions];
 --                 : DROP VIEW IF EXISTS view_name;
 --                 : CREATE VIEW Trainer AS SELECT c.course_name, c.trainer, t.email FROM courses c, contact t WHERE c.id = t.id; (View using Join clause).
 
@@ -500,7 +495,7 @@
 -- Rest just practice and practice and practice and dry run dry run dry run your queries!
 
 -- In MySQL "<>" also behaves as "!="
--- Interesting Quesries :
+-- Interesting Queries :
 -- 1) To clone a whole table from another already existing table...
 --      Write an SQL query to clone a new table from another table.
 --      CREATE TABLE worker_clone LIKE worker;
