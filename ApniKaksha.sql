@@ -385,20 +385,20 @@ Create table teacher (
 -- Alter command is used with the following operations like, add column, drop column, rename table, change column, and modify column!
 -- Using the student table to demonstrate the use of the above operations!
 -- Example Syntax of the operations :
-	-- Alter Table table_name
-	-- Add Column col_name datatype constraints;
+-- Alter Table table_name
+-- Add Column col_name datatype constraints;
     
-    -- Alter Table table_name
-    -- Drop Column col_name;
+-- Alter Table table_name
+-- Drop Column col_name;
     
-    -- Alter Table table_name
-    -- Rename to new_table_name;
+-- Alter Table table_name
+-- Rename to new_table_name;
     
-    -- Alter Table table_name
-    -- Change old_name new_name new_datatype new_constraints;
+-- Alter Table table_name
+-- Change old_name new_name new_datatype new_constraints;
     
-    -- Alter Table table_name
-    -- Modify col_name new_datatype new_constraints;
+-- Alter Table table_name
+-- Modify col_name new_datatype new_constraints;
 -- Some example usage of the above commands and operations!
 Alter Table Student
 add age int;

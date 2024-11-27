@@ -95,6 +95,14 @@
 --                       : Logical schema is most important in terms of its effect on application programs, as programmers construct apps by using logical schema.
 --                       : Physical data independence : physical schema change should not affect logical schema/application programs. maanlo jaise humne physical level pr jahaa pr data stored hai, vo pehle hardisc me stored tha ab humne usko SSD me store krdiya fast access ke liye, toh isse logical level database ko koi fark nhi padega! uska design pr koi affect nhi ayega!
 
+-- Difference between Table and Schema : Schema : A schema is a logical structure that organizes and groups database objects, such as tables, views, indexes, stored procedures, and functions. It acts as a blueprint or container for database objects.
+--                                              : Provides a logical grouping or categorization for database objects.
+--                                              : Helps in organizing and managing database objects for different purposes
+--                                              : Higher level of abstraction. Represents the overall organization of database objects.
+--                                     : Table : A table is a data structure within a schema that stores actual data in rows and columns. It is the primary unit where data is stored and manipulated.
+--                                             : Stores the actual data in a structured format. Allows users to query, insert, update, and delete records.
+--                                             : Lower level of abstraction. Represents individual entities or datasets.
+
 -- Now what are the features of DB Schema : Attributes of the table.
 --                                        : Consistency Constraints, Like there are some conditions jo hum kuch attributes pr lgaate hai! like kisi student table me koi aisa student nhi ho sakta jiska koi name ya roll number na ho! and similar se contraints aur bhi ho sakte hai, overall vahi ki kuch conditions lagi hongi kuch attributes pr!
 --                                        : Relationships! Like there are some relationships! like ek student table hai toh uss student ne kis kis course me apply kiya hua hai! uske liye courses ki ek alag table hoti hai toh uss course ki table and student table me relationship btata hai ye!
@@ -178,6 +186,28 @@
 --                     : Advantages : Scalability due to distributed application servers.
 --                                  : Data integrity, App server acts as a middle layer between client and DB, which minimize the chances of data corruption. Like maanlo ki galti se humne Tier 2 me koi galat query bhejdi DB server pr tab toh ho sakta hai poora DB destroy hojaye, toh iss mistake se bachane ke liye we use the Tier 3 isse jo bhi query bheji jayegi, vo pehle app server pr check hogi and agar vo fatal query hai toh usko decline krdiya jayega and koi agar sahi query hogi toh uske according output mil jayega!
 --                                  : Security, client can’t directly access DB, hence it is more secure.
+
+-- Now, see overall... There are multiple Architectures in Softwares which are called Software Architecture!
+-- There are multiple Software Architectures! like : Monolithic Architecture : All parts of the application (frontend, backend, database, etc.) are built as a single unit and work closely together. and If you change one part, you often need to test and redeploy the whole application. Example : E-Commerce Website.
+--                                                 : Microservices Architecture : The application is split into smaller, independent services, each responsible for one function (e.g., user login, catalog search, or payment). and Each service can run and be deployed separately. Services communicate with each other through APIs. Example : Amazon and Netflix.
+--                                                 : Event-Driven Architecture : Components communicate by sending events to each other. An event is a signal that something happened (e.g., a user clicked a button). One component creates an event, and others listen for it and respond accordingly. Example : Banking Systems and E-Commerce.
+--                                                 : Serverless Architecture : Applications run on the cloud, and you don’t need to worry about managing servers or infrastructure. and You write code in smaller pieces (called functions), and the cloud provider handles running it. Example : Chatbots and Image Processing Systems.
+--                                                 : Layered Architecture : The application is divided into layers, where each layer has a specific role. and Layers interact only with the layers directly above or below them. Layers are : Presentation Layer, Business Logic Layer and Data Access layer! Example : Banking Systems and CRMs.
+--                                                 : Distributed Architecture : Distributed Architecture is a type of software architecture where the system is divided into multiple components or nodes that are distributed across different machines or locations. These components work together to provide the functionality of the application, often communicating over a network. Example : Netflix and Uber!
+
+-- 1/2/3 Tier Architectures are also a type of Software Architectures... overall there are multiple architectures for different types of use cases! We decide first that what we want to design and create... according to our use case and goals we choose multiple architecture or one... depends on what we want to do... So yes that's how it works!
+-- So it all depends on use cases!... For now understand this ki tumko koi badaa software abhi nhi banana, you just need to haive a brief idea about different architectures and how and where they can be used for different types of tasks!
+-- but specific to Databases Management Systems, there are DBMS Architectures!
+
+-- If a DBMS follows a ER or Relational Data model then it is a RDBMS, and if a DBMS follows other Data Models like onject relation, key value pairs and all then it is a NRDBMS!
+-- So, which Data Model you will be using will depend on the type of DBMS you are using! every DBMS works on a particular Data Model!
+
+-- So lets say for a software you want a particular data model! then in that you should be choosing a particular DBMS which works on that particular Data Model!
+-- Relational and ER Data Model are used by : MySQL, SQL Server, PostgreSQL and Oracle and more... (ER Data Model is just a visual representation of Relational Data Model, and relational model is implemented by DBMSs like MySQL, SQL Server, and all so it indirectly implements ER Model also!)
+-- Document Based Data Model is used by : MongoDB
+-- Key Value Pairs Data Model is used by : Redis
+-- Network Data Model is early data model which was used by : TurboIMAGE
+-- And similarly different Data Models uses different DBMSs, or should say that different DBMSs are made based on different Data Models.
 
 -- ----------------------------------------------------------------------- Lecture 3 : ER Models Explained --------------------------------------------------------------------------------------------------->
 -- Data models works at the conceptual layer!
@@ -307,11 +337,11 @@
 -- Ab humne ek ER model ke entities and attributes ko table and columns ke form me represent krdiya and jo rows bani unko humne tuple bol diya, but jo relation hai unn entities ke beech ke usko kaise define kre tabular form me? so for that we have Foreign Key!
 
 -- Properties of the Table : The name of relation is distinct among all other relation.
-                        -- : The values have to be atomic. Can’t be broken down further.   
-                        -- : The sequence of row and column has no significance.   
-                        -- : Tables must follow integrity constraints, it helps to maintain data consistency across the tables
-                        -- : Each tuple must be unique in a table.
-                        -- : The name of each attribute/column must be unique.
+--                         : The values have to be atomic. Can’t be broken down further.   
+--                         : The sequence of row and column has no significance.   
+--                         : Tables must follow integrity constraints, it helps to maintain data consistency across the tables
+--                         : Each tuple must be unique in a table.
+--                         : The name of each attribute/column must be unique.
 
 -- Relational Keys : Super Keys : Any P&C of attributes present in a table which can uniquely identify each tuple. like suppose agar kisi table me multiple attributes hai and hum unn sab attributes ki jitni bhi combinations possible hai jo kisi tuple ko uniquely identify krenge, That will be a super key!
 --                 : Candidate Keys : Minimum subset of super keys, which can uniquely identify each tuple. It contains no redundant attribute. Superkeys me vo saare possible combinations hote hai, but in case of Candidate keys, hum super keys ka hi subset lete hai jo kisi tuple ko uniquely identify kr sake and usme koi redudant attribute na ho! redudant attribute means jahaa values same nhi ho sakti!
