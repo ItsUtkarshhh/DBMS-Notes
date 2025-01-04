@@ -30,82 +30,92 @@
 -- A DBMS is the database itself, along with all the software and functionality. It is used to perform different operations, like addition, access, updating, and deletion of the data.
 
 -- Why things are being made more complex, like we know we have File Systems, then why DBMS?? Reason :
--- Suppose you have a bank and you want to give a feature of savings account to your user, and assuming that you don't have any idea what DBMS is, then you will use the traditional file systems, and you will hire a programmer, and that programmer will write some functionalities for your savings a/c features like debit/credit, new a/c, balance find, general monthly statements. But now suppose after 10 years, bank wants to create another feature of current account, now isme koi Interest ka funda nhi hoga like savings account, so now you will again hire a programmer and will ask them to write a code for this feature! Now lets see how the prblms occur!
--- Data Redundancy and Inconsistency : Now suppose after 10 years jo insaan jisne apna bank account khulwaya tha savings and current, and now ab uska same data do jagah stored hai, this is the problem of Data Redudancy and now maanlo usne apna address change krdiya savings me then current me change nhi hua hoga vo, I mean program toh likh hi sakte hai itna achaa ki ek jagah change ho toh vahaa pr bhi hojaye, but baat vhi hai ki itni mehnat krni pad rhi hai file systems me!
--- Difficulty in accessing data : Now suppose koi inspector aata hai and he asks ki btao ki 1001 Postal code pr kon kon log rehte hai, toh now ab ek programmer aayega vo iss info ko retrieve krne ke liye code likhega and then info dega, isme time lagega as ye saare rows ko traverse krega and then jo rows ka pincode match krta hai unko return krega so overall it is taking too much time! wheras we know how easy it is with SQL!
--- Data Isolation : Ab maanlo ki jo do programmers the undono ne alag alag format me data store kiya hai ek ne .dat me and ek ne .txt me toh ab data retreive krne me bhi dikkat ayegi! so again this is prblm of Data Isolation!
---                : File systems are great for storing and retrieving files, but they struggle with keeping data safe and consistent when multiple users or programs access files at the same time. This can lead to mixed-up content, corrupted files, slow performance, and complex programming requirements. Unlike databases, file systems lack built-in mechanisms to easily manage these issues, making data isolation a significant challenge.
--- Integrity Problem : Ab maanlo ki jo programmer tha usne harr account ke saath ek limit lagai hui thi ki aap 2 lacs se zyada paisa withdraw nhi kr sakte, but after sometime RBI ka ek naya rule aagya ki 2 lacs ko 3 lacs krna hai toh again ab isko change krne ke liye bhi nayaa programmer hire krna padega! which is again not very good way!
---                   : Data integrity means keeping data accurate, consistent, and reliable.
---                   : File systems are useful for storing and retrieving files, but ensuring data integrity can be difficult. Problems like accidental changes, corruption from crashes, human errors, lack of built-in validation, synchronization issues, and no automatic backup and recovery make it challenging to keep data accurate, consistent, and reliable. Unlike databases, file systems don’t have advanced features to automatically handle these issues, making data integrity a significant challenge.
--- Atomicity Problem : Now there are somethings jo ek baar me hoti hai this is called atomicity (means atomic hai cheeze means ek baar me) like agar kahin se paisa debit hua hai toh kahin pr credit hua hoga, toh ye cheez honi chahiye! ptaa chlaa ek jagah se debit hogya but credit kahin nhi hua the that will not be a successfull transaction! so this again a problem with file systems, krne ko kr toh sakte hai ye cheeze ki sahi way se ho, pr again its tough will take a long time and more lines of code jo DBMS bhot jaldi krdeta hai!
--- Concurrent Access Anomalies : Like agar koi data do log ek time pr access krna chah rhe hai toh iss cheez ke liye file system me alag se programs likhne padenge which is not a feasible method!
--- Security Problems : Again isme like hum chahte hai ki kuch DB kuch high level ke log hi access kr paye toh uske liye ye access and rights ka control dena logo ko manually is very difficult and again will take more time, which can be done easily with DBMS.
+-- What are File Systems : File systems are used to store, organize, and retrieve data in a computer. They work by managing files and directories on storage devices like hard drives. Examples are NTFS, FAT32, and ext4.
+--                       : Limitations : While they are great for simple tasks (like saving and retrieving files), they lack the advanced features needed for complex data management, like ensuring consistency, handling multiple users, or running complex queries efficiently.
 
+-- Why DBMS Over File Systems?
+-- DBMS (Database Management System) is designed to overcome the challenges faced with file systems. Let's go over the specific problems :
+-- Data Redundancy and Inconsistency : Problem : In file systems, the same data might get stored in multiple files (redundancy). For example, a bank customer has a savings account and a current account, and their information is stored in two separate files. If they change their address in the savings account but not in the current account, the data becomes inconsistent.
+--                                   : Solution : DBMS allows centralized data storage and eliminates redundancy by ensuring all data is updated in one place.
+
+-- Difficulty in Accessing Data : Problem : Retrieving specific data in file systems often requires custom programs. For instance, finding all customers in a specific postal code requires a programmer to write a code that scans all rows and matches the postal code its a time-consuming process.
+--                              : Solution : SQL queries like SELECT * FROM customers WHERE postal_code = '1001'; make it fast and efficient to retrieve data.
+
+-- Data Isolation : Problem : Different programmers might store data in different formats (e.g., .txt, .dat), leading to difficulties when trying to retrieve or combine data.
+--                : Solution : DBMS stores data in a consistent format, making access uniform and straightforward.
+
+-- Integrity Constraints : Problem : File systems don't have built-in checks to enforce rules (integrity constraints). For example, a bank might limit withdrawals to ₹2,00,000, but changing this limit across multiple files requires manual effort and is error-prone.
+--                       : Solution : Integrity rules can be defined in DBMS. For example, you can set constraints like WITHDRAW_LIMIT <= 200000 and update them easily when policies change.
+
+-- Atomicity Problems : Problem : Atomicity ensures that a transaction is fully completed or not at all. For instance, when transferring money, the debit and credit operations must both succeed. In file systems, if the debit happens but the credit fails (e.g., due to a crash), data gets corrupted.
+--                    : Solution : DBMS ensures transactions are atomic. If one part fails, the entire transaction is rolled back automatically.
+
+-- Concurrent Access Anomalies : Problem : When multiple users access or modify data at the same time, conflicts can arise in file systems. For example, if two people try to withdraw from the same account simultaneously, the balance might become inconsistent.
+--                             : Solution : DBMS uses locking mechanisms and transactions to handle concurrent access safely.
+
+-- Security Problems : Problem : File systems lack fine-grained access control. Limiting access to certain files or parts of data (e.g., salary data only visible to HR) requires extra programming.
+--                   : Solution : DBMS provides built-in security features, such as roles and permissions. For example, only authorized users can execute certain queries.
+
+-- So, hence why choose DBMS : With DBMS, you replace hundreds of lines of code with simple queries and built-in features. This improves efficiency, reduces errors, and makes systems easier to maintain. It’s especially important for handling complex, large-scale applications like banking, where consistency, security, and quick access are critical.
 -- Now we can do the above thing with File Systems as well but the amount of data is growing now, so itna feasible nhi hoga File Systems use krna so yes ek nayi system ki zarurat thi and that is fullfilled by DBMS!
 
-
 -- ----------------------------------------------------------------------- Lecture 2 : DBMS Architecture --------------------------------------------------------------------------------------------------->
--- There is a word which changed the tech world, which is "Abstraction".
--- Isko aise samajh sakte hai jaise ki maanlo car driving hai! ab jo insaan drive kr rha hota hai car ko usko mainly bss 3-4 cheezo ke baare me hi knowledge honi zaruri hai! and those are, Accelarator, Brake, Clutch and Gear, baaki cheeze like brake dabaane pr kaise brake lg rha hai and kaise gear kaam kr rhe hai ye sab ke baare me jaanna important nhi hai usko! So this is what is Abstraction!
--- Now this is what abstract means, and DBMS ka kaam hi yhi hota hai ki Database ka ek abstract view provide kre!
--- Ab maanlo ek company ka Database hai and uss DB ko access krne ke liye ek DBMS bnaya hua hai! now, alag alag tarah ki teams hoti hai like kisi ek particular team ko ek particular type ka hi data chahiye hoga and unko usse zyada kuch dene ki zarurat nhi hai! So DBMS help in this abstraction or in other words ki alag alag type ke users ko alag alag view of database dene ke liye!
--- Now see like Amazon hai, uska Database toh ek hi hoga! and uss ek database me multiple type of data stored hoga, like Name of Customer, Customer_ID, Address, Phone Number, Liking/Disliking, Age, CC, DC, UPI ID, Product Purchased and many other...
--- Now ab agar koi Logistics ki team hai usko customer ka saara data toh nhi dedenge ya naa hi unko uss saare data ki zarurat hai, toh uss team ke liye jo important data hai customer ka utna hi view krne ke liye available hoga uss team ke kisi bhi employee ko! Jaise for Logistics team they will be able to view only Customer_Name, ID, Address and Phone Number and thats it!
--- Similarly agar koi customer_service ki team hogi toh uske liye unn 3 cheezo ke alawa ek product purchased ka data hona bhi important hai! toh unke liye vo sab bhi view ho rha hoga!
--- and similarly with other teams of the Amazon!
+-- Abstraction is like driving a car – you only need to know a few things like the accelerator, brake, clutch, and gear to drive. You don’t need to understand the inner workings of how these components function. Similarly, in a DBMS (Database Management System), abstraction helps simplify access to a complex database by providing only the relevant data to each user, based on their needs.
+-- For example, in a company like Amazon, the database holds various types of customer data (e.g., name, ID, address, phone number, purchase history).
+-- Different teams need different subsets of this data : Logistics team only needs customer name, ID, address, and phone number. Customer service team needs customer details plus purchase information.
+-- In this way, DBMS provides an abstract view of the database to different users, ensuring they only access the data that is relevant to their role.
 
--- View of Data (Three Schema Architecture) :
--- The major purpose of DBMS is to provide users with an abstract view of the data. That is, the system hides certain details of how the data is stored and maintained.
--- To simplify user interaction with the system, abstraction is applied through several levels of abstraction.
--- The main objective of three level architecture is to enable multiple users to access the same data with a personalized view while storing the underlying data only once
+-- Instance of DB : Refers to the collection of data stored in the database at a specific moment.
+-- The three-schema architecture in DBMS aims to provide users with an abstract view of the data, hiding the details of how data is stored and maintained. It simplifies user interaction by applying multiple levels of abstraction. The main goal is to allow multiple users to access the same data, each with a personalized view, while storing the actual data only once.
 
--- Now ab ye toh abstraction ka main goal, but ab ye achieve kaise hoga, to achieve this we have 3 layer architecture of the DBMS.
--- Physical/Internal Level
--- Logical/Conceptual Level
--- View/External Level
+-- Three Layers of DBMS Architecture :
+-- Physical/Internal Level : Lowest level of abstraction, dealing with how data is physically stored. Data is stored in the form of bits and bytes, and low-level data structures (e.g., N-ary tree) are used.
+--                         : It covers storage allocation, data compression, and encryption. 
+--                         : Goal : Define algorithms for efficient data access.
+--                         : Example : Viewing physical schema with SHOW TABLE STATUS; gives details about the low-level data storage for the tables in the database.
 
--- Physical/Internal Level : The lowest level of abstraction describes how the data are stored.
---                         : Isme data bits and bytes ke form me stored rehta hai!
---                         : Low-level data structures used.
---                         : Jaise like koi agar picture kisi disc me stored hai toh vo kaise stored hai like 100x100 ki picture kaise stored hai, kitna usme compression hai and all, that is the physical level abstraction.
---                         : It has physical schema, which tells ki physically data kaise stored hai! ki like jaise ek blueprint hota hai kisi ghar ka ki yahaa bedroom hoga ya kitchen hoga and all. toh bss vhi physical schema krta hai ki ek blue print batata hai ki data kaise stored hoga konsa data structures use hoga, konsi encryption use hogi and all, this is done by physical schema!
---                         : Talks about: Storage allocation (N-ary tree etc), Data compression & encryption etc.
---                         : Goal : we must define the algorithms, that will allow efficient access of data.
---                         : To view the physical schema of the DB tables, write SHOW TABLE STATUS; it will show all the low level relevant information about all the tables present in that DB!
+-- Logical/Conceptual Level : Describes how physically stored data is logically represented and what it means. Maps physical data into a logical format (e.g., mapping raw data to understandable structures like names, addresses, etc.).
+--                          : The conceptual schema defines the logical design of the database, including what data is stored and the relationships between them.
+--                          : Goal : Make the system easy to use and understand.
+--                          : Example : Viewing logical schema with SHOW Table_name; displays the database table’s logical structure.
 
--- Logical/Conceptual level : This tells ki jo physically jo data stored hai, vo actually dikhta kaisa hai! like agar physically data aise stored hai ki bss Utkarsh,CSE,O,2,6, ki like bss aise likha hua hai but hume nhi ptaa na ki konsa kya likha hai, hume koi idea nhi hai uska, so here logical/conceptual schema comes in role jahaa vo define krta hai ki kis cheez ka kya mtlb hai, like ko physical data ko logical data me map krta hai taaki jo physical data hai uska koi sense bane!
---                          : The conceptual schema describes the design of a database at the conceptual level, describes what data are stored in DB, and what relationships exist among those data.
---                          : User at logical level does not need to be aware about physical-level structures.
---                          : DBA, who must decide what information to keep in the DB use the logical level of abstraction.
---                          : Goal: ease to use.
---                          : To view the logical schema of the database : SHOW Table_name; It will describe a particular table of the database!
+-- View/External Level : The highest level of abstraction, designed to simplify user interaction. 
+--                     : Provides different views of the database to different user groups based on their needs. Each view schema describes a subset of the data relevant to a specific user.
+--                     : Acts as a security mechanism, hiding certain parts of the database from unauthorized users.
+--                     : Goal : Tailor the database view to user requirements and enhance security.
+--                     : Example : To view the view level schema, a view must first be created, then you can access it.
 
--- View/External Level : Highest level of abstraction aims to simplify users interaction with the system by providing different view to different end-user.
---                     : Each view schema describes the database part that a particular user group is interested and hides the remaining database from that user group.
---                     : At the external level, a database contains several schemas that sometimes called as subschema. The subschema is used to describe the different view of the database.
---                     : At views also provide a security mechanism to prevent users from accessing certain parts of DB.
---                     : To view the view level schema of the database, you need to first create a view! and then you can view it!
+-- Schema in DBMS : A schema is a blueprint or design of the database that defines its structure. It is a collection of logical definitions and constraints that specify how data is organized and related.
+-- Just like abstraction, there are also three types of schemas that correspond to the different levels of abstraction :
+-- Physical schema : This schema corresponds to the physical level of abstraction.
+--                 : It defines how the data is actually stored in the database (e.g., how the data is represented in files, indexes, storage, etc.). This schema is typically managed by the DBMS and is not visible to most end users.
 
--- Instances and Schemas : The collection of information stored in the DB at a particular moment is called an instance of DB.
---                       : The overall design of the DB is called the DB schema. DB Schema ko hum logical level schema bhi boldete hai log so this is used very interchangebly
---                       : Schema is structural description of data. Schema doesn’t change frequently. Data may change frequently.
---                       : DB schema corresponds to the variable declarations (along with type) in a program.
---                       : We have 3 types of Schemas: Physical, Logical, several view schemas called subschemas.
---                       : Logical schema is most important in terms of its effect on application programs, as programmers construct apps by using logical schema.
---                       : Physical data independence : physical schema change should not affect logical schema/application programs. maanlo jaise humne physical level pr jahaa pr data stored hai, vo pehle hardisc me stored tha ab humne usko SSD me store krdiya fast access ke liye, toh isse logical level database ko koi fark nhi padega! uska design pr koi affect nhi ayega!
+-- Conceptual schema : This schema corresponds to the logical (conceptual) level of abstraction.
+--                   : It provides a high-level description of the database's structure, including the relationships between entities, constraints, and other logical aspects of the data. This schema is independent of the physical storage of data and provides a unified view of the entire database, which is accessible to the DBA and developers.
 
--- Difference between Table and Schema : Schema : A schema is a logical structure that organizes and groups database objects, such as tables, views, indexes, stored procedures, and functions. It acts as a blueprint or container for database objects.
---                                              : Provides a logical grouping or categorization for database objects.
---                                              : Helps in organizing and managing database objects for different purposes
---                                              : Higher level of abstraction. Represents the overall organization of database objects.
---                                     : Table : A table is a data structure within a schema that stores actual data in rows and columns. It is the primary unit where data is stored and manipulated.
---                                             : Stores the actual data in a structured format. Allows users to query, insert, update, and delete records.
---                                             : Lower level of abstraction. Represents individual entities or datasets.
+-- View schema : This schema corresponds to the view level of abstraction.
+--             : It defines how the data should appear to the user or an application, based on specific needs or requirements. Different views of the same database can be created for different users, showing different subsets or representations of the data.
 
--- Now what are the features of DB Schema : Attributes of the table.
---                                        : Consistency Constraints, Like there are some conditions jo hum kuch attributes pr lgaate hai! like kisi student table me koi aisa student nhi ho sakta jiska koi name ya roll number na ho! and similar se contraints aur bhi ho sakte hai, overall vahi ki kuch conditions lagi hongi kuch attributes pr!
---                                        : Relationships! Like there are some relationships! like ek student table hai toh uss student ne kis kis course me apply kiya hua hai! uske liye courses ki ek alag table hoti hai toh uss course ki table and student table me relationship btata hai ye!
+-- How Level of Abstraction and Schemas work together! and are they same or different :
+-- No, abstraction and schema are not the same, but they are closely related!
+-- Abstraction is a broader concept that deals with hiding complexity at different levels (physical, logical, and view).
+-- Schema refers to the structure and design of the database at each of these abstraction levels.
+-- Every Level of Abstraction has its own Schema! In short, Physical Level Abstraction is about how data is stored in the memory! and Physical Schema is just schema or way to store those low level detail! Its something like that only!
+
+-- Difference Between Schema and Table :
+-- Schema : A logical structure organizing and grouping database objects.
+--        : Provides a blueprint or container for database objects like tables, views, and procedures.
+--        : Higher level of abstraction, representing the overall organization of database objects.
+--        : Helps in organizing and managing database objects for different purposes.
+
+-- Table : A data structure within a schema storing actual data.
+--       : Stores and manipulates actual data in rows and columns.
+--       : Lower level of abstraction, representing individual entities or datasets.
+--       : Allows users to query, insert, update, or delete records.
+
+-- Features of DB Schema : Attributes of the table.
+--                       : Consistency Constraints, Like there are some conditions jo hum kuch attributes pr lgaate hai! like kisi student table me koi aisa student nhi ho sakta jiska koi name ya roll number na ho! and similar se contraints aur bhi ho sakte hai, overall vahi ki kuch conditions lagi hongi kuch attributes pr!
+--                       : Relationships! Like there are some relationships! like ek student table hai toh uss student ne kis kis course me apply kiya hua hai! uske liye courses ki ek alag table hoti hai toh uss course ki table and student table me relationship btata hai ye!
 
 -- Data Models : Provides a way to describe the design of a DB at logical level.
 --             : Underlying the structure of the DB is the Data Model, a collection of conceptual tools for describing data, data relationships, data semantics & consistency constraints.
@@ -116,11 +126,8 @@
 --                   : Data manipulation language (DML) to express database queries and updates.
 --                   : Practically, ye dono lang koi alag nhi hoti hai rather both language features are present in a single DB language, eg :- SQL language.
 --                   : DDL : We specify consistency constraints, which must be checked, every time DB is updated.
---                   : DML : Data manipulation involves : Retrieval of information stored in DB.
---                                                      : Insertion of new information into DB.
---                                                      : Deletion of information from the DB.
---                                                      : Updating existing information stored in DB.
---                         : Query language, a part of DML to specify statement requesting the retrieval of information.
+--                   : DML : Data manipulation involves : Retrieval, Insertion, Deletion and Updation of information stored in DB.
+--                   : DQL : Query language, a part of DML to specify statement requesting the retrieval of information.
 
 -- Now the question is that, How Database accessed from Application Program : To understand how an application (written in languages like C, C++, Java, etc.) interacts with a database (like SQL databases), we need to focus on database connectivity using APIs (Application Programming Interfaces). This is crucial because applications and databases are developed in different systems or languages, and APIs help bridge that gap.
 -- When we write an app in programming languages such as Java or C++, the instructions or commands are specific to that language. But databases like SQL use SQL queries to interact with data. So, the question arises: how can an application in one language (like Java or C++) communicate with a database that understands SQL?
@@ -133,7 +140,7 @@
 -- 1) Fetching data (using SQL SELECT queries)
 -- 2) Inserting new records (using SQL INSERT queries)
 -- 3) Updating existing records (using SQL UPDATE queries)
--- 4) Example Scenario: You have a Java application where a user fills out a form to add new customer data to a database. In the background, the app will need to communicate with the database to save this information.
+-- 4) Example Scenario : You have a Java application where a user fills out a form to add new customer data to a database. In the background, the app will need to communicate with the database to save this information.
 
 -- Step 2: JDBC/ODBC Interfaces as Middlemen
 -- Here, the API comes into play. Let's assume the app is written in Java, so the API we'll use is JDBC (Java Database Connectivity).
@@ -144,11 +151,10 @@
 
 -- Step 3: API Sends the SQL Query to the Database
 -- After translating the commands into SQL, JDBC/ODBC acts as a connector between the application and the database. The SQL query is sent to the database (for example, a MySQL or PostgreSQL database).
--- Example: If the user enters customer details in the Java app, JDBC might generate an SQL query like:
--- Code: "INSERT INTO customers (name, email, address) VALUES ('John Doe', 'john@example.com', '123 Street');"
+-- Example : If the user enters customer details in the Java app, JDBC might generate an SQL query like : "INSERT INTO customers (name, email, address) VALUES ('John Doe', 'john@example.com', '123 Street');
 
 -- Step 4: Database Executes the Query
--- Once the database receives the SQL query, it processes it. Depending on the type of query (like SELECT, INSERT, UPDATE, or DELETE), the database will:
+-- Once the database receives the SQL query, it processes it. Depending on the type of query (like SELECT, INSERT, UPDATE, or DELETE), the database will :
 -- 1) Retrieve the requested data (for SELECT queries)
 -- 2) Insert or update records (for INSERT or UPDATE queries)
 -- 3) Delete records (for DELETE queries)
@@ -161,34 +167,30 @@
 -- Step 7: Application Receives and Processes the Response
 -- Finally, the application receives the response from the API, and the data can now be displayed or further processed. In our example of adding a new customer, once the database confirms the insertion, the Java app may display a success message to the user.
 
--- Database Administrator : A person who has central control of both the data and the programs that access those data.
---                        : Functions of DBA : Schema Definition
---                                           : Storage structure and access methods.
---                                           : Authorization control.
---                                           : Schema and physical organization modifications.
---                                           : Routine maintenance like Periodic backups, Security patches like jo data jo stored hai vo secure toh hai na ye toh nhi na ki koi kisi malware ya kisi illegal way se uss data ko access kr paa rha hai, Any upgrades, like koi cheez ya attribute ya koi column ya kuch bhi change ya upgrade krna hai agar DB me toh vo kaam bhi DBA ka hi hota hai.
+-- Database Administrator is a person who has central control of both the data and the programs that access those data.
+-- Functions of DBA : Schema Definition, Storage structure and access methods, Authorization control, Schema and physical organization modifications, Routine maintenance like Periodic backups and
+--                  : Security patches like jo data jo stored hai vo secure toh hai na ye toh nhi na ki koi kisi malware ya kisi illegal way se uss data ko access kr paa rha hai, Any upgrades, like koi cheez ya attribute ya koi column ya kuch bhi change ya upgrade krna hai agar DB me toh vo kaam bhi DBA ka hi hota hai.
 
 -- DBMS Application Architecture : Aapki jo machine hai vo database se kaise communicate kregi and kis level pr communicate kregi! that is defined by the DBMS App Architecture!
 -- Now there are two terms one is Client Machine and another is Server Machine!
--- The Client Machine is that jispe ek end user baith ke DB se data retrieve krta hai jaise humlog jo youtube vdos dekhte hai vo hum YT ke DB se data retrieve krke dekh paate hai!
--- The Server Machine is that jahaa pr actual DBMS run kr rha hai!
+-- Client Machine : Jispe ek end user baith ke DB se data retrieve krta hai jaise humlog jo youtube vdos dekhte hai vo hum YT ke DB se data retrieve krke dekh paate hai!
+-- Server Machine : Jahaa pr actual DBMS run kr rha hai!
 
--- Ab now ye dono kaise arrange hote hai uss basis pr hi 3 tiers bane hue hai!
--- Tier 1 Architecture : Where all the three Client, Database and Server, teeno ek hi machine pr hote hai, like agar hum koi Web app bnaate hai tab client bhi hum hi hai, and uske liye hum seedha koi AWS ka server nhi khareed lete uske liye we have a local host, jo local host krke likha hota hai that is our own remote server and then DB bhi humare hi machine pr hota hai! so that is Tier 1 architecture!
--- Tier 2 Architecture : Isme kya hota hai ki, hum ek PC pr client and app hote hai and kisi aur remote PC pr Server hota hai jisme DB stored hai, and ye dono Network ke through connected hote hai! and now and inse hum communicate kr paate hai JDBC ya ODBC ke through taaki data retrieve kr sake! and that's how it works! so this is Tier 2 Architecture!
---                     : Client machine, which invokes DB system functionality at server end through query language statements.
---                     : API standards like ODBC & JDBC are used to interact between client and server.
--- Tier 3 Architecture : This is used in more large level applications and usage, App is partitioned into 3 logical components.
---                     : Jaise Tier 2 me directly hum SQL Queries bhej rhe the jisse directly hum DB ko call kr rhe the yahaa pr aisa nhi hota! here the client machine jo hai vo app ke server se communicate kregi jo kisi remote machine pr hai and uss hi machine pr DB bhi stored hai! and then vo app server jo hai vo DB ko call krta hai! then jo DB hai vo data retrieve krke App server ko bhejega and then vo app server cleint machine ko bhejega and the vo uss cleint machine se client ko milegi! 
---                     : Client machine is just a frontend and doesn’t contain any direct DB calls.
---                     : Client machine communicates with App server, and App server communicated with DB system to access data.
---                     : T3 architecture are best for WWW Applications.
---                     : Advantages : Scalability due to distributed application servers.
---                                  : Data integrity, App server acts as a middle layer between client and DB, which minimize the chances of data corruption. Like maanlo ki galti se humne Tier 2 me koi galat query bhejdi DB server pr tab toh ho sakta hai poora DB destroy hojaye, toh iss mistake se bachane ke liye we use the Tier 3 isse jo bhi query bheji jayegi, vo pehle app server pr check hogi and agar vo fatal query hai toh usko decline krdiya jayega and koi agar sahi query hogi toh uske according output mil jayega!
---                                  : Security, client can’t directly access DB, hence it is more secure.
+-- Now, these Client and Server works on 3 Tiers, which is called 3-Tier Architecture in DBMS :
+-- Tier 1 Architecture : All three components (Client, Database, and Server) are on the same machine.
+--                     : Example : Localhost setup for web apps where the client, server, and DB reside on a single system.
+--                     : Common in development or small-scale applications.
 
--- Now, see overall... There are multiple Architectures in Softwares which are called Software Architecture!
--- There are multiple Software Architectures! like : Monolithic Architecture : All parts of the application (frontend, backend, database, etc.) are built as a single unit and work closely together. and If you change one part, you often need to test and redeploy the whole application. Example : E-Commerce Website.
+-- Tier 2 Architecture : Client and App are on one machine, while Server with Database is on a remote machine.
+--                     : Communication happens through JDBC/ODBC API standards. Client sends SQL queries to the server to retrieve data directly.
+--                     : Key Point : Client handles app and query logic, while the server manages DB functionality.
+
+-- Tier 3 Architecture : Used for large-scale applications with three logical components : Client Machine, App Server, and DB Server.
+--                     : How It Works : Client communicates with the App Server (middle layer). App Server communicates with the DB Server. Results flow back from DB to App Server, then to the client.
+--                     : Advantages : Scalability, Data Integrity and Security! Best suited for WWW Applications.
+
+-- Now, see overall, There are multiple Architectures in Softwares which are called Software Architecture!
+-- There are multiple Software Architectures, like : Monolithic Architecture : All parts of the application (frontend, backend, database, etc.) are built as a single unit and work closely together. and If you change one part, you often need to test and redeploy the whole application. Example : E-Commerce Website.
 --                                                 : Microservices Architecture : The application is split into smaller, independent services, each responsible for one function (e.g., user login, catalog search, or payment). and Each service can run and be deployed separately. Services communicate with each other through APIs. Example : Amazon and Netflix.
 --                                                 : Event-Driven Architecture : Components communicate by sending events to each other. An event is a signal that something happened (e.g., a user clicked a button). One component creates an event, and others listen for it and respond accordingly. Example : Banking Systems and E-Commerce.
 --                                                 : Serverless Architecture : Applications run on the cloud, and you don’t need to worry about managing servers or infrastructure. and You write code in smaller pieces (called functions), and the cloud provider handles running it. Example : Chatbots and Image Processing Systems.
@@ -725,7 +727,6 @@ select department , sum(salary) as depSal from worker group by department order 
 
 -- Q-50. Write an SQL query to fetch the names of workers who earn the highest salary.
 select first_name, salary from worker where salary = (select max(Salary) from worker);
-
 
 -- ----------------------------------------------------------------------- Lecture 11 : Normalisation --------------------------------------------------------------------------------------------------------------------------------->
 -- It is used to optimized the DB and its design, and to reduce data redudancy!
