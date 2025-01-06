@@ -193,15 +193,15 @@
 -- There are multiple Software Architectures, like : Monolithic Architecture : All parts of the application (frontend, backend, database, etc.) are built as a single unit and work closely together. and If you change one part, you often need to test and redeploy the whole application. Example : E-Commerce Website.
 --                                                 : Microservices Architecture : The application is split into smaller, independent services, each responsible for one function (e.g., user login, catalog search, or payment). and Each service can run and be deployed separately. Services communicate with each other through APIs. Example : Amazon and Netflix.
 --                                                 : Event-Driven Architecture : Components communicate by sending events to each other. An event is a signal that something happened (e.g., a user clicked a button). One component creates an event, and others listen for it and respond accordingly. Example : Banking Systems and E-Commerce.
---                                                 : Serverless Architecture : Applications run on the cloud, and you don’t need to worry about managing servers or infrastructure. and You write code in smaller pieces (called functions), and the cloud provider handles running it. Example : Chatbots and Image Processing Systems.
+--                                                 : Serverless Architecture : Applications run on the cloud, and you don’t need to worry about managing servers or infrastructure. And You write code in smaller pieces (called functions), and the cloud provider handles running it. Example : Chatbots and Image Processing Systems.
 --                                                 : Layered Architecture : The application is divided into layers, where each layer has a specific role. and Layers interact only with the layers directly above or below them. Layers are : Presentation Layer, Business Logic Layer and Data Access layer! Example : Banking Systems and CRMs.
 --                                                 : Distributed Architecture : Distributed Architecture is a type of software architecture where the system is divided into multiple components or nodes that are distributed across different machines or locations. These components work together to provide the functionality of the application, often communicating over a network. Example : Netflix and Uber!
 
 -- 1/2/3 Tier Architectures are also a type of Software Architectures... overall there are multiple architectures for different types of use cases! We decide first that what we want to design and create... according to our use case and goals we choose multiple architecture or one... depends on what we want to do... So yes that's how it works!
--- So it all depends on use cases!... For now understand this ki tumko koi badaa software abhi nhi banana, you just need to haive a brief idea about different architectures and how and where they can be used for different types of tasks!
+-- So it all depends on use cases!... For now understand this ki tumko koi badaa software abhi nhi banana, you just need to have a brief idea about different architectures and how and where they can be used for different types of tasks!
 -- but specific to Databases Management Systems, there are DBMS Architectures!
 
--- If a DBMS follows a ER or Relational Data model then it is a RDBMS, and if a DBMS follows other Data Models like onject relation, key value pairs and all then it is a NRDBMS!
+-- If a DBMS follows a ER or Relational Data model then it is a RDBMS, and if a DBMS follows other Data Models like object relation, key value pairs and all then it is a NRDBMS!
 -- So, which Data Model you will be using will depend on the type of DBMS you are using! every DBMS works on a particular Data Model!
 
 -- So lets say for a software you want a particular data model! then in that you should be choosing a particular DBMS which works on that particular Data Model!
@@ -214,7 +214,7 @@
 -- ----------------------------------------------------------------------- Lecture 3 : ER Models Explained --------------------------------------------------------------------------------------------------->
 -- Data models works at the conceptual layer!
 -- And even the DBA also works at the conceptual/logical level/layer!
--- Data Model: Collection of conceptual tools for describing data, data relationships, data semantics, and consistency constraints.
+-- Data Model : Collection of conceptual tools for describing data, data relationships, data semantics, and consistency constraints.
 -- And aisa hi ek model hai ER model, which is Entity Relationship Model, jo alag alag entities ke beech me kya relation hai vo batata hai!
 -- ER Model : It is a high level data model based on a perception of a real world that consists of a collection of basic objects, called entities and of relationships among these objects.
 --          : Graphical representation of ER Model is ER diagram, which acts as a blueprint of DB.
@@ -230,7 +230,7 @@
 -- Entity Set : Jab humare paas bhot saare entities ho of same type, then unn sab entities ko ek set bnaa dete hai tab usko hum ek entity set kehte hai!
 --            : It is a set of entities of the same type that share the same properties, or attributes.
 --            : Eg - Student is an entity set, Customer of a bank.
---            : Entity set and table are not same things, entity set is like in case of students, entity set is the whole group or gang of students! but the table is a structured way of storing information about that every single instance of that entity! overall, the entity set is the idea of a group, and the table is the way we organize and store information about each member of that group in a database.
+--            : Entity set and table are not same things, entity set is like in case of students, entity set is the whole group of students! but the table is a structured way of storing information about that every single instance of that entity! overall, the entity set is the idea of a group, and the table is the way we organize and store information about each member of that group in a database.
 
 -- Attributes : Kisi bhi entity ko describe krne ke liye jo properties hoti hai usko hum attributes kehte hai!
 --            : An entity is represented by a set of attributes.
@@ -286,34 +286,54 @@
 -- For ER Diagram Notations, refer the notes!
 
 -- ----------------------------------------------------------------------- Lecture 4 : Extended ER Features --------------------------------------------------------------------------------------------------->
--- 1) Speciallization : When we divide a particular entity into sub entities to avoid redudancy! like suppose we have an entity name as person and in a company a person can be an employee and a customer, but maanlo jab hum ek DB design kr rhe hai toh agar hum ek single entity person naam se bnaa ke usko saare attributes dede like salary, customer id, profile pic, name address and job role,
--- ab isme se kuch attributes like job role and salary ye customer ko belong nhi krti but humaare DB design me humne sirf ek entity person naam se bnaa ke usko ye attributes bhi dediye hai, now this will create a problem! kyunki ab kon customer hai and kon employee ye dhundna mushkil hojayega, so here we divide that person entity into sub entities like customer and employee and now inke personal attributes hum inko dedenge!
--- like an employee entity will have only salary and job role attribute and profile pic and customer id attributes will only belong to customer entity! and then there will be some attributes like name and address ye toh dono se belong krenge toh these will be the common attributes! and that is how we apply speciallization!
--- Now isme se bhi jo employee entity bnaai hai humne vo bhi aage sub divide ho sakti hai into HR Manager, Developer and Housekeeper! so humne yahaa pr ek aur sub division create krdiya and division by division ek is-a relation establish hote rehta hai!
--- So Speciallization has an is-a relation! and iss basis pr hi aur sub enitities banti rehti hai!
--- Formal Defintions...
--- In ER model, we may require to subgroup an entity set into other entity sets that are distinct in some way with other entity sets.
--- Specialisation is splitting up the entity set into further sub entity sets on the basis of their functionalities, specialities and features.
--- It is a Top-Down approach.
--- e.g., Person entity set can be divided into customer, student, employee. Person is superclass and other specialised entity sets are subclasses. We have “is-a” relationship between superclass and subclass. and Depicted by triangle component.
--- Why Specialisation? Certain attributes may only be applicable to a few entities of the parent entity set, DB designer can show the distinctive features of the sub entities, to group such entities we apply speciallization and to overall refine the DB Blueprint!
+-- Speciallization : Specialization is a top-down approach in the ER model where a generalized entity is divided into more specific sub-entities based on their distinct features, functionalities, or attributes. It establishes an "is-a" relationship between a parent (superclass) and its sub-entities (subclasses).
+-- Key Points : Purpose : To avoid redundancy in the database design.
+--                      : To assign attributes specific to certain sub-entities.
+--                      : To refine and clarify the database schema.
+--            : How It Works : A generalized entity (e.g., Person) is split into sub-entities (Example : Customer, Employee).
+--                           : Common attributes (e.g., Name, Address) remain in the parent entity.
+--                           : Specific attributes (e.g., Salary for Employee, Customer ID for Customer) are assigned to sub-entities.
+--            : Examples : Person -> Divided into Customer and Employee. Employee may further specialize into HR, Developer, Housekeeper. Person is the superclass, while Customer and Employee are subclasses.
+--            : Advantages : Eliminates ambiguity by clearly associating attributes with relevant entities.
+--                         : Helps group entities with distinctive features for better database organization.
+--            : Depiction : Represented using a triangle symbol in an ER diagram.
+--                        : Subclasses inherit attributes and relationships from the superclass.
 
--- 2) Generalization : Reverse of specialization! it follows a bottom up approach! Speciallization and Generalization are both almost similar! but in both we have different way of thinking!
--- So isme hum basically ekdum same cheez kr rhe hote hai just inn reverse order of the speciallization! going from bottom to top!
--- DB Designer, may encounter certain properties of two entities are overlapping. Designer may consider to make a new generalised entity set. That generalised entity set will be a super class.
--- “is-a” relationship is present between subclass and super class.
--- e.g., Car, Jeep and Bus all have some common attributes, to avoid data repetition for the common attributes. DB designer may consider to Generalise to a new entity set “Vehicle”.
--- Why Generalisation? : Makes DB more refined and simpler, Common attributes are not repeated.
- 
--- 3) Attribute Inheritance : Parent ke jo attribute honge vo sub entities inherit krengi hi krengi!
--- The attributes of higher level entity sets are inherited by lower level entity sets.
--- E.g., Customer & Employee inherit the attributes of Person.
+-- Generalization : Generalization is a bottom-up approach in the ER model where multiple specific entities are combined into a generalized entity based on their shared attributes. It establishes an "is-a" relationship between subclasses and the superclass.
+-- Key Points : Purpose : To simplify the database design.
+--                      : To avoid data redundancy by grouping common attributes in a generalized entity.
+--            : How It Works : Specific entities (e.g., Car, Jeep, Bus) are merged into a generalized entity (e.g., Vehicle).
+--                           : Common attributes are moved to the superclass, while unique attributes remain in subclasses.
+--            : Examples : Car, Jeep, Bus -> Generalized into Vehicle.
+--                       : Vehicle becomes the superclass, and Car, Jeep, and Bus are the subclasses.
+--            : Advantages : Reduces redundancy by consolidating common attributes.
+--                         : Simplifies and refines the database structure.
+--            : Depiction : Represented using a triangle symbol in an ER diagram.
+--                        : Subclasses inherit attributes and relationships from the generalized superclass.
 
--- 4) Participation Inheritance : If a parent entity set participates in a relationship then its child entity sets will also participate in that relationship.
+-- Aggregation : Aggregation is a technique used to represent relationships among relationships in the ER model. It involves abstracting a relationship into a higher-level entity, known as an abstract entity, to simplify the design and avoid redundancy.
+-- Key Points : Purpose : To model scenarios where a relationship itself participates in another relationship.
+--                      : To avoid making overly complex and redundant relationships in the database.
+--            : How It Works : A relationship (e.g., between Employee, JobRole, and Branch) is treated as a single higher-level entity.
+--                           :This aggregated entity can then form a relationship with another entity (e.g., Manager).
+--            : Example : Scenario : An Employee works in a Branch with a specific JobRole. A Manager supervises this setup.
+--                      : Instead of creating a quaternary relation involving all entities, the ternary relationship (Employee-JobRole-Branch) is abstracted into an aggregate entity, which then relates to Manager.
+--            : Advantages : Simplifies the design by reducing the complexity of relationships.
+--                         : Avoids redundancy and unnecessary dependencies in the database.
+--            : Depiction : Represented in ER diagrams with a rectangle enclosing the relationship being aggregated, which is then connected to the external entity.
 
--- 5) Aggregation : Suppose a case where we have an employee, a job role and a branch and we have a relation of all of it! means ek employee hai jo kisi particular branch me kaam krta hai kisi particular job role me! now we want a manager! who will manage that employee who works in a branch in a particular job role! toh ab hum yaa toh aisa kr sakte hai ki iss ternary relation ko quartenary relation bnaa dete hai ek manager enitity add krke! but that will not be feasible kyunki fir uss manager entity ke paas saari knowledge ajayegi uss employee table ki bhi branch table ki bhi and job role table ki bhi! but hume sirf uss particular employee jo ek particular branch me kaam krta hai ek particular job role me! sirf uske saath relation bnaana hai!
--- So for that we will treat the whole Employee-JobRole-Eranch ternary relation into a single entity! and that we will form an external relation of this entity with another manager entity! and that's we apply aggregation!
--- Formal Defintion : How to show relationships among relationships? - Aggregation is the technique, Abstraction is applied to treat relationships as higher-level entities. We can call it Abstract entity, Avoid redundancy.
+-- Attribute Inheritance : Attribute inheritance ensures that the attributes of a parent entity (superclass) are automatically inherited by its sub-entities (subclasses) in the ER model.
+-- Key Points : Purpose : To maintain consistency and avoid duplication of common attributes across entities.
+--                      : To establish a clear hierarchical structure in the database.
+--            : How It Works : Attributes defined in the higher-level entity (superclass) are shared by all its lower-level entities (subclasses).
+--                           : Subclasses like Customer and Employee inherit these attributes while adding their own specific ones (e.g., Customer ID for Customer, Salary for Employee).
+--            : Example : A Person entity has attributes like Name and Address.
+--                      : Subclasses like Customer and Employee inherit these attributes while adding their own specific ones (e.g., Customer ID for Customer, Salary for Employee).
+--            : Advantages : Reduces redundancy in schema design. Enhances clarity and simplifies updates to shared attributes.
+--                         : Avoids redundancy and unnecessary dependencies in the database.
+
+-- Participation Inheritance : If a parent entity set participates in a relationship then its child entity sets will also participate in that relationship.
+
 -- Go to the hand written notes! for more details and diagram!
 
 -- ----------------------------------------------------------------------- Lecture 5 : Making of ER Diagram - Banking System ER Model --------------------------------------------------------------------------------------------------->
