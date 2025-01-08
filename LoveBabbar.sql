@@ -80,8 +80,7 @@
 --                          : Example : Viewing logical schema with SHOW Table_name; displays the database table’s logical structure.
 
 -- View/External Level : The highest level of abstraction, designed to simplify user interaction. 
---                     : Provides different views of the database to different user groups based on their needs. Each view schema describes a subset of the data relevant to a specific user.
---                     : Acts as a security mechanism, hiding certain parts of the database from unauthorized users.
+--                     : Provides different views of the database to different user groups based on their needs. Each view schema describes a subset of the data relevant to a specific user. Acts as a security mechanism, hiding certain parts of the database from unauthorized users.
 --                     : Goal : Tailor the database view to user requirements and enhance security.
 --                     : Example : To view the view level schema, a view must first be created, then you can access it.
 
@@ -347,15 +346,14 @@
 -- Relational Model (RM) organises the data in the form of relations (tables).
 -- A relational DB consists of collection of tables, each of which is assigned a unique name.
 -- A row in a table represents a relationship among a set of values, and table is collection of such relationships.
--- Tuple: A single row of the table representing a single data point / a unique record.
--- Columns: represents the attributes of the relation. Each attribute, there is a permitted value, called domain of the attribute.
+-- Tuple : A single row of the table representing a single data point / a unique record.
+-- Columns : represents the attributes of the relation. Each attribute, there is a permitted value, called domain of the attribute.
 
--- ER model me jo jo entities thi vo relational model me tables ban jaati hai!
--- ER model me jo jo attributes hote hai vo sab relational model me columns ban jaati hai!
+-- ER model me jo jo entities thi vo relational model me tables ban jaati hai! & jo attributes hote hai vo sab relational model me columns ban jaati hai!
 -- Degree of Table : Number of Attributes!
 -- Cardinality : Number of tuples!
 -- Jab DB Design hota hai toh pehle ER model banta hai and then uss ER model se Relational Model banta hai!
--- And then ek RDBMS  software hota hai jo iss relational model ko implement krta hai! like creation and updation of the whole tables and relations among them! example of RDBMS Software : MySQL, Postgre, Oracle!
+-- And then ek RDBMS software hota hai jo iss relational model ko implement krta hai! like creation and updation of the whole tables and relations among them! example of RDBMS Software : MySQL, Postgre, Oracle!
 -- Ab humne ek ER model ke entities and attributes ko table and columns ke form me represent krdiya and jo rows bani unko humne tuple bol diya, but jo relation hai unn entities ke beech ke usko kaise define kre tabular form me? so for that we have Foreign Key!
 
 -- Properties of the Table : The name of relation is distinct among all other relation.
@@ -369,7 +367,7 @@
 --                 : Candidate Keys : Minimum subset of super keys, which can uniquely identify each tuple. It contains no redundant attribute. Superkeys me vo saare possible combinations hote hai, but in case of Candidate keys, hum super keys ka hi subset lete hai jo kisi tuple ko uniquely identify kr sake and usme koi redudant attribute na ho! redudant attribute means jahaa values same nhi ho sakti!
 --                                  : CK value shouldn’t be NULL.
 --                 : Primary Key : Selected out of CK set, has the least no. of attributes.
---                 : Alternate Keys : All CK except PK. It is also called Secondary Key.
+--                 : Alternate Keys : All CK except PK. It is also called Alternate/Secondary Key.
 --                 : Foreign Keys : It creates relation between two tables.
 --                                : A relation, say r1, may include among its attributes the PK of an other relation, say r2. This attribute is called FK from r1 referencing r2. 
 --                                : The relation r1 is aka Referencing (Child) relation of the FK dependency, and r2 is called Referenced (Parent) relation of the FK.
@@ -377,12 +375,10 @@
 --                 : Composite Key : PK formed using at least 2 attributes.
 --                 : Compound Key : PK which is formed using 2 FK.
 --                 : Surrogate Keys : Suppose you have DB of 2 Schools, and their criteria of uniquely identifying students are different! like one school stores the roll number as 1 2 3... and another stores it like A101, A102 and so on... so now if we want to merge the tables of these two schools, so we will make another column or attribute which will give a common serial number for all the students/tuples!
---                                  : Generated automatically by DB, usually an integer value.
---                                  : May be used as PK.
---                                  : It is a self generated PK. DB generate it itself after merging!
+--                                  : Generated automatically by DB, usually an integer value. May be used as PK. It is a self generated PK. DB generate it itself after merging!
 
 -- Integrity Constraints : CRUD Operations must be done with some integrity policy so that DB is always consistent. Introduced so that we do not accidentally corrupt the DB.
---                       : Domain Constraints : Restricts the value in the attribute of relation, specifies the Domain. E.g., We want to specify that the enrolment should happen for candidate birth year < 2002.
+--                       : Domain Constraints : Restricts the value in the attribute of relation, specifies the Domain. Example, We want to specify that the enrolment should happen for candidate birth year < 2002.
 --                       : Every relation should have PK. PK != NULL.
 
 -- Refrential Constraints : Specified between two relations & helps maintain consistency among tuples of two relations.
@@ -393,7 +389,7 @@
 --                        : There are multiple type of referential constraints while deleting/updating data in the child or parent table, they are : ON [DELETE | UPDATE] [SET NULL | CASCADE | RESTRICT | NO ACTION | SET DEFAULT];
 --                        : ON DELETE/UPDATE SET NULL : If a record in the parent table is deleted, the foreign key column(s) in the child table are set to NULL. and If a primary key value in the parent table is updated, the foreign key column(s) in the child table are set to NULL.
 --                        : ON DELETE/UPDATE CASCADE : If a record in the parent table is deleted, all corresponding records in the child table are automatically deleted. and If a primary key value in the parent table is updated, all corresponding foreign key values in the child table are automatically updated to match.
---                        : ON DELETE/UPDATE RESTRICT : Prevents the deletion of a record in the parent table if there are corresponding records in the child table. and Prevents the update of the primary key value in the parent table if there are corresponding foreign key values in the child table.
+--                        : ON DELETE/UPDATE RESTRICT : Prevents the deletion of a record in the parent table if there are corresponding records in the child table, and Prevents the update of the primary key value in the parent table if there are corresponding foreign key values in the child table.
 --                        : ON DELETE/UPDATE NO ACTION : Similar to RESTRICT, it prevents the deletion or update of records in the parent table if there are corresponding records in the child table. There is no very signifcant difference between the two apart from terminologies and intentions, NO ACTION explicitly states that no action will be taken, while RESTRICT implies a restriction on the action.
 --                        : ON DELETE/UPDATE SET DEFAULT : If a record in the parent table is deleted, the foreign key column(s) in the child table are set to their default values. and If a primary key value in the parent table is updated, the foreign key column(s) in the child table are set to their default values.
 
@@ -446,7 +442,7 @@
 -- Will mention only the exclusive details jo iss lecture se mili hai, if want to study from A-Z then visit the Apni Kaksha notes and FCC Notes!
 -- Here we go...
 
--- Can we use select keyword wothout using the from clause? Yes we can!
+-- Can we use select keyword without using the from clause? Yes we can!
 -- This is how... Using dual tables... example...
 -- Select 55 + 20, this query will display the sum.. so we are using select without from
 -- Select now(), this is a query where we try to see the current timings of the server, if server is located at some long distances and we are trying to pass some queries in the database, and for some reason we want o check the timing then we use this query!
