@@ -46,7 +46,7 @@ Select * from Student;
     -- 11) Year -> year ranging from 1901 - 2155
 
 -- Now there are some extra datatypes operations like Signed and Unsigned, where if some datatype is marked as signed means it can store negative as well as positive values but if it is marked as unsigned then it will always be positive!
--- So example: like as we know that tinyint contains only values upto -128 to 127, but what if we want to store 129, we can't but to solve this we will use tinyint unsigned and now it will range from 0 to 255! and now we can store 129 using tinyint unsigned!
+-- So example : Like as we know that tinyint contains only values upto -128 to 127, but what if we want to store 129, we can't but to solve this we will use tinyint unsigned and now it will range from 0 to 255! and now we can store 129 using tinyint unsigned!
 
 -- SQL Commands, there are 5 types of SQL commands! these 5 types are : DDL(Data Definition Language), DQL(Data Query Language), DML(Data Manipulation Language), DCL(Data Control Language) and TCL(Transaction Control Language)
 -- DDL Commands are : Create, Alter, Rename, Truncate and Drop!
@@ -103,13 +103,13 @@ Select * from Employee;
 
 -- ---------------------------------------------------------------------------------------------------------------------------------------->
 -- Keys : Primary Key and Foreign Key!
-	-- Primary Key : It is a column (or a set of columns) of the table that uniquely identifies each row. There is only 1 PK and it can not be null! Means bhale hi hum multiple columns ko primary key banaa sakte honge, pr sirf ek ko hi actually primary key banayenge!
-	-- Foreign Key : A foreign key is a column (or set of columns) in a table that refers to the primary key of some another table! There can be multiple foreign keys! FKs can have duplicate and null values!
+-- Primary Key : It is a column (or a set of columns) of the table that uniquely identifies each row. There is only 1 PK and it can not be null! Means bhale hi hum multiple columns ko primary key banaa sakte honge, pr sirf ek ko hi actually primary key banayenge!
+-- Foreign Key : A foreign key is a column (or set of columns) in a table that refers to the primary key of some another table! There can be multiple foreign keys! FKs can have duplicate and null values!
 
 -- Constraints : SQL Constraints are used to specify rules for a data in a table!
 -- Not Null : If this is a constraint means that column cannot have null value!
 -- Unique : All values in column are different
--- Primary Key : Makes a column unique and not null but used for one column only! Hum according to our usage 2 column ke combination ko bhi primary key bnaa sakte hai!
+-- Primary Key : Makes a column unique and not null but used for one column only! Hum according to our usage 2 column ke combination ko bhi primary key bnaa sakte hai! called the Composite Key!
 -- Foreign Key : Prevents actions that would destroy links between tables!
 --             : Syntax will be like -> Create Table temp1 (
 --                                          cust_id int,
@@ -149,7 +149,7 @@ values
 (105, "Emanuel", 12, "F", "Delhi"),
 (106, "Farah", 82, "B", "Delhi");
 
--- Here whar happened was that I added two extra rows into the table with come wrong ids so I wanted to change it pr vo change nhi ho rha tha toh maine pehle unn dono rows ko delete kiya and then firse add kiya!
+-- Here what happened was that I added two extra rows into the table with come wrong ids so I wanted to change it pr vo change nhi ho rha tha toh maine pehle unn dono rows ko delete kiya and then firse add kiya!
 Insert into Student
 (rollno, name, marks, grade, city)
 values
@@ -169,17 +169,17 @@ Insert into Student
 values
 (107, "Ram", 80, "A", "Mumbai"),
 (108, "Shyam", 90, "A", "Delhi");
+
 Select * from Student;
--- Select Command : used to select any data from the database!
--- Basic Syntax (For individual selection) : Select col1, col2 from Table_name;
--- Syntax (for overall selection) : Select * from Table_name;
+-- Select Command : used to select any data from the database! Basic Syntax (For individual selection) : Select col1, col2 from Table_name; AND Syntax (for overall selection) : Select * from Table_name;
 -- Here also we can use a distinct keyword which will select and display all the non-repeating values, for example, if there is column name city and we will write select distinct city from Table_name; then it will select and display all the cities without repeating!
+
 Select name, marks from Student; -- It will display the columns which has marks and name at its heading!
 Select city from Student; -- It will display all the cities!
 Select distinct city from Student; -- It will only display pune mumbai and delhi, and not the repeating ones!
 
--- Clause in SQL!
--- Now there are some clauses in the SQL which defines some conditions, one of them is "Where" clause!
+-- Clause in SQL : Now there are some clauses in the SQL which defines some conditions, one of them is "Where" clause!
+
 -- Where Clause :
 -- Select col1, col2 from Table_name
 -- Where Condition
@@ -200,7 +200,7 @@ Select * from Student where marks between 80 and 90;
 select * from Student where city in ("Delhi", "Mumbai");
 select * from Student where city not in ("Delhi", "Mumbai", "Uttar Pradesh");
 
--- Limit Clause! :
+-- Limit Clause :
 Select * from Student
 where marks > 80 -- It will select and display all the students whose marks are > 80, but if we want to put a limit then we we will use the limit clause!
 limit 4; -- It will put limit upto 4 students
@@ -244,13 +244,6 @@ order by avg(marks) desc;
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Practice Question 2 : Find the total payment according to the each payment method!
 Create Database Transaction;
-Create Table Payment (
-	customer_id int primary key,
-    customer varchar(50),
-    mode varchar(20),
-    city varchar(20)
-);
-Drop Table Payment;
 Use Transaction;
 Create Table Payment (
 	customer_id int primary key,
@@ -276,6 +269,7 @@ Select mode, count(customer_id)
 from Payment
 group by mode;
 -- Hence, thats how you do it!
+
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 Use college;
 -- Similarly agar hume check krna ho kitne students ko A grade mila and all then also we can use group by clause!
@@ -284,24 +278,22 @@ from Student
 group by grade
 order by grade asc;
 
--- Having Clause! : It is similar to where clause, but there is a difference! and that is....
--- Similar to where, i.e it applies some conditions on rows, used when we want to apply some conditions after grouping! Hence, it like where rows pr condition lagaane ke kaam aata hai and having clause groups ke upar condition lgaane ke kaam aata hai!
+-- Having Clause : It is similar to where clause, but there is a difference! and "where" rows pr condition lagaane ke kaam aata hai and "having" clause groups ke upar condition lgaane ke kaam aata hai!
 -- Use of Having Clause : Count number of students in each city where max marks cross 90!
 Select city, count(rollno)
 from Student
 group by city
 having max(marks) > 90;
 
--- Now after studying all these clauses, we need to keep in mind the order of it and that is :
--- Select -> From -> Where -> Group By -> Having -> Order By
+-- Overall, Order of syntax of SQL Commands is : SELECT -> FROM -> WHERE -> GROUP BY -> HAVING -> ORDER BY -> LIMIT/OFFSET
+-- Order of Execution of SQL Commands is : FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> DISTINCT -> ORDER BY -> LIMIT/OFFSET
 
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Table Related Queries!
--- Update Command! : To update existing rows!
--- Syntax
-		-- Update table_name
-		-- set col1 = val1, col2 = val2
-		-- where condition;
+-- Update Command : To update existing rows!
+-- Syntax : Update table_name
+--          set col1 = val1, col2 = val2
+--          where condition;
 
 Set SQL_SAFE_UPDATES = 0; -- By default safe mode mysql me on hota hai means, hum koi cheez update nhi kr sakte, this safe made is for like kabhi maanlo humne koi aise changes krdiye apne DB me jo nhi krne the, toh uss cheez se bachne ke liye ye safe mode by default on rehta hai, pr abhi hum isko off kr rhe hai iss command se!
 Update Student
@@ -337,9 +329,8 @@ set marks = marks + 1;
 Select * from Student;
 
 -- Delete Command : Used to delete existing rows!
--- Syntax :
-			-- Delete from table_name
-			-- where condition;
+-- Syntax : Delete from table_name
+--          where condition;
 Use college;
 Update Student
 set marks = 12
@@ -347,6 +338,7 @@ where rollno = 105;
 Delete from Student -- Agar hum sirf iss line ko execute krde tab poora table delete hojayega, and we can't bring that table back, so use this operation very carefully!
 where marks < 33;
 Select * from Student;
+
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Revisiting Foreign Key!
 Use college;
@@ -361,8 +353,7 @@ Create table teacher (
     foreign key (dept_id) references dept(id)
 );
 -- In the above example we have established a connection or a link between the two tables which are teachers and dept! using foreign key!
--- If we want to visualize it we can go to database in the top nav bar and then we can select college database and then we can see the ER diagram of all the tables we have created!
--- The table which has the primary key is called the parent table and other table is called the child table!
+-- If we want to visualize it we can go to database in the top nav bar and then we can select college database and then we can see the ER diagram of all the tables we have created! The table which has the primary key is called the parent table and other table is called the child table!
 
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Cascading for Foreign Keys!
@@ -382,24 +373,25 @@ Create table teacher (
 
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Alter Command : It is used to change the schema! means jab bhi hume columns ki basic design means datatype constraints yaa koi bhi design ya layout me changes krne hote hai toh uske liye we use this command!
--- Alter command is used with the following operations like, add column, drop column, rename table, change column, and modify column!
--- Using the student table to demonstrate the use of the above operations!
--- Example Syntax of the operations :
--- Alter Table table_name
--- Add Column col_name datatype constraints;
-    
--- Alter Table table_name
--- Drop Column col_name;
-    
--- Alter Table table_name
--- Rename to new_table_name;
-    
--- Alter Table table_name
--- Change old_name new_name new_datatype new_constraints;
-    
--- Alter Table table_name
--- Modify col_name new_datatype new_constraints;
--- Some example usage of the above commands and operations!
+-- Operations with Alter Command : ADD, DROP, CHANGE, MODIFY Column & RENAME Table!
+
+-- Syntax :
+-- ADD Column : Alter Table table_name
+--              Add Column col_name datatype constraints;
+
+-- DROP Column : Alter Table table_name
+--               Drop Column col_name;
+
+-- RENAME Table : Alter Table table_name
+--                Rename to new_table_name;
+
+-- CHANGE Column : Alter Table table_name
+--                 Change old_name new_name new_datatype new_constraints;
+
+-- MODIFY Column : Alter Table table_name
+--                 Modify col_name new_datatype new_constraints;
+
+-- Working Examples :
 Alter Table Student
 add age int;
 
@@ -414,18 +406,20 @@ Alter Table Students
 rename to Student;
 Select * from Student;
 
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Truncate Command : It deletes the data inside the table and not the whole table!
--- Syntax : Truncate Table table_name; -- It will delete the whole data inside the table!
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+-- Syntax : Truncate Table table_name;
 
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Practice Question 3 : In the student table change the column name to fullname, delete all the students who have scored marks less than 80, delete the column of grades!
 Alter Table Student
 change name full_name varchar(50);
+
 Delete from Student
 where marks < 80;
+
 Alter table Student
 Drop column grade;
+
 Select * from Student;
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Date format function in SQL is used to format Date and time in a particular format needed according to system requirements!
@@ -447,11 +441,12 @@ DATE_FORMAT(date, format) -- This is the syntax!
 -- Joins in SQL! : It is used to combine rows from 2 or more tables, based on related column between them! Overall means it is used to join 2 or more than 2 columns but for that we should be having some common columns!
 -- Now there are 4 different types of joins, as we have studied in maths, like...Inner Join (Intersection) and Outer Join (Left Join -> A+(A Intersection B), Right Join -> B+(B Intersection A), Full Join -> AUB)!
 
--- 1) Inner Join : Returns records that are having matching values in both the tables!
+-- Inner Join : Returns records that are having matching values in both the tables!
 -- Syntax : Select column(s)
 --          From TableA
 --          Inner Join TableB -> Yahaa konsa table left ya right hai isse fark nhi padta, toh upar neeche likhne se bhi result me koi fark nhi padega! but as per rules jo pehle likha hota hai that is left table and baad vaala right table!
 --          On TableA.col_name = TableB.col_name; 
+
 -- Example :
 Create Table Student2 (
 	student_id int,
@@ -489,6 +484,7 @@ On Student2.student_id = Course.student_id;
 --          From TableA
 --          Left Join TableB -- This line simply means that Table A ka Table B se left join krna hai! and jo pehle likha hua hai vo left hai and jo baad me vo right hai!
 --          On TableA.col_name = TableB.col_name;
+
 -- Example :
 Select *
 From Student2
@@ -500,6 +496,7 @@ On Student2.student_id = Course.student_id;
 --          From TableA
 --          Right Join TableB -- This line simply means that Table A ka Table B se right join krna hai! and jo pehle likha hua hai vo left hai and jo baad me vo right hai!
 --          On TableA.col_name = TableB.col_name;
+
 -- Example :
 Select *
 From Student2
@@ -514,6 +511,7 @@ On Student2.student_id = Course.student_id;
 --                   Select * from tableA
 --                   Right join tableB
 --                   On tableA.col_name = tableB.col_name
+
 -- Example :
 Select * from Student2 as s2
 left join Course as c
@@ -558,6 +556,7 @@ Select *
 from Student2 as a
 join Student2 as b -- Yahaa hum alias use krte hai, so hum ek table ko ek baar a naam dedete hai and ek baar b and then dono ko join krdete hai!
 on a.student_id = b.student_id;
+
 -- Example : lets understand the use of Self Join!, first lets create a table
 Create table  Employee2 (
 	id int primary key,
@@ -602,59 +601,79 @@ on a.id = b.manager_id;
 -- FULL-EXCLUSIVE JOIN : Isme bhi common columns pr hi condition lgaani hoti hai! and then it does Left-Exclusive Join U Right-Exclusive Join. No syntax, ye hume condition lgaa ke hi krni hoti hai!
 -- SELF JOIN : Isme ek table apne aap se hi join hojaata hai!
 
+-- EQUI and INNER JOIN : INNER JOIN supports more conditions (e.g., >, <). but EQUI JOIN focuses strictly on =.
 -- Practice all these Joins toh have a taste of them all!
 
 -- ---------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Unions : It is used to combine the result records of the 2 or more select statements, and it gives a unique value! mathematically it is AUB!
--- To use it : every select statement should have same number of columns
---           : columns must have similar datatypes
---           : columns in every select should have same order!
+-- To use it : Every select statement should have same number of columns
+--           : Columns must have similar datatypes
+--           : Columns in every select should have same order!
 -- Syntax : Select column(s) from Table A
 --        : Union
 --        : Select column(s) from Table B
 -- Also jaise union hota hai, jo saari duplicate/repeated values ko hataa deta hai, vaise hi ek union all hota hai jo saari duplicate/repeated values ko bhi allow krta hai!
 
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------->
--- SQL Sub Queries : A Sub Query, a nested query or an inner query is a query within another SQL query! and it invloves 2 select statements!
--- Syntax : Select column(s)
---        : From table_name
---        : Where column_name operator
---        : (sub query);
--- Sub queries ko likhne ke 3 tareeke hote hai, inko hum Select, From and Where Clause ke andar likh sakte hai, and the above syntax is the third one jahaa humne where clause ke andar likha hua hai sub query!
--- Example (Writing sub queries inside the where clause) : get the names of all the students who have scored more than the class average!
--- First we will write the query to get the average of all the marks!
-select avg(marks) from student;
+-- Sub Query : A subquery (also called a nested or inner query) is a query written inside another SQL query. It is enclosed in parentheses () and can return a value or a set of values.
+--           : Subqueries are used to perform intermediate calculations or fetch data for the main query.
 
--- Now we will write the whole query along with the sub query!
-select * from student;
+-- Sub Query Syntax : SELECT column_name(s)
+--                    FROM table_name
+--                    WHERE column_name operator (subquery); 
 
-Select full_name, marks
-from student
-where marks > (select avg(marks) from student); -- Here we have used the sub query!
--- Jab bhi queries ke under koi query daalni hoti hai that is called a sub query!
--- And this sub query is dynamic in nature, that we do not need to update the average value everytime!
+-- Ways to use Sub Queries : WHERE, FROM & SELECT
 
--- Example (Writing sub queries inside the Form ) : Find the max marks from the students of Delhi!
-select max(marks) from student
-where city = "Delhi";
--- This example can be solved without using any sub query, but bss dikhaane ke liye ki form ke saath kaise use krte hai sub query uske liye demonstrate krne ke liye neeche show kiya hai!
+-- Sub Query using WHERE Clause :
+SELECT full_name, marks
+FROM student
+WHERE marks > (SELECT AVG(marks) FROM student);
 
-select * from student;
-Select max(marks)
-from (select * from student where city = "Delhi") as temp;
+-- Sub Query using FROM Clause :
+-- Without subquery :
+SELECT MAX(marks) 
+FROM student 
+WHERE city = 'Delhi';
 
--- Example (Writing sub queries inside the Select ) :
-Select (select max(marks) from student), full_name
-from student;
--- Ho sakta hai yahaa iska usage koi make sense naa kre, but its okay, ye bss demo ke liye tha ki sub query ko use kaise krte hai select ke andar!
+-- With subquery :
+SELECT MAX(marks)
+FROM (SELECT * FROM student WHERE city = 'Delhi') AS temp;
+
+-- With subquery in the SELECT clause :
+SELECT (SELECT MAX(marks) FROM student) AS max_marks, full_name
+FROM student;
+
+-- Key Points : Dynamic Nature : Subqueries are executed dynamically during query runtime. For example, in the average marks query, the subquery recalculates the average whenever the main query is run.
+--            : Parentheses : Subqueries must be enclosed in parentheses ().
+--            : Scope : A subquery can return a single value (scalar), a list of values, or a table.
+--            : Usage : Use subqueries for readability and reusability, especially when breaking down complex queries.
+
+-- Advantages of Subqueries : Simplifies Queries : Breaks down complex queries into smaller, manageable parts.
+--                          : Dynamic Calculations : Automatically updates results when underlying data changes.
+--                          : Modular Design : Easier to debug and reuse.
+
+-- Disadvantages of Subqueries : Performance Overhead : Subqueries can slow down execution if not optimized.
+--                             : Readability : Excessive nesting can make queries harder to understand.
 
 -- ---------------------------------------------------------------------------------------------------------------------------------------------------->
--- My SQL Views! : On one hand we have real tables where real data store hota hai and jispe hum real operations perform krte hai, so similarly ek virtual tables bhi hoti hai jo ek kind of temp tables hoti hai like, suppose agar koi teacher hai usko students ka data chahiye, toh uss student ke city se usko koi fark nhi padta, toh jab hum uss teacher ko vo table dete hai jisme saare students ki saari info rehti hai, toh hum kuch cheeze chupa ke vo table dete hai, aisa samjhlo!
--- Example : We had a table named Student previously! and suppose kisi teacher ko vo table dekhni hai, so teacher ke liye jo imp info hai vo sirf rollno, name and marks hai, so we will proceed with....
-Create view view1 as
-Select rollno, full_name, marks from student; -- Now it has created a virtual table, which is same as our originaly table just without the grade (although ye humne upar ke operations me already original table me hi remove krdiya tha, but just saying) and city column!
--- And now ab hum vo saari operations perform kr sakte hai view (virtual table pr) jo hum original pr krte the!
--- Drop view view1; Iss statement se hum view table remove bhi kr sakte hai!
-Select * from view1; -- It is a virtual table! and also ye views me jaake store hota hai, isse original table pr koi effect nhi padta hai!
+-- Real Tables vs Virtual Tables : Real tables store actual data, and operations are performed directly on them.
+--                               : Views are virtual tables that don't store data; they are like temporary tables created to simplify data retrieval.
+--                               : Views are used to present data in a specific way without altering the original data.
+
+-- Example :  A teacher only needs selected student information (like roll number, name, and marks) and not the entire student record.
+-- Solution :
+-- Create View : A virtual table (view) is created that includes only the columns relevant to the teacher :
+CREATE VIEW view1 AS
+SELECT rollno, full_name, marks
+FROM student;
+-- This view behaves like a table with only the selected columns (rollno, full_name, marks). Original Table remains unaffected.
+
+-- Perform Operations on the View : The same operations you perform on real tables can be done on the view :
+SELECT * FROM view1; -- The result shows only the data as per the view (virtual table).
+
+-- Drop View : If the view is no longer needed, it can be removed :
+DROP VIEW view1; -- This removes the view but does not affect the original table.
+
+-- Note : Views are useful for data abstraction, hiding unnecessary details from the user. No impact on the original data. You can perform operations like SELECT on views, but they do not store data permanently.
 
 -- ---------------------------------------------------------------------------------------------------------------------------------------------------->

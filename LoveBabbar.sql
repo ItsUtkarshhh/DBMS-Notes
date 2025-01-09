@@ -468,7 +468,7 @@
 -- Agar replace me data present nhi hai toh insert ki tarah kaam krega and data add krdega, but update will do nothing in this case!
 
 -- Baaki joins we have already studied previously! one more type of join here is... "CROSS JOIN" iska zyada industrial use nhi hai, what it does is... if table 1 has 5 rows and table 2 has 10 rows then it will do the cross product of all the rows and will join the two tables and the final table will have 50 rows!
--- Syntax is... suppose you have two tables Table 1 and Table 2...
+-- Syntax :
 -- SELECT T1.name, T1.lname, T2.id, T2.name FROM Table1 as T1
 -- CROSS JOIN Table2 as T2; -> The output will contain number of rows = product of rows of both the tables
 -- This is how it works!
@@ -477,30 +477,33 @@
 -- Syntax...
 -- SELECT * FROM LeftTable, RightTable WHERE LeftTable.id = RightTable.id -> So here we have implemented Inner Join without using the JOIN Keyword!
 
--- Set Operations in SQL : Union, Intersection and Minus...
--- Set and Joins both are used to combine two tables, joins do it along columns and sets do it along rows!
+-- Set Operations in SQL : Union, Intersection and Minus
+-- Set operations and Joins both are used to combine two tables, joins do it along columns and sets do it along rows!
 -- Used to combine multiple select statements.
 -- Always gives distinct rows.
--- Jinn columns ko combine krna chahte hai row wise unke data types same hone chahiye! and number of columns jo select krne hai dono tables me se vo bhi same hone cahiye! and it combines results vertically! also it combines distinct rows!
+-- Jinn columns ko combine krna chahte hai row wise unke data types same hone chahiye! and number of columns jo select krne hai dono tables me se vo bhi same hone chahiye! and it combines results vertically! also it combines distinct rows!
 
 -- Union : Combines two or more SELECT statements,
--- Union Syntax :
--- SELECT * FROM table1
--- UNION
--- SELECT * FROM table2;
+-- Union Syntax : SELECT column_name(s) 
+--                FROM table1
+--                WHERE condition
+--                UNION
+--                SELECT column_name(s)
+--                FROM table2
+--                WHERE condition;
 -- Number of column, order of column must be same for table1 and table2.
 
 -- Intersect : Returns common values of tables, in SQL there is not keyword for Intersect, so we need to formulate it! and for that we use inner join
--- Formulated Syntax for Intersect :
--- Select Distinct id from T1
--- InnerJoin T2
--- using (id);
+-- Formulated Intersect Syntax : SELECT DISTINCT T1.id
+--                               FROM T1
+--                               INNER JOIN T2 ON T1.id = T2.id;
 
--- Minus : T1 - T2, it is similar what we do in maths, there is no keyword for Minus in SQL, so we need to formulate it...
--- Formulated Syntax for Minus :
--- Select id from T1
--- Left Join T2 using (id)
--- Where T2.id is NULL;
+-- Minus : T1 - T2, it is similar what we do in maths, there is no keyword for Minus in SQL, so we need to formulate it
+-- Formulated Minus Syntax : Select DISTINCT T1.id
+--                           FROM T1
+--                           LEFT JOIN T2
+--                           ON T1.id = T2.id;
+--                           WHERE T2.id is NULL;
 
 -- Sub Queries : When there is one query inside another query, they are alternatives to Join!
 -- Sub Queries Syntax :
@@ -513,7 +516,7 @@
 
 -- Derived SubQuery : SELECT columnLists(s) FROM (SELECT columnLists(s) FROM table_name WHERE [condition]) as new_table_name;
 
--- Co-Related SubQuery : With a normal nested subquery, the inner SELECT query runs first and executes once, returning values to be used by the main query,  A correlated subquery, however, executes once for each candidate row considered by the outer query. In other words, the inner query is driven by the outer query.
+-- Co-Related SubQuery : With a normal nested subquery, the inner SELECT query runs first and executes once, returning values to be used by the main query, A correlated subquery, however, executes once for each candidate row considered by the outer query. In other words, the inner query is driven by the outer query.
 
 -- Join vs SubQuery : Joins are Faster and SubQueries are Slower, Joins maximize calculation burden on DBMS and Sub Queries keeps responsibility of calculations on user, Joins are difficult to understand and implement but subQueries are relatively easier, chhosing optimal join for optimal result is difficult but subQueries are easy!
 
@@ -530,14 +533,15 @@
 -- ----------------------------------------------------------------------- Lecture 10.1 : SQL Questions --------------------------------------------------------------------------------------------------------------------------------->
 -- These question will be practiced on MySQL, so there wont be any notes, if there is something important then visit the vdo again!
 -- Some importante concepts and keywords you need to try and search for it later...
--- Substring Keyword : Substring(String, Starting point, Ending point).
--- Upper and Lower case keyword : Upper(string) / Lower(string).
--- instr keyword : Tells the position of character in a string, syntax : INSTR(string, 'character'). and it is case-insensitive.
--- Rtrim and Ltrim keywords : It helps in removing the white spaces from right and left side, syntax is simple, Ltrim(string) / Rtrim(string).
--- Replace keyword : Replaces substring inside a string, replace(string, kis substring ko replace krna hai, kisme replace krna hai).
--- concat keyword : Combines two strings, example : Select concat(first_name, " " ,last_name) from Worker; or simply Select concat(first_name, last_name) from Worker; / Select concat(string1, string2) from Worker;
--- curdate() and now() keywords
--- Mod() : Syntax : Mod(value, number jisse mod krna hai)
+-- "Substring" : Substring(String, Starting point, Ending point).
+-- Upper and Lower case : Upper(string) / Lower(string).
+-- "instr" : Tells the position of character in a string, syntax : INSTR(string, 'character'). and it is case-insensitive.
+-- "Rtrim" and "Ltrim" : It helps in removing the white spaces from right and left side, syntax is simple, Ltrim(string) / Rtrim(string).
+-- "Replace" : Replaces substring inside a string, replace(string, kis substring ko replace krna hai, kisme replace krna hai).
+-- "concat" : Combines two strings, example : Select concat(first_name, " " ,last_name) from Worker; or simply Select concat(first_name, last_name) from Worker; / Select concat(string1, string2) from Worker;
+-- "curdate()" and "now()" : Both retrieve the current date and time. curdate() will display the current date (without the time part). now() will display the current date and time (timestamp).
+-- "Mod()" : Syntax : Mod(value, number jisse mod krna hai)
+
 -- Study co-related subqueries as it is important! and also Joins!
 -- Try the last question of the video!
 -- Rest just practice and practice and practice and dry run dry run dry run your queries!
@@ -562,11 +566,11 @@
 --         : Answer : select max(salary) from worker where salary not in (select max(salary) from worker); -> But now if we try to output the third highest salary, and using the same logic, it may fail becoz NOT IN keyword sometimes does not works well with NULL values, theoritically answer should be 3rd highest salary, However, it might not work as intended due to potential issues with how NOT IN handles the list of salaries and NULL values. A more efficient approach for this is...
 
 --         : Question 3 : Write an SQL query to show the third highest salary from a table using sub-query. select max(salary) from worker using sub-query.
---         : Answer : SELECT DISTINCT salary FROM worker ORDER BY salary DESC LIMIT 1 OFFSET 2; -> Here salary ko select kiya gya, then desc order me order kiya gya! then LIMIT ne bataya ki kitni row output me rakhni hai, and then OFFSET ne bataya ki kitni rows top se skip krni hai! so LIMIT = 1 means ek hi row output me ayegi! and then OFFSET = 2 means top se do rwos skip krni hai! and then we get the third highest salary!
+--         : Answer : SELECT DISTINCT salary FROM worker ORDER BY salary DESC LIMIT 1 OFFSET 2; -> Here salary ko select kiya gya, then desc order me order kiya gya! then LIMIT ne bataya ki kitni row output me rakhni hai, and then OFFSET ne bataya ki kitni rows top se skip krni hai! so LIMIT = 1 means ek hi row output me ayegi! and then OFFSET = 2 means top se do rows skip krni hai! and then we get the third highest salary!
 
 -- Co-Related Subquery : Isme inner and outer dono queries ek dusre pr depend kr rhi hoti hai!
 -- Example : Question 1 : Write an SQL query to show the second highest salary from a table using co-related sub-query.
---         : Answer : SELECT salary FROM worker w1 WHERE 1 = ( SELECT COUNT(DISTINCT w2.salary) FROM worker w2 WHERE w2.salary > w1.salary );
+--         : Answer : SELECT salary FROM worker w1 WHERE 1 = ( SELECT COUNT(DISTINCT w2.salary) FROM worker w2 WHERE w2.salary > w1.salary);
 
 -- ----------------------------------------------------------------------- Lecture 10.2 : SQL Questions --------------------------------------------------------------------------------------------------------------------------------->
 -- Q-1. Write an SQL query to fetch “FIRST_NAME” from Worker table using the alias name as <WORKER_NAME>.
@@ -635,12 +639,10 @@ select * from worker where YEAR(joining_date) = 2014 AND MONTH(joining_date) = 0
 select department, count(*) from worker where department = 'Admin';
 
 -- Q-22. Write an SQL query to fetch worker full names with salaries >= 50000 and <= 100000.
-select concat(first_name, ' ', last_name) from worker
-where salary between 50000 and 100000;
+select concat(first_name, ' ', last_name) from worker where salary between 50000 and 100000;
 
 -- Q-23. Write an SQL query to fetch the no. of workers for each department in the descending order.
-select department, count(worker_id) AS no_of_worker from worker group by department
-ORDER BY no_of_worker desc;
+select department, count(worker_id) AS no_of_worker from worker group by department ORDER BY no_of_worker desc;
 
 -- Q-24. Write an SQL query to print details of the Workers who are also Managers.
 select w.* from worker as w inner join title as t on w.worker_id = t.worker_ref_id where t.worker_title = 'Manager';
@@ -652,7 +654,7 @@ select worker_title, count(*) as count from title group by worker_title having c
 select * from worker where MOD (WORKER_ID, 2) != 0; -- or --
 select * from worker where MOD (WORKER_ID, 2) <> 0;
 
--- Q-27. Write an SQL query to show only even rows from a table. 
+-- Q-27. Write an SQL query to show only even rows from a table.
 select * from worker where MOD (WORKER_ID, 2) = 0;
 
 -- Q-28. Write an SQL query to clone a new table from another table.
@@ -661,6 +663,7 @@ INSERT INTO worker_clone select * from worker;
 select * from worker_clone;
 
 -- Q-29. Write an SQL query to fetch intersecting records of two tables.
+-- "Using" : The USING keyword in SQL is used in JOIN operations to specify the columns that should be used for the join condition. It simplifies the join syntax when the columns being joined have the same name in both tables.
 select worker.* from worker inner join worker_clone using(worker_id);
 
 -- Q-30. Write an SQL query to show records from one table that another table does not have.
@@ -690,8 +693,7 @@ where w2.salary >= w1.salary
 select w1.* from worker w1, worker w2 where w1.salary = w2.salary and w1.worker_id != w2.worker_id;
 
 -- Q-36. Write an SQL query to show the second highest salary from a table using sub-query.
-select max(salary) from worker
-where salary not in (select max(salary) from worker);
+select max(salary) from worker where salary not in (select max(salary) from worker);
 
 -- Q-37. Write an SQL query to show one row twice in results from a table.
 select * from worker

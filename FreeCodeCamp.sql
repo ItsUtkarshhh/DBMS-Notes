@@ -4,17 +4,13 @@
 -- Non-Relational Databases : Any type of databases which are not relational, organizing data in anything except tabular form! and some of the example are : Key-value stores, Documents (JSON, XML etc), Graphs etc!
 
 -- And now, SQL is a language that is used to manage the relational databases, using relational database management system! SQL interact with Relational DBMS and then RDBMS interact with that relational database!
--- Although SQL is used as a standardized language for all the RDBMS but still there are some modifications in SQL while using it for other RDBMS like PostgreSQL, Oracle, or others!
+-- Although SQL is used as a standardized language for all the RDBMS but still there are some modifications in SQL while using it for other RDBMS like PostgreSQL, Oracle or others!
 
 -- Some example of Non-RDBMS are : MongoDB, DynamoDB, Apache, Cassandra, Firebase etc!
 -- Database Queries : Queries are the request made to the RDBMS to retrieve some specific information! as the DB structures becomes more complex, it becomes difficult to get the specific pieces of information we want! for example : Google Search is query for the Google's Database!
 
 -- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
--- Tables and Keys!
--- Every table should have a primary key column, so that we can uniquely identify the rows!
--- Foreign Key we already know about!
--- Another is Composite Key, jahaa hum 2 or more columns ko primary key bnaade, and jisse a group of column milke kisi ek row ko uniquely identify kre! That is called a primary key!
--- Another is a candidate key, where hum kisi ek ya zyada rows ko uniquely identify kraate hai with the unique keyword constraint!
+-- Tables and Keys : There are different keys in SQL, Primary Key, Foreign Key, Candidate Key and Composite Key...
 
 -- Difference between Candidate and Primary key! :
 -- A Candidate key is a set of one or more column in a table that can uniquely identify a record! BUT Primary key is a specific candidate key that is uniquely identify each record in a table!
@@ -34,6 +30,7 @@ CREATE TABLE Student (
     marks int
 );
 DESCRIBE Student;
+
 -- In the below columns, major vaala column me koi input nhi kr rahe hai inn dono students le liye, toh inn dono ke liye undecided show hoga, agar hum yahaa pr specify krde insert ke neeche ki hum koi major vaale column ke andar kuch insert krne vaale hai pr kuch insert na kre tab toh vo column khaali dikhayega and undecided likha hua nhi ayega! kyunki humne pehle likh diya ki hum kuch insert krne vaale, pr agar pehle hi insert ke neeche parenthesis me major vaale column ko na likhe, tab undecided dikayega!
 INSERT INTO Student
 (id, name, marks)
@@ -56,6 +53,7 @@ VALUES
 ("Mohan", 95),
 ("Rohan", 90);
 SELECT * FROM Student3;
+
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
 -- Wildcards in SQL!
 -- Wildcards is a special character used to represent one or more other characters in a string. Wildcards are often used in conjunction with the LIKE operator in SQL queries to perform pattern matching in string comparisons.
@@ -71,39 +69,18 @@ SELECT * FROM Student3;
 --			   : Similarly, agar "_ _ _ J" likha hota toh mtlb hai ki J ke pehle 3 letters hone chahiye only and J should be the last letter of the string! ya agar aise likha hota "_ _ J _" meant ki J ke pehle 2 character hone chahiye and J ke baad 1 character hona chahiye only!
 -- So that's how this Wildcards works!
 
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
--- While doing Union of two columns, they should have same datatypes!
--- Also while doing union, both the select statements should have same number of columns to unite!
--- for example :
--- The below syntax is valid!
-	-- Select col1
-	-- from table1
-	-- union
-	-- select col2
-	-- from table2
--- But if we write something like this...
-	-- Select col1, col2
-	-- from table1
-	-- union
-	-- select col2
-	-- from table2
--- Then this will be considered incorrect statement, bez both the select statements should have same number of columns for union!
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
--- "On Delete cascade" AND "On Delete set null" keywords!
--- Whenever we design a table schema, we put this keyword after foreign keys, like either of them, so that, agar kabhi ek agar primary table ya kisi table me se koi row ka data delete hota hai toh jis column me usse related cheeze thi vo bhi delete hojaye!
--- Like for example : Agar hum "On Delete Cascade" use krenge then agar parent table me se koi row delete hoti hai toh jiss table me uski foreign ki thi vo poori row delete hojayegi!
--- And agar hum "On Delete set null" use krenge tab parent table me se agar koi row delete hoti hai toh child table me sirf foreign key vaale column ka data delete hoga and uski jagah NULL likha aajayega!
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------> 
 -- Triggers in SQL!
 -- So triggers are the SQL Codes that automatically gets executed in response to a certain events on a particular table, it is used to maintain the inetgrity of the data!
 -- Suppose koi employee hai jiska kaam hai jab bhi koi fresher company me aaye toh usko ek welcome email send krde, agar 2-3 freshers aa rhe hai toh koi dikkat nhi hai, ye kaam manually bhi ho jayega, pr agar 1000s of freshers aayenge toh sabko itne saare mails bhejna feasible nhi rahega! toh in this case we use triggers, jab bhi koi nayaa freshers ka name and id company ke database ke employee table me aayega, tab uss employee ek welcome email chlaa jayega triggers ke through! This is what the actual use of triggers!
 -- Syntax of Triggers : CREATE TRIGGER trigger_name
--- 						( BEFORE | AFTER )
+-- 						[ BEFORE | AFTER ]
 --						[ INSERT | UPDATE | DELETE ]
 -- 						On [ table_name ]
 --						[ FOR EACH ROW | FOR EACH COLUMN ] BEGIN
 --						[ trigger_body ]
--- Example of use of Triggers :
+
+-- Examples (Simple Triggers) :
 -- Create a trigger table, and as humne upar ek student table banaya tha, so ab jab bhi koi new entry ayegi student table me ek then trigger will activate and trigger table jo humne banaya hai usme ye information update hojayegi ki ek nayaa student add hua hai student table me!
 -- It will be done like :
 -- Down here I have created a database called DBase to understand triggers!
@@ -124,11 +101,12 @@ VALUES
 (104, "Rohan", 92, "EEE"),
 (105, "Khushi", 91, "MED");
 SELECT * FROM Students;
--- Now from here I will apply triggers into this!
--- First to store triggers value/message lets create a table...
+
+-- Now from here I will apply triggers into this! First to store triggers value/message lets create a table...
 CREATE TABLE Trigger_Table (
 	Message VARCHAR(200)
 );
+
 -- Now I will create my trigger and I want is jab bhi koi nayi row Students table me aaye tab Trigger table me ek message likha aajaye ki added a new student! so for that we have to write the following code!
 DELIMITER $$
 CREATE TRIGGER Trigger1 -- yahaa pehle trigger ka naam aata hai
@@ -138,18 +116,18 @@ FOR EACH ROW BEGIN
 INSERT INTO Trigger_Table VALUES ("New Student Added"); -- The konsa table trigger ke actions pr kaam krega uss table ka naam!
 END $$
 DELIMITER ;
+
 -- Now we will try to insert a new row in the students table and will check ki trigger table me ye cheez update hui ki students table me ek nayi row add hui hai!
 INSERT INTO Students
 (ID, Name, Marks, Subject)
 VALUES
 (106, "Vanna", 90, "Pharma");
+
 -- Now we will check in the trigger table...
 SELECT * FROM Trigger_Table; -- And as we can see that in the trigger table "New Student Added" likha hua aagya, and as we will keep inserting new students, this trigger table will also get updated!
--- In the above trigger syntax we have used delimiters, becoz line termination and whole code terminate kahaa ho rha hai ptaa chale! like delimiter humne pehle set krdiya $$ taki ye ptaa chale ki end tak ye poora whole code hai trigger ka and uske baad vapis delimiter ko set krdiya ;
--- se! basically yhi reason tha, ab now dont get deep into it, its not worth! its just syntax ke kaaran ye delimiter use krna padaa kyunki insert vaali line me bhi line terminate ho rhi thi, ab mysql confuse na hojaye ki insert vaali line pr terminate ho rhe hai instruction ya end pr,
--- isliye dono alag alag use krliya, insert vaali line me use krna hi tha, toh final delimiter change krdiya "DELIMITER" se! bss now dont get deep into, its not worth!
+-- Used delimiter to change the termination point in the query! as the insert statement is also using ";" as delimiter, and the whole trigger block also need some termination point, but can't use ";" becoz it may confuse the MySQL Compiler! So that's why only we have changed it!
 
--- Here I am creating another trigger and trigger table, a bit more advance and useful way!
+-- Example 2 (More useful Triggers) :
 CREATE TABLE Trigger_Table2 (
 	Message VARCHAR(200)
 );
@@ -167,16 +145,16 @@ FOR EACH ROW BEGIN
 	END IF;
 END $$
 DELIMITER ;
+
 INSERT INTO Students
 (ID, Name, Marks, Subject)
 VALUES
 (107, "Vanna", 90, "Pharma");
 SELECT * FROM Trigger_Table2;
 -- Hence here I added some conditions where when and how the the trigger will activate and how it will update the trigger table using if else!
--- Now there are some more commands like dropping the trigger! 
--- It is "DROP TRIGGER IF EXIST "Trigger_Name"; or "DROP TRIGGER "Trigger_Name";
+-- Now there are some more commands like dropping the trigger! It is "DROP TRIGGER IF EXIST "Trigger_Name"; or "DROP TRIGGER "Trigger_Name";
 
--- Now this trigger has some new and bit advance feaature as shown...
+-- Example 3 (Some Advanced Triggers) :
 CREATE TABLE Trigger_Table3 (
 	Message VARCHAR(200)
 );
@@ -193,7 +171,5 @@ INSERT INTO Students
 VALUES
 (109, "Palak", 96, "AI/ML");
 -- Now we will display that table! using "Select * from Trigger_Table3;" this command!
-
--- ER Diagram Intro, Designing of ER Diagram and Converting ER Diagram to Database Schema is done in the notebook, kindly refer that for remaining topics!
 
 -- X --------------------------------------------------------- FreeCodeCamp Course of SQL Complete --------------------------------------------------------------------------------------------------- X
