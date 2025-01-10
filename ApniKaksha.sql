@@ -677,3 +677,122 @@ DROP VIEW view1; -- This removes the view but does not affect the original table
 -- Note : Views are useful for data abstraction, hiding unnecessary details from the user. No impact on the original data. You can perform operations like SELECT on views, but they do not store data permanently.
 
 -- ---------------------------------------------------------------------------------------------------------------------------------------------------->
+-- Window Functions!
+-- Window functions in SQL are used to perform calculations across a set of rows that are related to the current row, while still keeping the individual rows in the result. They don't collapse the rows like aggregate functions (SUM, AVG, etc.), but provide additional calculated values alongside the row-level data.
+-- Syntax : <window_function>() OVER (
+--          [PARTITION BY column1, column2, ...] (Optional)
+--          [ORDER BY column1 [ASC | DESC], column2, ...] (Required)
+--          [ROWS or RANGE frame_specification] (Optional)
+--          )
+-- Syntax Explaination : <window_function> : Here we write the window function, which we are going to use! like, ROW_NUMBER(), RANK() etc.
+--                     : PARTITION BY : PARTITION BY is used in window functions (like ROW_NUMBER(), RANK(), SUM(), etc.) to divide the result set into groups (partitions) but does not reduce the number of rows. After partitioning, the window function is applied to each group separately, but the full result set remains intact.
+--                                    : GROUP BY also does grouping of rows, but the difference is, GROUP BY reduce the original table and perform some operations on each group, and create each row per group!
+--                                    : PARTITION BY also does grouping of rows, but the it does not reduce the rows of the original table, it just group them "theoritically"
+--                                    : Example : Suppose you have a Table T, which has attributes Department & Salary.
+--                                              : Applying GROUP BY : SELECT Department, AVG(Salary) AS Avg_Salary FROM Table GROUP BY Department. The resultant table for this query will have two columns Department and Avg_Salary. And rows are grouped in Departments and Avg_Salary column will show the average salary of the employees of that group!
+--                                              : Applying PARTITION BY : SELECT Department, Salary ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS Row_Number FROM Table. It will just simply form another column as Row_Number, which will just contain Row_Number according to the salary of every group that is Department in descending order! Like a an employee in a Department with maximum salary will have Row_number 1.
+--                     : ORDER BY : Specifies the order in which the rows should be processed.Always needed for window functions to define how rows should be sorted. This is crucial for functions like ROW_NUMBER() and RANK() to assign values in the correct order.
+--                     : ROWS or RANGE : The ROWS and RANGE clauses are used to define the "window frame" or the range of rows that the window function will consider when calculating its result. These clauses come into play when you want to perform calculations that depend on a specific set of rows relative to the current row.
+--                                     : The window frame is the subset of rows that the window function looks at to perform its calculation. By default, if no ROWS or RANGE clause is specified, the window function looks at all the rows within the partition (or the entire result set if there's no partition).
+--                                     : Common Options for ROWS and RANGE : "ROWS/RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW" : This option looks at all rows (if rows) from the start of the partition up to the current row. This is useful for cumulative calculations, such as a running total.
+--                                                                         : "ROWS/RANGE BETWEEN 1 PRECEDING AND CURRENT ROW" : This option looks at the previous row (if rows) and the current row. It is used when you want to calculate something based only on the current and previous rows.
+--                                     : "ROWS" : When using ROWS, the window frame refers to a fixed number of rows. The window function calculates the sum based on physical rows before and after the current row. Considers individual rows for calculations, regardless of whether values in the ordered column are identical.
+--                                              : When you use ROWS, it calculates the window function over specific rows, based on their position in the dataset, even if the values in the ordering column are the same.
+--                                              : It does not group rows with identical values. Each row is treated independently.
+--                                              : When to use : Use ROWS when you want to keep the row-wise calculation without grouping rows with identical values together.
+--                                                            : Example : If you want the running total, and you care about each row's individual calculation regardless of identical values.
+--                                     : "RANGE" : When you use RANGE, it groups rows with identical values together and applies the window function across that group. Rows with the same value in the ORDER BY column are treated as a logical group, even if they are physically separate rows in the dataset.
+--                                               : It is called a logical window because it groups rows logically by their values rather than their row position. 
+--                                               : When to use : Use RANGE when you want to treat rows with the same value as a group and apply the calculation across that group.
+--                                                             : Example : If you're calculating the cumulative sum of salaries but want to treat employees with the same salary (like 6000) together.
+--                                     : Real World Scenarios for "ROWS" & "RANGE" : ROWS : Scenario : Tracking daily sales and calculating a running total for a company. Imagine you're working in the finance department of a retail company, and you need to track the daily sales for the entire month. You want to calculate a cumulative sales total to see how the total sales are accumulating each day.
+--                                                                                                   : Data : You have sales data for each day of the month. The goal is to calculate a running total that adds up the sales for each day as you progress through the month.
+--                                                                                 : "RANGE" : Scenario : Employee Salary Bands - Grouping Salaries and Calculating the Running Total for Groups! Imagine you are an HR manager working with employee salary data, and you want to calculate the cumulative salary for employees grouped by their salary bands. Employees who have the same salary should be treated as a group for the running total calculation.
+--                                                                                                      : Data : You have a list of employees, each with a salary. You need to calculate the cumulative salary total but group employees by their salary range (employees with the same salary should be treated as a group).
+
+-- Important Window Functions!
+-- ROW_NUMBER() : Assigns a unique number to each row within a partition, starting from 1. The rows are ordered based on the ORDER BY clause.
+--              : Use case : To rank rows uniquely, such as giving each customer in a dataset a unique ID.
+-- RANK() : Similar to ROW_NUMBER(), but it allows for tied ranks. When rows have the same value, they receive the same rank, "but the next rank will be skipped". Analogy : If two people crossed a finish line together, they both be marked Rank 1, and next person to cross the finish line will be marked Rank 3, Rank 2 will be skipped!
+--        : To rank rows where ties are possible (like scores in a competition).
+-- DENSE_RANK() : Similar to RANK(), but there is no gap in the rank. Even if rows are tied, the next rank number is not skipped. Analogy : If two people crossed a finish line together, they both be marked Rank 1, and next person to cross the finish line will this time be marked Rank 2, unlike Rank 3 in RANK()!
+--              : When you want to avoid skipping ranks even in the case of tied values.
+-- NTILE() : Divides the result set into a specified number of buckets (or tiles) and assigns each row to a bucket. Useful for grouping data into equal parts, like quartiles, deciles, etc.
+--         : Example : If there is an Employee table, and has attributes like, EmpID, Department, Salary, now if I apply, SELECT employee_id, department, salary, NTILE(4) OVER (PARTITION BY department ORDER BY salary DESC) AS quartile FROM employees; It will partition the rows on basis of groups that is Department in this case and order in DESC, now NTIL(4), will mark each row in a partition from 1-4 making quartiles and it will be follow in all the partitions!
+-- SUM() : Calculates the sum of a column's values within a window frame (partition).
+--       : Use case : To calculate the cumulative sum or total sales over a period.
+-- AVG() : Calculates the average of a column’s values within a specified window.
+--       : Use Case : To calculate the average salary or average score within a partition.
+-- MIN() & MAX() : MIN() returns the smallest value in a column within a window. MAX() returns the largest value in a column within a window.
+--               : To get the minimum or maximum value of a metric (like score or salary) within a partition.
+
+-- Try examples to practice and get to know them!
+
+-- ---------------------------------------------------------------------------------------------------------------------------------------------------->
+-- CASE Expressions in SQL!
+-- The CASE expression in SQL allows you to perform conditional logic in your queries, similar to an IF-ELSE structure in programming. It is commonly used to apply logic inside a SELECT, UPDATE, DELETE, or INSERT statement. The CASE expression evaluates a condition and returns a result based on the outcome of the condition.
+-- Two Types of CASE Expressions : Simple CASE Expression : Evaluates one expression against multiple possible values.
+--                               : Searched CASE Expression : Evaluates multiple conditions and returns the corresponding result for the first true condition.
+
+-- CASE Expression Syntax : SELECT column1,
+--                              CASE column_to_check
+--                                      WHEN value1 THEN result1
+--                                      WHEN value2 THEN result2
+--                                  ELSE result3
+--                              END AS alias_name
+--                          FROM table_name;
+
+-- Simple CASE Expression Example :
+-- Example : SELECT student_id, name, marks,
+--              CASE marks
+--                      WHEN 90 THEN 'Excellent'
+--                      WHEN 80 THEN 'Good'
+--                      WHEN 70 THEN 'Average'
+--                  ELSE 'Needs Improvement'
+--              END AS performance
+--           FROM students;
+
+-- Searched CASE Expression Example :
+-- Example : SELECT student_id, name, marks,
+--              CASE marks
+--                      WHEN marks >= 90 THEN 'Excellent'
+--                      WHEN marks >= 70 AND marks < 90 THEN 'Good'
+--                      WHEN marks >= 50 AND marks < 70 THEN 'Average'
+--                  ELSE 'Needs Improvement'
+--              END AS performance
+--           FROM students;
+
+-- Using CASE with Aggregations Example :
+-- Example : SELECT student_id, name, marks,
+--              CASE marks
+--                      WHEN marks >= 90 THEN 'Excellent'
+--                      WHEN marks >= 70 AND marks < 90 THEN 'Good'
+--                      WHEN marks >= 50 AND marks < 70 THEN 'Average'
+--                  ELSE 'Needs Improvement'
+--              COUNT(*) AS student_count
+--              END AS performance
+--           FROM students
+--           GROUP BY performance;
+
+-- Using CASE with UPDATE Statements Example :
+-- Example : UPDATE Students
+--           SET Performance =
+--              CASE marks
+--                      WHEN marks >= 90 THEN 'Excellent'
+--                      WHEN marks >= 70 AND marks < 90 THEN 'Good'
+--                      WHEN marks >= 50 AND marks < 70 THEN 'Average'
+--                  ELSE 'Needs Improvement'
+--              END;
+
+-- Rest practice to understand more use cases and examples!
+
+-- ---------------------------------------------------------------------------------------------------------------------------------------------------->
+-- Some conditional functions :
+-- IFNULL() : The IFNULL() function is used to check if a value is NULL (empty or missing) and replace it with a specified value if it is NULL. If the value is not NULL, it simply returns the original value.
+--          : Syntax : IFNULL(expression, replacement_value), expression : This is the value or column you want to check for NULL. replacement_value : This is the value that will be returned if the expression is NULL.
+-- COALESCE() : The COALESCE() function is used to check multiple values and return the first non-NULL value among them. If all the values are NULL, it will return NULL.
+--            : Think of COALESCE() like a series of backup options : It first looks at the first value. If it's NULL, it checks the second value. If the second value is also NULL, it checks the third value, and so on. If none of them have a value (i.e., all are NULL), it returns NULL.
+--            : Syntax : COALESCE(value1, value2, ..., valueN)
+--            : Example : Let’s say we have a customer contact details table with the following columns : customer_id, phone_number, email_address and mailing_address!
+--                      : We want to get the best contact information for each customer, and we want to : Prefer the phone_number first. If phone_number is missing (NULL), use email_address. If both phone_number and email_address are missing, use the mailing_address.
+--                      : Then we will write : SELECT customer_id, COALESCE(phone_number, email_address, mailing_address) AS best_contact FROM customers; Then, resultant table will contain 2 columns, customer_id & best_contact (This contains values using the COALESCE() function).

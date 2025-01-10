@@ -120,7 +120,8 @@ ORDER BY AVG(unit_price) DESC
 LIMIT 1;
 
 -- 20) Identify products with total sales exceeding 30.
-SELECT product_name FROM products
+SELECT product_name
+FROM products
 INNER JOIN sales_table
 ON sales_table.product_id = products.product_id
 GROUP BY product_name
@@ -132,13 +133,15 @@ FROM Sales_table s
 GROUP BY month;
 
 -- 22) Determine the average quantity sold for products with a unit price greater than $100.
-SELECT AVG(quantity_sold) FROM sales_table
+SELECT AVG(quantity_sold)
+FROM sales_table
 INNER JOIN products
 ON sales_table.product_id = products.product_id
 WHERE unit_price > 100;
 
 -- 23) Retrieve the product name and total sales revenue for each product.
-SELECT product_name, SUM(net_price) as total_revenue FROM sales_table
+SELECT product_name, SUM(net_price) as total_revenue
+FROM sales_table
 INNER JOIN products
 ON sales_table.product_id = products.product_id
 GROUP BY product_name;
@@ -150,7 +153,7 @@ ON sales_table.product_id = products.product_id;
 
 -- 25) Rank products based on Total sales revenue
 SELECT product_name, SUM(net_price) AS Sales_revenue,
-RANK() OVER (ORDER BY SUM(net_price) DESC) AS Ranking
+RANK() OVER (ORDER BY SUM(net_price) DESC) AS Ranking -- Window Function RANK() OVER()!
 FROM products
 INNER JOIN sales_table
 ON sales_table.product_id = products.product_id

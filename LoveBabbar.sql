@@ -97,7 +97,7 @@
 
 -- How Level of Abstraction and Schemas work together! and are they same or different :
 -- No, abstraction and schema are not the same, but they are closely related!
--- Abstraction is a broader concept that deals with hiding complexity at different levels (physical, logical, and view).
+-- Abstraction is a broader concept that deals with hiding complexity at different levels (physical, logical and view).
 -- Schema refers to the structure and design of the database at each of these abstraction levels.
 -- Every Level of Abstraction has its own Schema! In short, Physical Level Abstraction is about how data is stored in the memory! and Physical Schema is just schema or way to store those low level detail! Its something like that only!
 
@@ -505,18 +505,39 @@
 --                           ON T1.id = T2.id;
 --                           WHERE T2.id is NULL;
 
--- Sub Queries : When there is one query inside another query, they are alternatives to Join!
--- Sub Queries Syntax :
--- SELECT column_list (s) FROM table_name WHERE column_name OPERATOR
--- (SELECT column_list (s) FROM table_name [WHERE]);
--- Sub queries exist mainly in 3 clauses : Inside where, Inside from and inside select!
+-- SubQuery & Co-Related Queries!
+-- SubQuery : A subquery is a query that is written inside another query and executed once before the main query. It provides data to the main (outer) query.
+--          : Key Points : The subquery is independent of the main query. The result of the subquery is used by the main query. It is executed before the main query.
+--          : Syntax : SELECT column_name(s) FROM table_name WHERE column_name = (SELECT column_name FROM another_table WHERE condition);
 
--- SubQuery using From Clause : SELECT MAX(rating) FROM (SELECT * FROM movie WHERE country = ‘India’) as temp;
--- SubQuery using Select Clause : SELECT (SELECT column_list(s) FROM T_name WHERE condition), columnList(s) FROM T2_name WHERE condition;
+-- Co-Related Queries : A correlated query is a query that depends on the data from the main (outer) query for its execution. It is executed once for each row in the main query.
+--                    : Correlated query ek aisi query hai jo main query ki row pe dependent hoti hai. Yeh har row ke liye alag se run hoti hai, aur outer query ki values ko use karti hai.
+--                    : Syntax : SELECT column_name FROM table_name1 t1 WHERE condition_operator (SELECT column_name FROM table_name2 t2 WHERE t2.column_name = t1.column_name);
 
--- Derived SubQuery : SELECT columnLists(s) FROM (SELECT columnLists(s) FROM table_name WHERE [condition]) as new_table_name;
+-- NOTE : SubQueries and Co-related queries can be used in different parts of an SQL statement, such as SELECT, FROM, and WHERE clauses. However, their purpose and behavior differ based on where they are written.
+-- Example : SubQuery : In SELECT : SELECT name, salary, (SELECT AVG(salary) FROM employees e2 WHERE e1.department_id = e2.department_id) AS avg_department_salary FROM employees e1;
+--                    : In FROM : SELECT department_id, total_salary FROM (SELECT department_id, SUM(salary) AS total_salary, COUNT(*) AS employee_count FROM employees GROUP BY department_id ) AS department_summary WHERE employee_count > 1;
+--                    : In WHERE : SELECT name FROM employees WHERE department_id = (SELECT department_id FROM departments WHERE department_name = 'HR');
 
--- Co-Related SubQuery : With a normal nested subquery, the inner SELECT query runs first and executes once, returning values to be used by the main query, A correlated subquery, however, executes once for each candidate row considered by the outer query. In other words, the inner query is driven by the outer query.
+-- Example : SubQuery : In SELECT : SELECT name, salary, (salary * 100.0 / (SELECT SUM(salary) FROM employees e2 WHERE e1.department_id = e2.department_id)) AS salary_percentage FROM employees e1;
+--                    : In WHERE : SELECT name, salary FROM employees e1 WHERE salary > (SELECT AVG(salary) FROM employees e2 WHERE e1.department_id = e2.department_id);
+--                    : In FROM : Correlated queries are generally not used in the FROM clause because they are inherently row-dependent and evaluated for each row in the outer query. The FROM clause is typically used to define datasets (tables or subqueries) that the outer query processes as a whole, so correlated queries don't fit naturally into this scenario.
+
+-- SubQuery & Co-Related Queries Difference!
+-- SubQuery : Subquery ek aisi query hai jo independent hoti hai aur pehle execute hoti hai. Iska result main query ko input ke roop mein diya jaata hai.
+--          : Execution flow : Subquery ek baar execute hoti hai, poori table ke liye ek hi baar. Phir main query us result ko use karti hai.
+--          : SubQuery returns a static value or a dataset! which can be used by the main query or outer query!
+--          : Faster compared to correlated query (Coz it runs only once!).
+
+-- Co-related Query : Correlated query ek aisi query hai jo main query ki ek row ke upar dependent hoti hai. Yeh query row-by-row run hoti hai.
+--                  : Correlated query har row ke liye baar-baar chalti hai. Outer query ki har row ke liye inner query result calculate karti hai. Correlated query outer query ki values par dependent hoti hai.
+
+-- Identifying SubQuery & Correlated Queries : Logical clues we have discussed above, There are some syntactic clues also for both of them!
+-- SubQuery : The subquery runs once and provides a static result (value or dataset). AND It does not contain outer query aliases or references.
+-- Correlated Query : You will see references to outer query columns (like e1.column_name) in the inner query. Look for outer query table aliases (e.g., e1, t1) in the subquery. AND The subquery is typically nested in a WHERE or SELECT clause.
+
+-- Real-life Analogy : SubQuery : Ek school ka example lo. Pehle tum school ka overall average score nikalte ho (static value), phir students ko filter karte ho jo us score se zyada hain. Static calculation -> No dependency.
+--                   : Correlated Query : Har student ke liye uske class ka average score alag se calculate karte ho aur check karte ho ki uska score zyada hai ya nahi. Dynamic calculation -> Dependency on outer query.
 
 -- Join vs SubQuery : Joins are Faster and SubQueries are Slower, Joins maximize calculation burden on DBMS and Sub Queries keeps responsibility of calculations on user, Joins are difficult to understand and implement but subQueries are relatively easier, chhosing optimal join for optimal result is difficult but subQueries are easy!
 
@@ -681,7 +702,7 @@ select * from worker order by salary desc LIMIT 5;
 -- Q-33. Write an SQL query to determine the nth (say n=5) highest salary from a table.
 select * from worker order by salary desc LIMIT 4,1;
 
--- Q-34. Write an SQL query to determine the 5th highest salary without using LIMIT keyword.
+-- Q-34. Write an SQL query to determine the 4th highest salary without using LIMIT keyword.
 select salary from worker w1
 WHERE 4 = (
 SELECT COUNT(DISTINCT (w2.salary))
@@ -883,7 +904,6 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                               : Terminated State : A transaction is said to have terminated if has either committed or aborted.
 --                               : Failed State : When T is being executed and some failure occurs. Due to this it is impossible to continue the execution of the T.
 --                               : Aborted State : When T reaches the failed state, all the changes made in the buffer are reversed. After that the T rollback completely. T reaches abort state after rollback. DB’s state prior to the T is achieved.
-
 
 -- ----------------------------------------------------------------------- Lecture 13 : Implementing Atomicity and Durability --------------------------------------------------------------------------------------------------------------------------------->
 -- Recovery Mechanism Component of DBMS supports atomicity and durability. and the two methods we are going to study for recovery mechanism comes under this...
