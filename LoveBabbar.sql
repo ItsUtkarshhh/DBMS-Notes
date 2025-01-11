@@ -418,16 +418,16 @@
 -- Derived Attributes : They are not represented in the table, isme sirf calculate hi toh krna hai toh vo toh hum aise bhi kr sakte hai!
 
 -- Generalisation : Method 1 : Ek table banao pehle jo Higher level entity ko show kr rha ho and then uske attributes bnaa do! and then lower-level entities bnao and unke khud ke attributes bnao and then jo Higher level entity thi uski jo PK thi usko Lower-level entities ki bhi PK bnaa do!
---                : Example - account (account-number, balance)
---                : Table 1 : savings-account (account-number, interest-rate, daily-withdrawal-limit)
---                : Table 2 : current-account (account-number, overdraft-amount, per-transaction-charges)
--- In the above cases account-number is the PK!
-
+--                           : Example - account (account-number, balance)
+--                           : Table 1 : savings-account (account-number, interest-rate, daily-withdrawal-limit)
+--                           : Table 2 : current-account (account-number, overdraft-amount, per-transaction-charges)
 --                : Method 2 : Isme ye krna hota hai ki jo Higher level entity usko mtt bano sirf Lower level vaali banao and Higher level ki jo PK thi usko lower level ki PK bnaa do + jo bhi attributes the Higher level entity ke unko bhi lower level entity ke attributes bnaado!
---                : Table 1 : savings-account (account-number, balance, interest-rate, daily-withdrawal-limit)
---                : Table 2 : current-account (account-number, balance, overdraft-amount, per-transaction-charges)
--- But sometimes method 2 has some problems, which are like, Maanlo ki koi aisa account hai jo savings bhi hai and current bhi hai (mtlb overlapping generallization hai) toh usme balance toh same hi hoga! but according to 2nd Method dono lower level entity me balance stored hai toh balance iss case me do baar store ho jayega! which will create redudancy!
--- also if maanlo ki complete generalisation nhi hai and jo higher level entity hai account vo naa hi current hai naa hi savings vo kuch aur hi type ka account hai, then in that case aise accounts ko hum represent nhi kr payenge method 2 ka use krke!
+--                           : Table 1 : savings-account (account-number, balance, interest-rate, daily-withdrawal-limit)
+--                           : Table 2 : current-account (account-number, balance, overdraft-amount, per-transaction-charges)
+
+-- Note : But sometimes method 2 has some problems, which are like, Maanlo ki koi aisa account hai jo savings bhi hai and current bhi hai (mtlb overlapping generallization hai) toh usme balance toh same hi hoga! but according to 2nd Method dono lower level entity me balance stored hai toh balance iss case me do baar store ho jayega! which will create redudancy!
+--      : Also if maanlo ki complete generalisation nhi hai and jo higher level entity hai account vo naa hi current hai naa hi savings vo kuch aur hi type ka account hai, then in that case aise accounts ko hum represent nhi kr payenge method 2 ka use krke!
+-- In the above cases account-number is the PK!
 
 -- Aggregation : Isme jo relationship establish hua hai different entity sets me, uss relationship ko leke ek table bnaa denge and jitne bhi entities involved hai unn sabki PK ko Attributes bnaa ke iss Relationship table ki, unn sab PK ko mila ker ek PK bnaa denghe iss new relationship table ki!
 
