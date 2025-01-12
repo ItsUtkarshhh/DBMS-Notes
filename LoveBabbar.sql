@@ -768,142 +768,197 @@ select department , sum(salary) as depSal from worker group by department order 
 select first_name, salary from worker where salary = (select max(Salary) from worker);
 
 -- ----------------------------------------------------------------------- Lecture 11 : Normalisation --------------------------------------------------------------------------------------------------------------------------------->
--- It is used to optimized the DB and its design, and to reduce data redudancy!
--- But before that lets learn Function Dependency! : Suppose there is a table with 4 attrubutes! A,B,C,D... now we write some mathematical functions that are defining how the attributes are related to each other! so suppose FDs are, A->B and A->C, now here it means jo B and C attribute hai vo dependent hai A pr, and with the help of A we can identify B and C!
--- and here A can be a single attribute that can uniquely identify the other attributes or set of attributes that are combined to uniquely identify other attributes! and here A is called Determinant and B/C are called Dependent!
--- Example : In a employee table with 3 attributes, like Emp_ID, Emp_Name and Department!, now Emp Id is a primary key and it can uniquely identify Emp_name and departement!, so here Emp_ID is a determinant and other 2 are Dependent...
+-- Purpose of Normalisation : It is used to optimized the DB and its design, and to reduce data redudancy!
 
--- Functional Dependencies : It's a relationship between the primary key attribute (usually) of the relation to that of the other attribute of the relation.
---                         : X -> Y, the left side of FD is known as a Determinant, the right side of the production is known as a Dependent.
+-- Understanding Functional Dependency :
+-- Functional Dependency : It shows how attributes in a table are related. Example : Given attributes A, B, C, D, the FDs A → B and A → C means...
+--                       : B and C depend on A. Hence, A can uniquely determine B and C.
+--                       : Determinant : The attribute(s) that uniquely identifies others (e.g. A).
+--                       : Dependent : The attribute(s) identified by the determinant (e.g. B and C).
+--                       : Example : In a employee table with 3 attributes, like Emp_ID, Emp_Name and Department!, now Emp Id is a primary key and it can uniquely identify Emp_name and departement!, so here Emp_ID is a determinant and other 2 are Dependent.
 
--- Types of Functional Dependencies : Trivial and Non-Trivial!
--- Trivial FDs : A->B where B is a subset of A, example - {Emp_ID, Name} -> {Emp_ID}, so here unn dono attributes se uska subset toh idenitfy ho hi jayega!
---             : Also A->A and B->B, they are also Trivial FDs, as koi attribute khud ko toh identify kr hi sakta hai! and ek attribute khud ka toh subset hoga hi!
+-- Types of Functional Dependencies : Trivial & Non-Trivial
+-- Trivial : If B is a subset of A, then the FD A → B is trivial.
+--         : Example : {Emp_ID, Name} → {Emp_ID} (a subset can always identify itself). & A → A or B → B (an attribute can always identify itself, as it is its own subset).
+--         : Logic : If you know an attribute (e.g. Emp_ID), you naturally know a subset of it (like Emp_ID itself).
+--         : Why to care about them : Trivial FDs serve as a baseline in dependency analysis. They help identify redundant information in the table that doesn’t add value to relationships or constraints.
+--                                  : Example : {Emp_ID, Name} → {Emp_ID} shows that Name doesn’t contribute anything new to finding Emp_ID.
+-- Non-Trivial : If B is not a subset of A, the FD A → B is non-trivial.
+--             : Mathematical Condition : B is not a subset of A, and A ∩ B = ∅.
+--             : Example : {Emp_ID, Name} → Emp_dept (here, B = Emp_dept is not part of A).
+--             : Logic : If A → B and B is not a subset of A, it means A determines entirely new information about the table (or instance) through B.
+--             : Why to care about them : Non-trivial FDs are the foundation of normalization (breaking down data into smaller, non-redundant tables). They help identify potential data anomalies like duplication or inconsistency.
+--                                      : Example : {Emp_ID, Name} → Emp_dept shows that Emp_ID and Name uniquely determine the department. This relation is useful for organizing data.
 
--- Non-Trivial FDs : A->B where B is not a subset of A, means A is an attribute or a set of attributes that can uniquely identify some other attribute which is not a subset of A, means mathematically it says - B is not a subset of A, and A intersection B is NULL, example - {Suppose Emp_ID, Emp_name} -> Emp_dept, here B is not a subset of A, so it is a Non-Trivial FD.
+-- Armstrong Axioms!
+-- Armstrong’s Axioms are a set of rules used to derive new Functional Dependencies (FDs) from existing ones. They are logical rules that ensure database design is consistent and normalized.
+-- Rules : Reflexive : If ‘A’ is a set of attributes and ‘B’ is a subset of ‘A’. Then, A -> B holds. Means suppose A = {a,b,c,d,e} and B = {a,b,c}, Since B is part of A, knowing all of A (super set) means you naturally know B (subset).
+--                   : This rule states that attributes inherently "know themselves" or their subsets. It is the foundation for trivial FDs.
+--                   : Need : Helps verify simple dependencies in the table (like subsets or attributes themselves).
+--       : Augmentation : If A -> B, then adding an attribute C to both sides (e.g. AC -> BC) still holds true.
+--                      : Example : Given [Emp_ID -> Emp_name]. Adding Emp_dept : {Emp_ID, Emp_dept} → {Emp_name, Emp_dept}.
+--                      : Adding extra information (C) doesn’t change the fact that A → B. The rule allows us to "expand" existing FDs logically without violating the dependency.
+--                      : Need : Useful when combining or analyzing FDs in cases where new attributes are added to the relation.
+--       : Transitivity : If A -> B and B -> C, then A -> C. Given, Emp_ID -> Emp_name, Emp_name -> Emp_dept By transitivity, Emp_ID -> Emp_dept.
+--                      : This rule lets us derive new dependencies by "chaining" existing ones. If A leads to B and B leads to C, then A inherently leads to C.
+--                      : Crucial for simplifying relationships and ensuring all FDs are captured in database normalization.
 
--- Now there are some rules of FDs! which are called Armstrong Axioms!
--- 1) Reflexive : If ‘A’ is a set of attributes and ‘B’ is a subset of ‘A’. Then, A → B holds. means suppose A = {a,b,c,d,e} and B = {a,b,c}, now we can see B is a subset of A, so ofc A can easily identify B.
--- 2) Augmentation : Now suppose we are already given one FD, that is A->B and now agar isme hum ek aur koi attribute augment krte hai like C, means if we do something like we multiply C on both sides AC->BC, then it is also valid!
---                 : If B can be determined from A, then adding an attribute to this functional dependency won’t change anything.
--- 3) Transitivity : If A->B and B->C then A->C
--- Now we can get some questions like, kuch pair of FDs di hui ho and then hume koi aur FDs derive krni ho toh for that we can use the above Rules!
+-- Now the question is, Why Normalization!
+-- Normalization is a systematic process in database design that organizes data to minimize redundancy (duplicate data) and improve data integrity.
+-- Redudancy : Redundancy means storing the same piece of data multiple times in a database.
+-- Problems cause by Redudancy : Increased storage, Data Inconsistency and 3 Anomalies : Insertion, Deletion and Updation Anomaly!
 
--- Now the question is why Normalization!
--- To avoid redundancy in the DB, not to store redundant data.
+-- Insertion Anomalies : Insertion anomalies occur when you cannot add certain data to the database without the presence of other, unrelated data. This happens when all information is stored in a single table, creating dependencies that complicate the addition of new data.
+--                     : Example Scenario : Suppose someone designed a database table with the following attributes : ID | Name | Age | Branch_Code | Branch_Name | Branch_HOD.
+--                                        : Problem 1 : Adding Partial Information, Imagine a new student enrolls in the college. We know : Name, Roll Number (ID), and Age. But Branch_Code, Branch_Name, and Branch_HOD are not decided yet. To insert this student's data, we would have to leave the branch-related attributes as NULL until the information is available.
+--                                                    : This results in incomplete records and forces extra updates later to fill the missing information, which is inefficient.
+--                                        : Problem 2 : Adding Branch Details, Now suppose the college opens a new branch (e.g., IT). To add the branch's details (Branch_Code, Branch_Name, Branch_HOD), we face a problem : The database design requires a Student ID (PK) to insert any row, but there are no students in the IT branch yet.
+--                                                    : Issue : We cannot add information about the new branch because student-related data is missing.
 
--- But why we are in need to avoid redundant data, now this is becoz redundant data introduces 3 anomalies! - Insertion, Deletion and Updation!
--- Insertion Anomalies : Now suppose kisi ko DB ka zyada kuch knowledge nhi hai usne seedha data utha ke ek database bna diya with attributes like, [ID, Name, Age, Branch_code, Branch_name, Branch_HOD]
---                     : Now ab dikkat kya hogi ki maanlo hume koi nayaa student enroll kiya hai college me and vo student ka abhi branch and all decided nhi hai bss itna ptaa hai ki uska name kya hai and roll number and age, iske alawa we dont know anything, then in that case hume baaki attributes ko NULL krna padega! and baad me jab ye data mile tab jaake we will update the DB! toh isme hume double kaam krna pad rha hai! kyunki ek hi table me saara data stored hai!
---                     : Now another problem is maanlo uss college me ek nayaa branch khola hai college ne suppose IT, ab IT branch ko database me add toh krenge hi! and abhi naya naya khola hai! toh hum is table me IT branch ko add nhi kr payenge kyunki uske corresponding abhi koi bhi student enrolled nhi hai! and studentID toh null kr nhi sakte kyunki ye cheez jisne DB banaya tha college ka usne ID ko PK banaya hua hai! toh bss saara data ek hi table me hone ke chakkar me hum kuch aisi info jo college ke liye imp hai vo insert nhi kr paa rhe! acha hota agar branch and student ka alag table hota hai and branchID ek foreign key ki tarah use ho rhi hoti student table me
---                     : When certain data (attribute) can not be inserted into the DB without the presence of other data.
+-- Deletion Anomalies : A deletion anomaly occurs when deleting some data unintentionally removes other important information due to poor database design.
+--                    : Example Scenario : Considering the same table, If a branch has only one student and that student graduates (leaves the college), their data will be deleted from the table. Unintended Consequence: The branch information (e.g., Branch_Code, Branch_Name, Branch_HOD) will also be deleted, even though the branch still exists in the college.
+--                                       : Solution : Normalize the database by splitting the data into two tables : Student Table for student-specific details. Branch Table for branch-related details.
 
--- Deletion Anomalies : Now suppose in the same example, table me ko aisi branch hai jiske corresponding koi ek hi student hai! and vo pass out hogya hai! toh ab uska data delete hoga college ke DB se, toh ab iss chakkar me jo branch tha vo bhi delete hogya Db se! but aisa thori hoga, bss student gya na toh branch toh rehna chahiye table me! but kyunki sab kuch ek hi table me hai isliye ye dikkat hogyi! so again alag tabkles hoti toh better rehta!
---                    : The delete anomaly refers to the situation where the deletion of data results in the unintended loss of some other important data.
+-- Updation Anomalies : An updation anomaly occurs when updating a single piece of information requires changes in multiple rows, leading to inefficiency and potential data inconsistency if all updates are not made correctly.
+--                    : Example Scenario : Considering the same table, If the HOD of a department changes, we need to update the Branch_HOD in every row corresponding to that branch.
+--                                       : Issues : Redundancy : The same data is repeated in multiple rows, so all rows need to be updated.
+--                                                 : Time-Consuming : Updating multiple rows for a single change takes more time.
+--                                                 : Data Inconsistency : If some rows are missed during the update, it leads to inconsistent data.
+--                                       : Solution : Normalize the database to store branch-specific details (like Branch_HOD) in a separate Branch Table. The Student Table would reference the Branch Table using Branch_Code as a foreign key. Updating the Branch_HOD in the Branch Table automatically reflects in all related data.
 
--- Updation Anomalies : Now maanlo kisi ek department ke HOD change hogye! toh ab jab update krenge toh jitne bhi tuples jisme vo purane vaale HOD ka naam tha vo saare tuples update honge! and itna samajh toh nhi aata hai, but it takes a little more time! what we mean is, ek choti se change ke kaaran table me mutiple jagah pr changes krne pad rhe hai
---                    : The update anomaly is when an update of a single data value requires multiple rows of data to be updated.
---                    : and maanlo jo changes chah rhe the vo changes harr unn tuples me nhi ho paai iss chakkar me data inconstency arise hojayegi! Due to updation to many places, may be Data inconsistency arises, if one forgets to update the data at all the intended places.
-
--- Inn sab anomalise se DB ka size increase ho jaata hai jo cheez ek singlt table me kuch rows me save hojaati vo naa kr ke, humaare saara data ek hi tabke me store krne se DB ka size badh gya kyunki number of tuples badh gye
--- To rectify these anomalies and the effect of these of DB, we use Database optimisation technique called NORMALISATION.
--- So iss hi condition me we use Normalisation! overall what we do is we make multiple tables to avoid Data Redudancy in DB! like Student and Branch ke alag alag tables bnaa do!
-
--- Normalisation : Normalisation is used to minimise the redundancy from a relations. It is also used to eliminate undesirable characteristics like Insertion, Update, and Deletion Anomalies.
---               : Normalisation divides the composite attributes into individual attributes OR larger table into smaller and links them using relationships.
---               : The normal forms are used to reduce redundancy from the database table.
-
--- But lets see, what we actually do in Normalization! we keep decomposing tables! and we do it until SRP (Single Responsibilty Principle) achieve na hojaye! and here we use Normal Forms to achieve it!
+-- Hence, due to these factors, To address these issues and optimize the database, we use Normalization. Normalization involves dividing data into multiple tables to eliminate redundancy and minimize anomalies.
+-- For example, instead of storing Student and Branch data in a single table, we create separate tables for each entity (e.g., Student Table and Branch Table) and link them using foreign keys. Outcome, This reduces database size, improves efficiency, and ensures data consistency.
+-- Overall, we use the normal forms which are used to reduce redundancy from the database table.
+-- In normalization, we decompose tables into smaller ones to remove redundancy and avoid anomalies. We continue decomposing the tables until we achieve a design that adheres to the Single Responsibility Principle (SRP), meaning each table has only one responsibility (or purpose).
+-- How We Achieve SRP : We use Normal Forms (such as 1NF, 2NF, 3NF, etc.) to guide this decomposition process. Each normal form helps in eliminating specific types of redundancy and ensures the data is logically organized.
+-- Outcome : By applying normal forms and following SRP, we optimize the database, improving data integrity and efficiency while reducing redundancy.
 
 -- Types of Normal Forms : 1NF, 2NF, 3NF and BCNF!
--- 1NF (1st Normal Form) : Every relation cell must have atomic value and Relation must not have any multi-valued attribute, if there are any we will reduce it into multiple attribute! like if there is one attribute of phone number and it has multiple values then we will create multiple phone_numbers attribute for storing multiple numbers!
--- 2NF (2nd Normal Form) : To implement 2NF normalization, it should already have 1NF normalization!
---                       : And there should not be any partial dependencies! means, All non-prime attributes must be fully dependent on PK. and Non prime attribute can not depend on the part of the PK.
---                       : Lets understand it more clearly! suppose we have relation R(A,B,C,D) and A & B combines to be a primary key for the table! so A & B are prime attributes! and rest C & D are non-prime attributes! and ab maanlo koi ek functional dependency di hui hai where it says that B->C, ab yahaa B ek PK nhi hai balki ye ek part of PK hai and C ek part of PK pr depend kr rha hai! and this is called partial dependencies! so the correct dependencies could be, AB->C or AB->D, this is full dependencies!
---                       : Ab problem ye aayegi ki, maanlo iss hi case me A and B milke ek PK banaa rhe hai toh dono me se koi ek NULL ho sakta hai but dono saath me NULL nhi ho sakte! and ab maanlo A non-Null hai and B Null hai and suppose here is a partial dependency that is B->C or B->D toh aisa kaise ho sakta hai ki koi NULL value kisi aur attribute ko identify kr rha hai! so this is a problem with partial dependency!
---                       : Ab to achieven 2NF normalization, what we will do is, we will write 2 relations, R1(ABD) isme AB combined ek PK hai and R2(BC) isme sirf B ek primary key hai, and now aisa krke vo partial dependenciy hatt gyi, kyunki jahaa jahaa B null tha usko humne R2 me include hi nhi kiya and B ke around ek alag hi relation establish krdiya! now ye same cheez hum A ke saath bhi kr sakte the kisi non prime attribute ko leke! for example, R1(ABD) and R2(AC), isme jahaa A null hai usko humne R2 me include nhi kiya! and similarly we can also do this, R1(ABC) and R2(BD) and similarly you get it!
---                       : Toh overall hum yhi krte hai tables ko decompose krke normalizations achieve krte hai!
--- 3NF (3rd Normal Form) : Now to implement 3NF, the database should be 2NF normalized! means yahaa hum harr NF ke saath DB ko further optimize krte jaa rhe hai!
---                       : No transitivity dependency exists.
---                       : Non-prime attribute should not find a non-prime attribute.
---                       : Now lets understand this with an example, suppose a relation R(ABC) and here A is PK, and now (which we observed though practically going through the DB the FD is A->B & B->C and from Transitivity rule of FD, we can say A->C, toh ab yahaa baat ye aati hai ki agar A C ko determine kr hi sakta hai toh isme hume B->C ki zarurat hi kya hai krne ki, kyunki remember rule aane ke kaaran ye nhi hua, ye cheez ho rhi thi isliye isme isliye ye rule discover hua!
---                       : Now lets take an example, maanlo ek table hai, lets draw it...
--- Refernce table to understand 3NF...
--- A    |B    |C    |
--- a    |1    |x    |
--- b    |1    |x    |
--- c    |1    |x    |
--- d    |2    |y    |
--- e    |2    |y    |
--- f    |3    |z    |
--- g    |3    |z    |
---                       : Now we can see here A is a PK, and according to our FD A->B and B->C so A->C, so what is happening is, A chalo theek hai B ko identify krlega! but B bhi C ko identify kr paa rha hai and agar aisa ho rha hai toh humare PK ka kaam hi kya rha jab ek non-prime attribute dusre attribute ko identify kr paaye toh! also you can see that it is creating redudancy as you can see repeatative data!
---                       : So we will remove this through 3NF, isme dikkat B->C vaali FD genrate kr rhi hai, chaahe baat redudancy ki ho ya chaahe repetative data ki ho! so we will decompose this table into 2 simpler tables with relations like, A->B and B->C and here A and B are PKs of their respective tables! and isse kya hua we will have two tables and dono me jo A and B PKs banaye hai vo dono hi apne apne non-prime attribute ko uniquely identify kr paa rhe hai!
--- Hence, the decomposed table is after applying 3NF...
--- A    |B    |      |B      |C      |
--- a    |1    |      |1      |x      |
--- b    |1    |      |2      |y      |
--- c    |1    |  &   |3      |z      |
--- d    |2    |
--- e    |2    |
--- f    |3    |  
--- g    |3    |          : Now isse we can see ab isme na koi redudancy hai, na koi transitivity and na koi non-prime attribute kisi non-prime attribute ko uniquely identify kr paa rha hai, jo kr paa rha hai vo ek prime attribute hai!
+-- 1NF (1st Normal Form) : 1NF is the first step in the normalization process. It focuses on making sure that the table is structured in such a way that each cell contains atomic values (single, indivisible values) and ensures there are no multi-valued attributes.
+--                       : Key Concepts : Atomic Values : Each column in the table must contain a single value, not a set or list of values.
+--                                      : No Multi-Valued Attributes : If an attribute (column) holds multiple values, it violates 1NF. We must decompose it into multiple attributes or create separate rows to store these values.
+--                       : Steps : Remove Multi-Valued Attributes : If an attribute contains multiple values in a single cell (e.g., multiple phone numbers in one column), we need to split these into individual rows or multiple columns.
+--                               : Ensure Atomicity : Ensure each cell contains only one value, such as a single phone number or a single email.
+--                       : What about the Primary Key : The Primary Key (PK) plays a crucial role in ensuring that each row in a table is uniquely identifiable. In the context of 1NF, when we break up the multi-valued attributes into individual rows, we must also consider how to maintain a unique identifier for each row.
+--                                                    : Solution : To ensure uniqueness for each row, we need a composite primary key or a surrogate key (a new unique identifier).
 
+-- 2NF (2nd Normal Form) : Pre-requisite : To implement 2NF, the table must already be in 1NF. Main Idea is to Eliminate Partial Dependency!
+--                       : Partial Dependency : Partial Dependency happens when a non-prime attribute (a non-key attribute) depends on only part of a composite primary key (instead of the whole composite key).
+--                       : 2NF Condition : To satisfy 2NF, every non-prime attribute must depend on the entire primary key, not just part of it.
+--                       : Non Prime Attribute : Non-prime Attribute: Attributes that aren't part of the primary key. In a table where the primary key is composed of multiple attributes (like A and B), anything other than A and B would be a non-prime attribute.
+--                       : Problem : Partial Dependency : Let’s consider a table R(A, B, C, D) where, Primary Key : (A, B) — meaning that the combination of A and B uniquely identifies each row. Non-prime Attributes : C and D.
+--                                 : Now, suppose there's a functional dependency B -> C, which means B determines C. This is a partial dependency, because B is only part of the composite primary key (A, B), but C depends on just B, not the entire primary key. In this case, C depends on part of the composite primary key (B), which violates 2NF.
+--                                 : Why its a problem : If B is part of the primary key but is allowed to be NULL, we could have an issue. For example, if B is NULL, it doesn’t make sense for B to determine C. So, partial dependency could lead to inconsistent data or make the data difficult to manage. That's why it is important to eliminate it!
+--                                 : Solution : To remove partial dependency, we decompose the table into two smaller tables : R1(A, B, D) — where the primary key is A, B. And [A,B] -> D.
+--                                                                                                                           : R2(B, C) — where the primary key is just B. And [B] -> C.
 
--- BCNF (Boyce-Codd Normal Form) : It is just a more better version of 3NF and for this relation must be 3NF optimized! But now lets draw a table and understand it by adding some constraints on our own to the table in order to understand BCNF...
--- Std_ID    |Subject    |Professor    |
--- 101       |Java       |PJ           |
--- 101       |CPP        |PC           |
--- 102       |Java       |PJ2          |
--- 103       |C#         |PC#          |
--- 104       |Java       |PJ           |
---                                : Some constrainsts on the above table are, one student can enroll in multiple subjects, for each subject a professor is assigned to a student!, multiple professor can teach a single subject! and one professor can teach only one subject!
---                                : And here the PK is {Std_ID, Subject} and some functional dependencies we observed here are, {Std_ID, Subject} -> Professor & Professor -> Subject, so what we are seeing here is Std_ID and Subject are prime attributes and Professor is a non-prime attribute! now pehli FD toh chalo sahi hai! but dusri vaale me ek non-prime attribute (professor) ek prime attribute (subject) ko identify kr paa rha hai, so that is why this table still need Optimization, and that will be done through BCNF!
---                                : Now lets see how we will apply BCNF and optimize our table more, so what we will do is, we will create 2 tables after decomposing the original table, and in the new tables, one we will be of Student(Std_ID, Professor_ID) and another will be professor(P_ID, Professor_name, Subject) and here ID and P_ID are PKs of their repsective tables! and now the FDs are, Std_ID -> P_ID & P_ID -> Professor_name and P_ID -> Subject... so we have optimized the tables by removing the problems which this table previously had!
---                                : We must not derive prime attribute from any prime or non-prime attribute.
+-- 3NF (3rd Normal Form) : To achieve 3NF, the database must first be in 2NF. After achieving 2NF, the next step is to remove transitive dependencies.
+--                       : A transitive dependency exists when a non-prime attribute depends on another non-prime attribute, rather than depending directly on the primary key.
+--                       : Key Rule for 3NF : No non-prime attribute should depend on another non-prime attribute.
+--                       : Understanding with an Example : | A | B | C |
+--                                                         | a | 1 | x |
+--                                                         | b | 1 | x |
+--                                                         | c | 1 | x |
+--                                                         | d | 2 | y |
+--                                                         | e | 2 | y |
+--                                                         | f | 3 | z |
+--                                                         | g | 3 | z |
+--                                                       : A is the Primary Key (PK). B and C are non-prime attributes (they are not part of the primary key).
+--                                                       : From the given table, we can observe the following functional dependencies (FDs) : A → B : Attribute A determines B. B → C : Attribute B determines C. From the above, using the Transitivity Rule of functional dependencies, we can also say : A → C : Because A → B and B → C, we get that A indirectly determines C.
+--                                                       : Problem with it : Transitive Dependency: We have a transitive dependency between A and C via B. Even though A directly determines B, and B directly determines C, the primary key (A) is still indirectly determining C, which makes the relationship redundant.
+--                                                                         : Why is this a problem? This causes redundancy in the data (repeated values), as B is already determining C. We don't need B → C in this case, because A → C already exists. Redundant Data : You can see that values in column C are repeated for each corresponding value in column B, even though A can determine C.
+--                                                       : Solution : To eliminate this transitive dependency, we need to decompose the table into two smaller tables. The goal is to remove the dependency of a non-prime attribute on another non-prime attribute.
+--                                                                  : Procedure : Identify Redundant Dependency, In this case, the dependency B → C is creating redundancy. We will split the original table into two : A table where A → B holds. A table where B → C holds.
+--                                                                  : | A | B |     | B | C |
+--                                                                  : | a | 1 |     | 1 | x |
+--                                                                  : | b | 1 |     | 2 | y |
+--                                                                  : | c | 1 |  &  | 3 | z |
+--                                                                  : | d | 2 |
+--                                                                  : | e | 2 |
+--                                                                  : | f | 3 |  
+--                                                                  : | g | 3 |
 
--- Advantages of Normalization : Normalisation helps to minimise data redundancy.
---                             : Greater overall database organisation.
---                             : Data consistency is maintained in DB.
+-- BCNF (Boyce-Codd Normal Form) : BCNF is an advanced version of 3NF (Third Normal Form) used in relational database normalization to ensure minimal redundancy and better data integrity. In simple terms, BCNF eliminates any anomalies caused by functional dependencies where a non-key attribute determines a key attribute.
+--                               : Quick Recap of Normalization Stages : 1NF (First Normal Form) : No repeating groups or arrays; every column contains atomic (indivisible) values.
+--                                                                     : 2NF (Second Normal Form) : No partial dependencies; every non-prime attribute is fully dependent on the primary key.
+--                                                                     : 3NF (Third Normal Form) : No transitive dependencies; a non-prime attribute cannot depend on another non-prime attribute.
+--                               : Every determinant (attribute or set of attributes on the left-hand side of a functional dependency) must be a candidate key. A candidate key is a minimal set of attributes that uniquely identify a row.
+--                               : Understanding with an Example : | Stud_ID | Subject | Professor |
+--                                                                 |    1    |  Java   |    PJ     |
+--                                                                 |    1    |   CPP   |    PC     |
+--                                                                 |    2    |  Java   |    PJ2    |
+--                                                                 |    3    |   C#    |    PC#    |
+--                                                                 |    4    |  Java   |    PJ     |
+--                                                               : Constraints on the Table : A student (Std_ID) can enroll in multiple subjects. For each subject, a professor is assigned to the student. Multiple professors can teach the same subject. A professor can only teach one subject.
+--                                                               : Primary Key : The combination {Std_ID, Subject} uniquely identifies each record, so it is the primary key (PK).
+--                                                                             : Functional Dependencies (FDs) : {Std_ID, Subject} → Professor (The combination of student and subject determines the professor teaching them).
+--                                                                                                             : Professor → Subject : (Each professor teaches exactly one subject.)
+--                                                               : Why the Table Violates BCNF : For BCNF, every determinant (left side of a functional dependency) must be a candidate key.
+--                                                                                             : In the functional dependency Professor → Subject, Professor is a non-prime attribute (not part of the primary key), but it determines Subject (a prime attribute). This violates the BCNF rule because Professor is not a candidate key.
+--                                                               : Steps to Convert to BCNF : FD to Resolve : Professor → Subject, Here, Professor is not a candidate key, but it determines Subject. Create a separate table for this dependency.
+--                                                                                          : Decomposition into Two Tables : Table 1 : Student-Professor Table : Contains the student and professor mapping, Attributes : Std_ID, Subject, Professor, Functional Dependency : {Std_ID, Subject} → Professor
+--                                                                                                                          : Table 2 : Professor-Subject Table : Contains the professor and subject mapping, Attributes : Professor, Subject, Functional Dependency : Professor → Subject
+
+-- Advantages of Normalization : Minimizes Data Redundancy : It removes duplicate data across tables.
+--                             : Better Database Organization : Data is structured logically, making it easier to understand and manage.
+--                             : Maintains Data Consistency : Since data is stored in one place, any update happens in a single location, preventing mismatches.
 
 -- ----------------------------------------------------------------------- Lecture 12 : Transactions in DBMS --------------------------------------------------------------------------------------------------------------------------------->
--- What is a Transaction : Suppose there is a bank which has two accounts A and B, and ek transaction honi hai A to B, toh from user perspective it is just a single task, but from Db persepective it is divided into multiple tasks! like, Read(A) -> A = A-50 -> Write(A) -> Read(B) -> B=B+50 -> Write(B). so it took 6 steps to complete the transactions!
--- Now for a transaction to happen, all the 6 steps here should be atomic! means they all should be considered to be a single task! and if kahin pr bhi error aata hai toh uss transaction ko kro hi matt entirely!
--- It is a logical unit of work that contains one or more SQL statements. The result of all these statements in a transaction either gets completed successfully (all the changes made to the database are permanent) or if at any point any failure happens it gets rollbacked (all the changes being done are undone.)
--- Overall agar kahin pr bhi error aata hai suppose A=A-50 krke error aagya, toh ab jo amount A se deduct hua hai vo vapis A me add hojaye! this is called roll back!
--- Its like money can neither be created nor be destroyed! so jo integrity maintain rehni chahiye!
+-- Transactions : A transaction is a logical unit of work in a database that includes one or more SQL operations.
+--              : From the user's perspective, it looks like a single action, but from the database's perspective, it can be broken into multiple smaller steps. All these steps together form the transaction and must satisfy certain properties to maintain data integrity.
+--              : Example : Suppose a bank transaction involves transferring ₹50 from Account A to Account B.
+--                        : Steps in the transaction : Read(A) : Check balance in Account A (₹100).
+--                                                   : A = A - 50 : Deduct ₹50 from Account A (balance becomes ₹50).
+--                                                   : Write(A) : Save the updated balance of Account A.
+--                                                   : Read(B) : Check balance in Account B (₹200).
+--                                                   : B = B + 50 : Add ₹50 to Account B (balance becomes ₹250).
+--                                                   : Write(B) : Save the updated balance of Account B
+--              : The entire transaction must be atomic, meaning all 6 steps should execute successfully. If an error occurs in any step, the transaction should rollback, undoing any partial changes.
 
--- Jab bhi DB me koi bhi transaction hota hai toh vo ACID properties follow krti hai! and krni chahiye!
--- Lets see ACID Properties : A (Atomicity) C (Consistency) I (Isolation) D (Durability)
--- Lets discuss actually ho kya rha hai read and write me, so when we read(A), toh DB me jo A ka balance stored hai vo ek buffer memory me jaake copy ho jaata hai jab read(50) operation perform hota hai toh! and then vo operation hua A=A-50, so now write(A) me jo buffer me jo updated balance hai like suppose A was 1000 and -50 hoke ye 950 hogya, so write(A) krne pr 950 DB me actually jaake store hojayega! but jo aaj kal jo hum DB use krte hai usme original DB me jaake write nhi krta hai, hum ek alag se local buffer banaate hai usme store krte hai ye 950 and jab end me sab hojaye and ek commit operation hota hai, jab vo execute hojaye tab jaake main DB me store hota hai! but for now hum yhi maanenge ki jab write(A) kiya jaa rha hai tab Db me directly jaake store hojaa rhi hai value!
+-- Whenever a transaction happens in a database, it must follow ACID properties to ensure reliability and consistency.
+-- A : Atomicity - Either all steps in a transaction are completed or none are.
+-- C : Consistency - The database moves from one valid state to another.
+-- I : Isolation - Transactions do not interfere with each other.
+-- D : Durability - Once a transaction is complete, its changes are permanent.
 
--- Now lets see the ACID properties in details...
--- Atomicity : Either all operations of transaction are reflected properly in the DB, or none are.
---           : Maanlo jo operations hai vo sab execute hote time beech me kahin error aajaye, suppose at write(A) toh iske baad toh mtlb ki A se 50 deduct hochuke hai pr B me reflect nhi honge! toh aise condition me it is imp ki sab kuch vapis roll back hojaye to the previous state! taaki DB me incnsistency generate na ho!
---           : So transaction ya to successful ho ya agar fail hojaye toh vapis roll back hojaye prev state pr, so what DB does is it maintains a old state and an intermeddiate state! and jab trabsaction fail hoti hai tab prev state pr rollback hojaati hai!
---           : Isme jo old state hai vo transaction management system uska record rakhta hai and then baaki jo operations hai vo sab ek temp memory pr ho rhi hoti hai, jab transaction fail hota hai toh system vapis isko old state pr le aata hai! aur agar sab sahi sahi chal jaata hai toh DB update hojaata hai!
+-- How Read and Write Operations Work : Read Operation : The value from the database is copied into a temporary buffer (e.g., if A = 1000, it’s copied to the buffer).
+--                                    : Operation : Changes are made to the value in the buffer memory (e.g. A = A - 50 changes the buffer value to 950).
+--                                    : Write Operation : The updated value in the buffer (950) is saved back to the database.
+--                                    : Commit Operation : In modern databases, changes are stored in a local buffer first. After all steps of the transaction are complete, the commit operation ensures the updated values are permanently saved in the main database. This prevents incomplete changes if an error occurs midway.
 
--- Consistency : Integrity constraints must be maintained before and after transaction.
---             : DB must be consistent after transaction happens.
---             : Means jitna money yahaa se deduct hua hai utna hi dusri jagah add hona chahiye! and transaction hone se pehle and baad me jo sum of money hai dono parties ke beech vo same rehna chahiye!
+-- ACID Properties of Transactions in DBMS!
+-- Atomicity : A transaction is a group of operations. Either all operations complete successfully, or none should be reflected in the database.
+--           : Example : Suppose A transfers ₹50 to B. The transaction involves steps like reading A's balance, deducting ₹50, and adding ₹50 to B. If an error occurs at any step (e.g., while writing to B), the system should roll back to the original state where no money was deducted from A, ensuring no partial updates.
+--           : How it works : The database maintains two states : Old state : The state before the transaction starts.
+--                                                              : Intermediate state : Temporary changes made during the transaction.
+--           : If a transaction fails, the system reverts to the old state. If it succeeds, the changes become permanent. This ensures data consistency and no half-done transactions.
 
--- Isolation : Now suppose there is a Banking system! and in it there can be multiple transactions T1 T2 T3 and T4, now if suppose you have initiated transaction from two different places, one is net banking and another is googlePay, so they both should be isolated and should not interfere each other and should execute concurrently! and koi data inconsistency introduce na kre! vo kaise hoga...
---           : Now suppose, we have T1(Google pay) and T2(Net Banking), now if dono transactions saath me shuru hogye! toh maanlo ek baar T1 ne A se 1000 read krliya and T2 ne bhi same time pr 1000 read krliya and uske baad T1 ne usme se -50 krdiya toh 950 bache, and uske baad T2 ne apne according bhi -50 krdiya 1000 me se toh usme bhi 950 bache, so mtlb ki B me 50+50 gye? mtlb ki A me 950 hi bache hai but B me 50 rupees extra aagye? ye kahaa se? so this is the inconsistency we are talking about! ki A se -50 hue but then B me 50+50 chale gye, so this will bring inconsistency! so that is why isolation is important!
---           : So mtlb ki isolation maintain krne ke liye hume dono me se koi ek transaction pehle execute krna hoga ab chaahe vo fail ho ya success uske baad hi dusra vaala transaction shuru hona chahiye!
---           : Even though multiple transactions may execute concurrently, the system guarantees that, for every pair of transactions Ti and Tj, it appears to Ti that either Tj finished execution before Ti started, or Tj started execution after Ti finished. Thus, each transaction is unaware of other transactions executing concurrently in the system.
---           : Multiple transactions can happen in the system in isolation, without interfering each other.
+-- Consistency : The database should always maintain valid and meaningful data before and after a transaction.
+--             : Example : If ₹50 is deducted from A’s account, exactly ₹50 should be added to B’s account. The total money in both accounts before and after the transaction must remain the same.
+--             : This ensures that the integrity constraints (like account balances or totals) are always maintained.
 
--- Durability : Suppose there is a T1 transaction and it is a success means all those steps are successful, then DB me vo updation permanent hojaye! event after system failures!
---            : Like suppose, koi ek transaction hai vo success hogya, and now write operation bhi perform hogya, pr uske baad system fail hogya! and iss kaaran se write operation perform hoke bhi DB me update nhi hui value, but user ko ye notify hogya ha ki transaction is a success, toh system me itni durability honi chahiye ki system jab restart ho tab vo write operation firse execute hojaye and DB update hojaye!
---            : Durabilty is assured by Recovery Management Component! Toh jab saare transaction execute hojaye successfully, toh main memory (RAM) me jaake accounts ka balance update hojaye! and then jab ye cheez DB me update hone jaa rhi ho tab hi system failure hojaye! then koi aisa mechanism hona chahiye ki like jab systrem restart ho tab kaise bhi vo main memory vapis retrieve hojaye and then DB update hojaye, so iske kuch tareeke hai jaise ki Log based recovery ki harr step ke transactions pr logs bante jayenge jiske according and ye logs kisi stable memory me store rahenge! taai system failures ke baad bhi logs dekh ke we could get back to that position jahaa saare operation hogye the success and bss DB update hona reh gya tha! we will study these logs in future...
+-- Isolation : In a system with multiple transactions running concurrently, they should not interfere with each other.
+--           : Example : Suppose two transactions, T1 (via Google Pay) and T2 (via Net Banking), run simultaneously : T1 reads A’s balance as ₹1000 and deducts ₹50, making it ₹950.
+--                                                                                                                  : At the same time, T2 also reads A’s balance as ₹1000 and deducts ₹50.
+--                                                                                                                  : If they proceed independently, B might incorrectly receive ₹100 (₹50 from T1 + ₹50 from T2), and A’s final balance would still show ₹950 instead of ₹900. This creates inconsistency.
+--                     : Solution : Transactions must execute in isolation to prevent such issues. Either T1 completes first, and then T2 starts, or vice versa.
+--                                : The system ensures that each transaction sees a consistent view of the data and is unaware of other transactions happening simultaneously.
 
--- States of Transaction in DBMS : Active State, Partially Committed State, Committed State, Terminated State, Failed State, Aborted State... for diagram refer the notes! 
---                               : Active State : The very first state of the life cycle of the transaction, all the read and write operations are being performed. If they execute without any error the T comes to Partially committed state. Although if any error occurs then it leads to a Failed state.
---                               : Partially Committed State : After transaction is executed the changes are saved in the buffer in the main memory. If the changes made are permanent on the DB then the state will transfer to the committed state and if there is any failure, the T will go to Failed state.
---                               : Committed State : When updates are made permanent on the DB. Then the T is said to be in the committed state. Rollback can’t be done from the committed states. New consistent state is achieved at this stage.
---                               : Terminated State : A transaction is said to have terminated if has either committed or aborted.
---                               : Failed State : When T is being executed and some failure occurs. Due to this it is impossible to continue the execution of the T.
---                               : Aborted State : When T reaches the failed state, all the changes made in the buffer are reversed. After that the T rollback completely. T reaches abort state after rollback. DB’s state prior to the T is achieved.
+-- Durability : Ensures that once a transaction is committed, its changes are permanent and persist even after system failures. Only concerns the Committed State.
+--            : For Intermediate States, Failures in intermediate states (e.g., Active or Partially Committed) are managed by Atomicity, Consistency, Isolation and Logging Mechanisms!
+--            : Example : If T1 successfully updates A’s balance to ₹950, this change must be permanently stored in the database, even if there’s a power failure or crash immediately after.
+--                      : How it works : The Recovery Management Component ensures durability.
+--                                     : Before making changes permanent, the system maintains logs (records of each step of the transaction).
+--                                     : These logs are stored in stable memory (e.g. disk) and can be used to recover the database after a crash.
+--                                     : On restarting the system, the database checks these logs and resumes from where it left off to ensure the transaction is fully completed.
+
+-- States of Transaction in DBMS!
+-- Active State : The very first state of the life cycle of the transaction, all the read and write operations are being performed. If they execute without any error the T comes to Partially committed state. If any error occurs then it leads to a Failed state.
+-- Partially Committed State : Changes are temporarily saved in the buffer (main memory). If changes are permanently saved in the database, it moves to the Committed State; otherwise, to the Failed State.
+-- Committed State : Updates are permanently saved in the database, achieving a new consistent state. Rollback is no longer possible from this state.
+-- Terminated State : The final state where the transaction has either committed or aborted.
+-- Failed State : Occurs when a transaction cannot continue due to an error or failure during execution.
+-- Aborted State : After reaching the Failed State, all changes are rolled back, and the database is restored to its state before the transaction. The transaction is now considered aborted.
 
 -- ----------------------------------------------------------------------- Lecture 13 : Implementing Atomicity and Durability --------------------------------------------------------------------------------------------------------------------------------->
 -- Recovery Mechanism Component of DBMS supports atomicity and durability. and the two methods we are going to study for recovery mechanism comes under this...

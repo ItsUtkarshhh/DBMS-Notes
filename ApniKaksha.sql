@@ -741,6 +741,7 @@ DROP VIEW view1; -- This removes the view but does not affect the original table
 --                                  ELSE result3
 --                              END AS alias_name
 --                          FROM table_name;
+-- Note : when using a CASE statement, you can either specify the column name immediately after CASE or include the condition in the WHEN clause. Using it in both places will result in a syntax error.
 
 -- Simple CASE Expression Example :
 -- Example : SELECT student_id, name, marks,
