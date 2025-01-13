@@ -961,129 +961,166 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 -- Aborted State : After reaching the Failed State, all changes are rolled back, and the database is restored to its state before the transaction. The transaction is now considered aborted.
 
 -- ----------------------------------------------------------------------- Lecture 13 : Implementing Atomicity and Durability --------------------------------------------------------------------------------------------------------------------------------->
--- Recovery Mechanism Component of DBMS supports atomicity and durability. and the two methods we are going to study for recovery mechanism comes under this...
--- One way of implementing it is Shadow Copy Scheme!
--- Now there is a Old DB Copy on disc! and then there is DB pointer on disc which is pointing at Old DB currently! then jo Old Db hai uski ek new copy banegi and ispr hum saare operations krenge! jo bhi transaction me krne hote hai! and then jab transaction complete hojaye then jo mechanism hai vo iss new copy ko Disc pr write krega! but still the transaction is not at committed state, isko hum committed state pr tab bolenge jab iska jo DB pointer hai vo old copy se hatt ke new copy pr point krne lage! means jab DB pointer updates to new disc location then the transaction will be at committed state! and the change is not persist!
--- ab agar maanlo jiss time pr system hum new copy bana rhe the tab hi system fail hojaye toh uss time toh DB pointer toh old copy pr hi point kr rha tha toh koi dikkat nhi hogi! and old DB pr hum vapis easily roll back kr sakte hai!
--- In formal way : 
--- Based on making copies of DB (aka, shadow copies).
--- Assumption only one Transaction (T) is active at a time.
--- A pointer called db-pointer is maintained on the disk; which at any instant points to current copy of DB.
--- T, that wants to update DB first creates a complete copy of DB.
--- All further updates are done on new DB copy leaving the original copy (shadow copy) untouched.
--- If at any point the T has to be aborted the system deletes the new copy. And the old copy is not affected.
--- If T success, it is committed as : OS makes sure all the pages of the new copy of DB written on the disk.
---                                  : DB system updates the db-pointer to point to the new copy of DB.
---                                  : New copy is now the current copy of DB.
---                                  : The old copy is deleted.
---                                  : The T is said to have been COMMITTED at the point where the updated db-pointer is written to disk.
+-- Recovery Mechanism Component of DBMS supports Atomicity and Durability!
+-- The two ways to implement Atomicity and Durability are : Shadow Copy Scheme & Log Based Recovery Scheme!
 
--- Now lets see how the atomicity is maintained in here...
--- Agar transaction DB pointer change hone se pehle fail hojaati hai toh DB pointer toh old copy pr point pr point kr hi rha tha toh koi dikkat toh hai nhi! and jo new copy banai thi usko delete krdenge!
--- Hence, either all updates are reflected or none
+-- Shadow Copy Scheme!
+-- The shadow copy scheme is a recovery mechanism in DBMS that ensures atomicity (all-or-nothing execution of a transaction) and durability (changes remain permanent after a transaction is committed).
+-- Key Components : Old DB Copy on Disk : This is the original database state stored on the disk before any transaction starts.
+--                : DB Pointer : A pointer (db-pointer) maintained on the disk that always points to the current active copy of the database.
+--                             : Initially, it points to the Old DB Copy, which represents the consistent state of the database.
+--                : Transaction Workflow : When a transaction (T) starts, it creates a new copy of the entire database (called the shadow copy).
+--                                       : All changes related to the transaction are made on this shadow copy, leaving the old copy untouched.
+--                : Commit Process : The transaction is committed only when the db-pointer is updated to point to the new copy.
+--                                 : Before this update, the new copy is just temporary, and the changes are not persistent.
+--                : Rollback and Failure Handling : If the system fails before the db-pointer is updated : The db-pointer still points to the old copy, so the old copy remains intact. The new copy is discarded, and no changes are reflected.
+--                                                : This ensures that atomicity is maintained, i.e., either the transaction is fully completed or it has no effect at all.
+--                : Post-Commit Durability : If the db-pointer is successfully updated to the new copy : The changes are considered committed. Even if the system fails after this step, the db-pointer points to the new copy when the system restarts, ensuring durability.
 
--- Now lets see how the durability is maintained in here...
--- Suppose, system fails are any time before the updated db-pointer is written to disk. When the system restarts, it will read db-pointer & will thus, see the original content of DB and none of the effects of T will be visible.
--- T is assumed to be successful only when db-pointer is updated.
--- If system fails after db-pointer has been updated. Before that all the pages of the new copy were written to disk. Hence, when system restarts, it will read new DB copy.
--- Ab maanlo kya ptaa, ye jo time hai jisme DB pointer old copy se new copy ki taraf point krne jaa rha hoga, tab hi agar system fail hojaye tab? so jo DB pointer ke change hone vaala jo step hpta hai atomic hona chahiye aur vo atomic hota hai, iss kaaran se ya toh vo step hoga ya toh nhi hoga, it can never fail1 agar change nhi hota hai pointer tab toh old copy pr point kr hi rha hai, nhi toh agar success hogya toh new copy pr point krdega!
+-- How Shadow Copy Scheme Ensures ACID Properties : Atomicity : If a failure occurs before the db-pointer update, the old copy is untouched, ensuring that either all updates are applied or none are.
+--                                                : Durability : A transaction is considered successful only when the db-pointer is updated. If the system fails before this, the old DB copy is still accessible. If the system fails after this, the db-pointer already points to the updated state, ensuring the changes persist.
+--                                                             : Suppose, what if system fails right at the time when DB pointer is getting updated, so if that happens, this process of transfer of DB pointer from Old DB to New DB should be atomic in nature! Either it will go to COMMIT and point to new DB, or it will point to the original DB and it will be aborted!
 
--- but this, Shadow Copy Scheme is very ineffecient! kyunki isme maanlo jo old DB copy hai already bhot badi hai, toh jab new copy banegi toh vo bhi utna hi space legi! and iss chakkar me itna space manage kr paana is a tough task!, so for that reason we use another method, that is Log Based Recovery Method!
+-- Why Shadow Copy Scheme is Inefficient : Space Requirements : Every transaction requires creating a complete copy of the database. For large databases, this consumes significant storage space, which is impractical to manage.
+--                                       : Time Complexity : Creating a new copy of the database for every transaction can take a long time, especially if the database is large. This makes the shadow copy scheme slow and unsuitable for systems with frequent updates.
 
--- Log Based Recovery Scheme! 
--- Toh isme hum basically jo bhi operations krte hai unke Logs store krte jaate hai! but ye logs hum kisi stable storage space me krte hai! kyunki agar uss hi space me krenge jisme DB ki copies store kr rhe hai toh agar system fail hua toh saare logs bhi udd jayenge! toh isliye inko hum kisi stable storage space me store krte hai!
--- The log is a sequence of records. Log of each transaction is maintained in some stable storage so that if any failure occurs, then it can be recovered from there. 
--- If any operation is performed on the database, then it will be recorded in the log.
--- But the process of storing the logs should be done before the actual transaction is applied in the database.
--- Like lets see what we mean... lets consider the same Transaction which we used earlier!
--- Transaction  |Logs
--- Read(A)      |<T,Start>
--- A=A-50       |<T,A,950> ye vaala log Write(A) and A=A-50 actually krne se pehle hi likh diya gya! so that hum pehle hi store krle log me ki hum krne kya vaale hai! and then uske baad vo step kre!
--- Write(A)     |<T,B,2050>
--- Read(B)      |<T,Commit> Here the transaction ends!
--- B=B+50       |
--- Write(B)     |
+-- Log Based Recovery!
+-- It's a method to ensure database consistency and recovery in case of system failure.
+-- All operations (reads, writes, updates) are recorded as logs in a stable storage space, separate from where the database is stored. Stable storage ensures that logs are preserved even if the system crashes.
+-- Log Structure : Logs contain details about transactions such as : Transaction start (<T, Start>). Operations and their data changes (<T, A, old_value, new_value>). Commit status (<T, Commit>).
+-- Working : Logs are sequential records of every action a transaction performs.
+--         : Before any actual change is made to the database, its corresponding log entry is written to the stable storage.
+--         : These logs act as a reference to recover or redo actions in case of failure.
 
--- Now this Log based recovery is done in 2 ways, 1) Deferred DB Modifications 2) Immediate DB Modifications
--- Deferred DB Modifications : Ensuring atomicity by recording all the DB modifications in the log but deferring the execution of all the write operations until the final action of the T has been executed. mtlb isme hum saare jo modifications and updations hai jo krne hai vo sab hum log me store krdenge and then uske baad actual execution krenge!
---                           : Log information is used to execute deferred writes when T is completed.
---                           : Now isse fayeda kya hai ki agar Transaction fail hogyi ya user ne abort krdiya, toh saare logs ko ignore krdiya jayega! jab tak logs me commit state na aajaye, tab tak DB me updation nhi hoga!
---                           :  If T completes, the records associated to it in the log file are used in executing the deferred writes.
---                           : Ab agar last me jab DB me modification ke time system fail ya koi dikkat aagyi! toh iss case me hum vo saare logs redo krenge! mtlb vo saare logs hi vapis se execute krenge!
---                           : Isme jo humne upar discuss kiye the logs vaise hi bante hai
+-- Types of Log Based Recovery : Deferred Database Modification & Immediate Database Modification!
+-- Deferred Database Modification : Key Idea : All updates are logged but not applied to the database until the transaction is successfully completed. Changes are deferred until the commit state is reached.
+--                                : Working : Log every intended modification first. Only when the transaction completes, use the log to apply all updates to the database. If the transaction fails or is aborted, ignore the logs, as no changes have been applied yet.
+--                                : Advantages : Ensures atomicity as no partial changes are made to the database. and Easy to handle failures before the commit just discard the logs.
+--                                : Failure Handling : If the system fails before commit : No changes were made to the database, so simply ignore the logs.
+--                                                   : If the system fails during the process of applying logs : Use the logs to redo all the updates.
+-- Immediate Database Modification : Key Idea : Changes are applied to the database as the transaction progresses, immediately after writing the logs. Logs include both old values and new values, making recovery more dynamic.
+--                                 : Working : For every operation, create a log entry like <T, A, old_value, new_value>. Apply the changes to the database immediately after logging. If the transaction fails, use the log to undo the changes using old values.
+--                                 : Advantages : Faster than deferred modification as changes are applied during the transaction. Logs can be used for both undo (old value) and redo (new value) operations.
+--                                 : Failure Handling : If the system fails before commit : Use the old values from the logs to undo the changes.
+--                                                    : If the system fails after commit : Use the new values from the logs to redo the changes.
 
--- Immediate DB Modification : DB modifications are done in the active state! mtlb ki transactions abhi chal rhi hai and jab chal rhi hai uss hi time pr hum DB me modifications krte chale jayenge! DB modifications to be output to the DB while the T is still in active state.
---                           : Mtlb jo bhi operations kr rhe hai unke saath saath hi Logs create krte gye and then and there hi DB me modifications bhi krte gye!
---                           : Isme logs thore alag type se bante hai, like pehle vaale me 3 fields the, iss vaale me 4 hoti hai! and the logs are like....
+-- Advantages of Log-Based Recovery : Ensures atomicity : Either all changes occur, or none.
+--                                  : Handles failures gracefully : Before commit : Discard logs or undo changes.
+--                                                                : After commit : Use logs to redo changes.
+--                                                                : Logs act as a record of intent : They are crucial for recovery and troubleshooting.
 
--- Transaction  |Logs
--- Read(A)      |<T,Start>
--- A=A-50       |<T,A,1000,950> here we have both old value field and new value fields!
--- Write(A)     |<T,B,2000,2050>
--- Read(B)      |<T,Commit> Here the transaction ends!
--- B=B+50       |
--- Write(B)     |
---                           : In here, if system fails or crashes, system uses old value field of the log records to restore modified values.
---                           : Actual updations logs likhne ke baad hi krte hai! agar updations pehle krdiya and vo updatio failhogya toh usko hum log me likh hi nhi payenge and due to which hum recovery nhi kar payenge!
---                           : Failure handling : System failure before T completes, or if T aborted, then old value field is used to undo the T. ab agar maanlo jab saara transaction complete hogya and ab agar system crash ho jaata hai but user ko notify hogya hai ki transaction is success then in that case ye jo mechanism hai ye saare logs ko firse visit krega and check krega ki kya jo logs the vo end me commit state tak phocha tha ya nhi, agar haa toh ye mechanism saare logs ko firse execute krdega! and nhi ki toh baat hi nhi hai, kynki agar user ko notify hua hai ki transaction is success toh ofc commit hua hoga!
+-- Why Logs Before Database Changes : Writing logs first ensures that even if a system fails during the update, the logs can restore or redo the database to a consistent state.
+--                                  : Without logs, recovery wouldn’t be possible because there’s no record of what was attempted.
 
+-- Overall difference between Deferred and Immediate Log Based Recovery!
+-- Updates Are Applied	: After transaction commits | During transaction execution
+-- Log Fields : <T, A, value> | <T, A, old_value, new_value>
+-- Undo Capability : Not required | Uses old values from logs
+-- Redo Capability : Uses logs to redo after commit | Uses new values from logs
+-- Failure Before Commit : Ignore logs; no changes were made | Undo changes using logs
+-- Failure After Commit	: Redo changes using logs | Redo changes using logs
 
 -- ----------------------------------------------------------------------- Lecture 14 : Why Indexing is Important in DBs --------------------------------------------------------------------------------------------------------------------------------->
--- So what happens here is like jo DB me jo data store hota hai vo toh hum tuple ke form me store kr rhe hai RDBMS me, so jab hum unko access krne jaate DBMS ke thru toh ab itni saari tuples hoti hai toh thora time zyada lag sakta hai! toh in that case, what we do is to optimize this index ke through tuples access krne vaali cheez, we make groups/blocks of tuples with each block containing same number number of tuples, and harr block ka ek block pointer/base pointer hota hai usko hum ek alag se index naam se table bnaa ke store krdete hai! taaki jab next time hume DB access krna ho toh hum vo index table me se vo index DB ke jiss base pointer pr point kr rha hai vahaa jaake hum vo tuple fetch kr sake!
--- Lets understand this more deeply....
--- Suppose a DB of 10,000 records! and we have created blocks and each block contains 10 tuples! now so agar hume abhi search krna koi particular tuple jo kisi PK se associated hoga, toh hum Linear Search krenge and vo tuple nikal lenge!
--- Ab we now PK toh sorted hoti hai toh we can also apply Binary Search, jo aur better Time Complexity ke saath output dega!
--- But kya ye process aur optimize ho sakta hai? yess... we can use a Data Structure INDEX, isme what we will do is we will create another table jisme we will use all PKs with intervals of 10 (jitne blocks me tuples hai uske hisaab se) and now jo harr block jo humne banai thi uske Base pointer ko hum iss index vaali table me store krdenge! like INDEX me like first tuple kuch aise hogi ki, (1,BP1) (11,BP2) (21,BP3) and so on...
--- and now ab ye jo nayaa table hai isme tuples kaafi kam hogyi agar dekhe toh, original DB me 10,000 thi iss vaali me 1000 hogyi hai! toh ab hum iss Index vaali table me bhi Binary search ya Linear Search lagaa sakte hai! vaise toh optimize ho hi gya tha, but ab agar hum binary search bhi lgaa de toh aur optimize hojayega! ab agar maanlo hume 15 tuple chahiye DB ki, toh hum pehle INDEX ki 11 vaali primary key pr jayenge and usme BP2 stored hai, toh uski help se hum DB me BP2 pr pohochenge, mtlb ki ab hum DB ke 11 position pr hai, now hum 4 tuples aage traverse krke 15 tuple tak pohoch jayenge!
--- So that is how we have optimized the access to DB!
+-- Problem : In relational databases, data is stored in the form of tuples (rows). When you want to access specific data, searching through a large number of tuples can take a lot of time.
+-- Solution : To make data access faster, we use indexing. Here's how it works : Grouping Tuples into Blocks : Tuples are grouped into blocks, and each block contains a fixed number of tuples.
+--                                                                             : Block Pointers (Base Pointers) : Each block has a unique pointer called a block pointer or base pointer.
+--                                                                             : Index Table/File : An additional table called the index table is created. This table stores the block pointers for all the blocks.
+--          : How it helps : Instead of searching through all the tuples, the system first looks at the index table to find the block pointer. The pointer directly takes it to the required block, making the search much faster.
+--          : Analogy : Think of it like a book's index, Instead of reading every page, you check the index to find the page number for a topic and go directly to that page.
 
--- Formally...
--- Indexing is used to optimise the performance of a database by minimising the number of disk accesses required when a query is processed.
--- The index is a type of data structure. It is used to locate and access the data in a database table quickly.
--- Speeds up operation with read operations like SELECT queries, WHERE clause etc.
--- Search Key: Contains copy of primary key or candidate key of the table or something else.
--- Data Reference: Pointer holding the address of disk block where the value of the corresponding key is stored.
--- Indexing is optional, but increases access speed. It is not the primary mean to access the tuple, it is the secondary mean.
--- Index file is always sorted.
+-- Scenario : Imagine a database containing 10,000 records (tuples). To optimize data access, the tuples are divided into blocks, with each block containing 10 tuples.
+--          : If you want to search for a specific tuple using its Primary Key (PK) : You could use Linear Search, but it would be time-consuming. Since PKs are sorted, you could use Binary Search, which is faster but still processes all 10,000 records.
+--          : The Optimization with Indexing : To make the search process even faster, we introduce an index table, What is an Index Table? It’s a separate, smaller table created for the database. The index table stores primary keys from the main table at fixed intervals (e.g., every 10 tuples) along with the base pointer (BP) for each block. The Base Pointer (BP) indicates the starting location of a block in the database.
+--          : Example : For a database with 10,000 tuples, and blocks containing 10 tuples each, the index table will look like this :             INDEX TABLE
+--                                                                                                                                     Primary Key (PK) | Base Pointer (BP)
+--                                                                                                                                     -------------------------------------
+--                                                                                                                                     1                | BP1
+--                                                                                                                                     11               | BP2
+--                                                                                                                                     21               | BP3
+--                                                                                                                                     ...
+--                    : How it works : Let’s say you want to find the tuple with Primary Key 15. Here's the step-by-step process...
+--                                   : Search in the Index Table : Apply Binary Search on the index table (which has only 1,000 entries).
+--                                                               : Find the relevant block : For PK 15, it will fall between PK 11 and PK 20 in the index table. From the index table, locate the Base Pointer (BP2) of the block containing PK 11.
+--                                   : Jump to the Database Block : Using BP2, directly access the block in the database that starts with PK 11.
+--                                   : Traverse the Block : From the starting point (PK 11), traverse forward 4 tuples to reach PK 15.
 
--- Types of Indexing : 1) Primary Indexing & 2) Secondary Indexing
--- 1) Primary Indexing : A file may have several indices, on different search keys. If the data file containing the records is sequentially ordered, a Primary index is an index whose search key also defines the sequential order of the file.
---                     : Yahaa primary indexing me primary key ka mtlb primary key se nhi hai, hum kisi bhi ek attribute ko primary index bnaa sakte hai! mtlb PK bhi ho sakti hai Search key ya primary index, but it is not neccessary!
---                     : All files are ordered sequentially on some search key. It could be Primary Key or non-primary key.
---                     : Dense And Sparse Indices... Dense Index : The dense index contains an index record for every search key value in the data file.
---                                                   Sparse Index : An index record appears for only some of the search-key values.
---                     : Jo humne upar jo example liya tha, usme jo DB hai usme Dense indexing ki hui hai and jo INDEX vaali table hai usme Sparse Indexing ki hui hai!
---                     : Now lets see the Primary Indexing based on Key Attributes and based on Non-Key Attribute...
---                     : Based on Key Attribute : Data file is sorted w.r.t primary key attribute.
---                                              : PK will be used as search-key in INDEX.
---                                              : parse Index will be formed i.e., no. of entries in the index file = no. of blocks in datafile.
---                     : Based on Non-Key Attribute (Clustering Indexing) : Data file is sorted w.r.t non-key attribute.
---                                                                        : No. Of entries in the index = unique non-key attribute value in the data file.
---                                                                        : This is dense index as, all the unique values have an entry in the index file.
---                                                                        : here this is also called, Clustering Indexing!
---                                                                        : Isme jo humara DB hai vo kisi Non-key attribute ke bal ke sorted hai, toh mtlb ki jo vo particular attribute hai uski values duplicate bhi ho sakti hai, ab as we have discussed! there are two tables ek toh jo DB vaali table hai and ek humari vo INDEX vaali table hai! ab maanlo jaise jo main DB vaali table hai usme toh ye key values toh repeat ho rhi hongi! but in a sorted manner! and humne iss DB vaale table me blocks bnaa rakhe hai! so now hum INDEX table ko aise use krenge ki, jaise maanlo DB table me multiple 1 ke corresponding alag alag values hai! toh hum sabse pehli baar jab 1 (non-key attribute) occur hua tha usko lenge! and usko as a primary index INDEX table me daal denge!
---                                                                        : Then, uss first 1 ke along jo base pointer hai usko INDEX table me uss PK vaale 1 ke corresponding store krdenge! and now ab hum iss index table me jo 1 ke corresponding jo BP store hai ke through uss main DB me tuples me se value nikalenge! and agar maanlo humne jo first occurence vaala 1 store kiya hai INDEX table me uske corresponding jo BP store hai and vo BP jiss tuple pr point kr rha hai hume vo vaale 1 ki value nhi chahiye toh in that case hum uss BP ko ++ krte krte required 1 tak pohochenge! and as it is sorted DB table toh saare 1 saath me hi honge! and so similarly we will do with other indexes also!
---                                                                        : Iski need hume padti hi group by me, kyunki uss case me hum kaafi baar non-kety attribute ke dam pr hi indexing krte the!
---                                                                        : So in short! what we will do we will take the non-key attributes of DB tables and make them a PK in an INDEX table! and corresponding to them we will store base pointers of all first occurence of those distinct non-key attributes with those PKs in INDEX table! so that we can access the main DB table using the INDEX table using those BPs! and then later on we can applu Binary search in the DB table as it sorted also! to get a more optimized solution!
---                                                                        : And that is why it is called Clustering indexing becoz it is forming clusters of same indexes in the DB table!
---                     : Multi-Level Indexing : Index with two or more levels.
---                                            : If the single level index become enough large that the binary search it self would take much time, we can break down indexing into multiple levels.
---                                            : It is not very different, it more or less similar to the above, bss isme ye hai ki hum kuch aur layers add krdete hai indexing ke jab lage ki ek indexing se bhi binary search ke through bhi time zyada hi lag rha hai! kyunki tuples itne large hogye hai! ki even Binary search is taking lot of time!
---                                            : So we will keep indexing according to the effeciency and time! agar required hoga toh we will keep increasing the number of indexings! 
+-- Key Benfits : Smaller Search Space : The index table reduces the number of records to search from 10,000 to 1,000. Binary search on this smaller table is much faster.
+--             : Direct Access : The Base Pointer allows the system to jump directly to the relevant block in the database, skipping unnecessary records.
+--             : Optimized Search in Blocks : After reaching the block, only a few records need to be traversed linearly.
 
--- 2) Secondary Indexing : It is done on those datafiles which are unsorted! toh aisa kab hoga ki tables unsorted hai! toh jab table agar kisi ek attribute ke along sorted hai toh kisi aur attribute ke along to unsorted hogi!
---                       : Toh aisa situation tab aata hai, jaise lets see a situation, where ek table hai DB me vo kisi ek attribute ke along pimary indexing ke through sorted hai! toh ofc kisi aur attribute ke along vo unsorted hoga! toh jab ek primary indexing already exist kr rhi hai table me! and hume kisi aur attribute ke along sorting lagaani pad rhi hai toh in that case we use secondary indexing!
---                       : And isme search key (INDEX table vaali) PK and Non-PK dono ho sakti hai! now, jo DB table hai usme saari entries ke indexes un-sorted hai and duplicate values bhi ho sakti hai same keys ki, toh agar hum maanlo jaise DB table me kisi ek tuple ka index 1 hai, but ab hume ye nhi pataa rehta ki vo 1 kahaa hai, vo 1 first block me hai ya kisi aur block me hai, ya iss index ki kitni duplicate values hai (as becoz iss iss attribute me duplicate values ho sakti hai kyunki ye hai toh ek non-key attribute),
---                       : toh for that case hum unn saari unique DB vaale indexes ko ek INDEX vaali table me daalke unn harr blocks ke base pointer pr point kraa denge! isse kya hoga ki jab hum INDEX vaali table ke through kisi particular block ke base pointer tak pohochenge, and then vahaa pr jaake ab Binary Search ya Linear Search lgaa ke vo vaali index nikal lenge! and agar aisi aur bhi duplicate indexes hai toh vo sab indexes jin jin block me hai unn sab blocks ka base pointer INDEX table me linkedlist bnaa ke store krlenge!  
---                       : So we can see isme hum Dense indexing kr rhe hai kyunki hum harr unn DB ke unique indexes ko search key bnaa ke INDEX vaale table me store rhe hai! and unke corresponding unke blocks ke base pointers ko Linkedlist bnaa kr store kr rhe hai!
---                       : So that is how secondary indexing is used in case of indexing of non-key attributes! also isme bhi hum multil-level indexing kr sakte hai!
---                       : How does it benefit? so what happens is pehle DB vaale table me normal indexing thi along non-key attributes and vo bhi unsorted manner me! so agar kuch 1 lakh entries hoti toh hume linear search krnaa padta ek particular entry ko dhundne ke liye! and isme bhot time lgta! aur Binary search toh lagaa nhi sakte kyunki sorted toh hai nhi ye! but secondary indexing krne pr ab hum secondary table mtlb vo INDEX vaali table uss par hum Binary Search lgaa sakte hai! kyunki usme index sorted hai! and that is how we have optimized indexing here!
---                       : In formal language : Datafile is unsorted. Hence, Primary Indexing is not possible.
---                                            : Can be done on key or non-key attribute.
---                                            : Called secondary indexing because normally one indexing is already applied.
---                                            : No. Of entries in the index file = no. of records in the data file.
---                                            : It's an example of Dense index.
+-- Why it's efficient : Reduction in Complexity : Searching the index table has a time complexity of O(log n) (Binary Search).
+--                                              : Accessing the block and traversing it is a constant-time operation, making the overall process highly efficient.
+--                    : Scalability : Even as the database grows, indexing ensures quick access by minimizing the number of records involved in the search process.
 
+-- Types of Indexing : Primary Indexing & Secondary Indexing!
+-- Primary Indexing : Primary Indexing is a type of indexing used in databases to improve search performance. It is created when the database records (data file) are sorted based on a search key, typically a unique primary key. The primary index acts as a guide to quickly locate the records in the data file.
+-- Key features : Sorted Data File : The records in the data file must be sorted based on the key column (e.g., roll number, account ID). This sorting is a requirement for primary indexing to work effectively.
+--              : One Index Entry per Block : The primary index contains one entry for each block (or group) of data in the data file. A block contains multiple records.
+--              : Smaller Index Table : Since there is only one index entry per block, the index table is smaller and faster to search.
+--              : Key and Pointer : Each index entry consists of, Search Key which is a value from the sorted data file (e.g., roll number). Pointer which is a reference to the block in the data file where the record(s) reside.
+-- How Does Primary Indexing Work : Data File Organization : Records in the data file are stored in blocks. The data is sorted based on a key attribute (e.g., roll number).
+--                                : Index Table Creation : The index table is created with one entry for each block in the data file.
+--                                : Each entry in the index table contains : Search Key : The smallest key value in the block.
+--                                                                         : Pointer: A reference to the block in the data file.
+--                                : Search Process : First, the index table is searched to find the block where the record might exist. Then, the specific record is found within the block using linear or binary search.
+-- Idea of Primary Indexing : Dense Index : Contains an entry for every record in the data file. Each record in the data file has a corresponding key and pointer in the index table.
+--                                        : Advantage : Faster search, as every record is indexed. Disadvantage : Larger index table.
+--                          : Sparse Index : Contains an entry for each block in the data file, not every record. Each entry points to the first record in the block.
+--                                         : Advantage : Smaller index table. Disadvantage : Slightly slower search, as you may need to scan within the block.
+-- Primary Indexing based on Key & Non-Key Attributes : In database systems, primary indexing helps to quickly access data by creating an index table, but the way the data is indexed depends on whether the indexing is done using a key attribute or a non-key attribute.
+--                                                    : Key Attribute : A key attribute is a unique identifier, like a Primary Key (PK), where no two rows in the database have the same value for this attribute. The data file is sorted based on the key attribute, and the index is created accordingly.
+--                                                                    : Key Features : Sorted Data File : The main database table (data file) is sorted by the primary key (e.g., Roll Number, Employee ID).
+--                                                                                   : Sparse Index : The index file contains one entry for each block of the data file. The number of index entries equals the number of blocks in the data file.
+--                                                                                   : Search Key in Index Table : The primary key is used as the search key in the index table.
+--                                                                    : Working : The index table is created with two columns : Primary Key : The smallest key in each block of the sorted data file.
+--                                                                                                                            : Pointer : A reference (base pointer) to the corresponding block in the data file.
+--                                                                    : To search for a specific record : Search the index table using the key (e.g., binary search). Use the pointer to jump to the corresponding block in the data file. Search within the block to find the record.
+--                                                    : Non-Key Attribute : A non-key attribute is a column that can have duplicate values, unlike a primary key. For example, "Department" in an employee database or "Category" in a product database.
+--                                                                        : Clustering Index : When the data file is sorted based on a non-key attribute, a clustering index is created. This index helps group records with the same non-key attribute value into clusters in the data file.
+--                                                                        : Key Features : Sorted Data File : The data file is sorted based on the non-key attribute (e.g., Department, Category).
+--                                                                                       : Dense Index : The index contains one entry for each unique value of the non-key attribute in the data file. Each entry points to the first occurrence of that value in the data file.
+--                                                                                       : Duplicate Values : Since the attribute is a non-key, its values can repeat in the data file. The index groups these duplicates into clusters.
+--                                                                        : Working : The index table is created with two columns : Non-Key Attribute : The unique values of the non-key attribute.
+--                                                                                                                                : Pointer : A reference (base pointer) to the first record of each unique value in the data file.
+--                                                                                  : To find a record : Search the index table using the non-key attribute. Use the pointer to jump to the first occurrence of the value in the data file. Sequentially search the data file for additional records if needed (as duplicates are stored together).
+--                                                                        : Need of Cluster Indexing : Clustering indexes are especially useful in GROUP BY queries, where records are grouped by a non-key attribute. For example : Grouping employees by "Department". Grouping products by "Category".
+--                                                                                                   : By clustering similar records together in the data file, clustering indexes improve query performance and make searching more efficient.
+--                                                                        : Advantages : Faster Query Processing, Efficient Storage & Supports Duplicate Values.
+--                                                                        : Disadvantages : Static Structure & Limited use cases!
+-- Multi-Level Indexing : (In Extension of Primary Indexing) Multi-level indexing is a technique used to optimize the performance of indexing when the size of a single index becomes too large, and even binary search on that index takes too much time. To break it down, multi-level indexing creates an additional layer (or multiple layers) of indexes to make searching even faster by reducing the number of entries that need to be searched at each level.
+--                      : Key Points : Problem with Single-Level Indexing : In single-level indexing, all data entries are stored in one index file. Binary Search is used on this index to find the required record quickly. But when the data set grows very large (i.e., when there are a lot of records), even searching the index using binary search can take significant time because the index itself becomes large.
+--                                   : For example, if there are millions of records, the index can become very long, and binary search on such a large index might still take considerable time.
+--                      : Solution is Multi-Level Indexing : Multi-level indexing works by breaking down the large index into smaller sub-indexes (i.e., creating additional levels of indexing). Instead of searching through a massive single index, you search through a smaller index first (the first level) and then use that smaller index to find the actual record.
+--                      : How It Works : Level 1 Index : This is your first level of index, which could contain pointers to blocks in your data file (or to the second-level indexes).
+--                                     : Level 2 Index : The second-level index would contain pointers to specific entries in the first-level index (i.e., pointers to ranges of data in the data file).
+--                                     : Level N Index : You keep adding levels as needed, depending on how large the data set and indexes are.
+--                                     : So, it’s like having multiple layers of search, where each level reduces the amount of data you need to search through.
+--                      : Efficiency : The more levels you add, the fewer entries you have to search through at each level. This reduces the number of operations needed to find the correct record.
+--                                   : As the data grows larger, the number of levels grows as well. The overall time complexity is reduced because, at each level, the size of the data you are searching is smaller.
+
+-- Secondary Indexing : Secondary indexing is used when the data file is unsorted, and we want to efficiently search based on some attribute (either a primary key (PK) or a non-primary key (non-PK)).
+--                    : It’s called secondary indexing because there is already a primary index applied on the data file, and this secondary index helps to speed up searches on non-key attributes. Secondary indexing helps improve search efficiency when the data is not sorted by the attribute on which we are applying the index.
+--                    : Why Do We Use Secondary Indexing : In some cases, we may have a primary index applied based on one attribute (usually the primary key), but the data may not be sorted by another attribute (especially non-key attributes).
+--                                                       : For example : Imagine a database table that is sorted by primary key (e.g., ID). But the data is unsorted by another attribute, such as name or age.
+--                                                                     : If we want to search by name or age, a simple binary search won't work because these attributes aren't sorted. This is where secondary indexing comes in.
+-- Types of Indexes in Secondary Indexing : Secondary indexing can be based on either PK or Non-PK.
+--                                        : Primary Key (PK) : Even though the table is unsorted by the primary key, we can still create a secondary index using the primary key. This type of index will speed up searches by primary key in the unsorted data.
+--                                        : Non-Primary Key (Non-PK) : Secondary indexing can also be done based on non-primary keys. This is often useful when we want to search by attributes that are not the primary key (e.g., searching by name, age, or category when the primary key is a unique ID).
+-- Structure of the Index in Secondary Indexing : Dense Indexing : In secondary indexing, we use dense indexing. In dense indexing, every unique value from the data file (whether PK or non-PK) has an entry in the index table.
+--                                                               : Each entry in the index table points to the base pointer of the block in the data file where the value exists. If the non-PK value appears multiple times in the data file (i.e., duplicate values), we create a linked list in the index table. Each duplicate value will have a pointer to its corresponding block.
+-- How Secondary Indexing Works with Multiple Blocks : Problem with Unsorted Data : If a data file is unsorted, finding a specific record can be very slow because the data is not organized, and a linear search might be required, which is inefficient.
+--                                                   : Solution with Secondary Indexing : By creating an index on the non-key attribute (e.g., Name), we speed up the search. The index table is sorted, so we can perform a binary search on the index table itself, which is much faster than scanning the entire data file.
+--                                                   : If multiple records have the same value (duplicate entries), we link those base pointers in the index table. This way, we don’t lose information, and the search remains efficient.
+-- Multi-Level Indexing in Secondary Indexing : (In Extension of Secondary Indexing) Just like primary indexing, multi-level indexing can be applied to secondary indexing as well, especially when the index grows too large. Multi-level indexing involves creating a hierarchy of indexes, where the first level index points to the second level, and so on.
+--                                            : This helps optimize the search by reducing the search space at each level.
+-- How Does Secondary Indexing Benefit Us : Improves Search Efficiency : In unsorted data, without an index, searching becomes slow (linear search). Secondary indexing allows us to use binary search on the index, speeding up the process significantly.
+--                                        : Dense Indexing : Even for non-PK attributes that have duplicate values, the index still allows fast lookups by pointing to the base pointers of the blocks where those records exist.
+--                                        : Optimizes Unsorted Data : In cases where the data file is unsorted (and sorting it is not feasible or efficient), secondary indexing optimizes searches and retrievals.
+-- Formally : Data file is unsorted.
+--          : Primary Indexing is not possible on this file.
+--          : Secondary indexing can be done on key or non-key attributes.
+--          : The index file will contain entries equal to the number of records in the data file.
+--          : It’s called dense indexing because every unique value (from the attribute) gets an entry in the index.
 
 -- ----------------------------------------------------------------------- Lecture 15 : SQL vs NoSQL --------------------------------------------------------------------------------------------------------------------------------->
 -- NoSQL is Non-Relational Model! It means not only SQL, means zaruri nhi ki DB ko access krne ke liye hum SQL ka hi sahara le! hum Non-relational lang ka bhi use kr sakte hai! a good example is MongoDB!
