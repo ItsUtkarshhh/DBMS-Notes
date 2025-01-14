@@ -1215,68 +1215,56 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 -- Data to Object Mapping    ->   Required object relational mapping              |   Many do not require ORMs. MongoDB documents map directly to data structures in most popular programming languages!
 
 -- ----------------------------------------------------------------------- Lecture 16 : Types of Databases --------------------------------------------------------------------------------------------------------------------------------->
--- Relational Databases : Relational databases are quite popular, even though it was a system designed in the 1970s. Also known as relational database management systems (RDBMS), relational databases commonly use Structured Query Language (SQL) for operations such as creating, reading, updating, and deleting data. Relational databases store information in discrete tables, which can be JOINed together by fields known as foreign keys. For example, you might have a User table which contains information about all your users, and join it to a Purchases table, which contains information about all the purchases they’ve made. MySQL, Microsoft SQL Server, and Oracle are types of relational databases.
---                      : They are ubiquitous, having acquired a steady user base since the 1970s
---                      : They are highly optimised for working with structured data.
---                      : They provide a stronger guarantee of data normalisation
---                      : They use a well-known querying language through SQL
---                      : Scalability issues (Horizontal Scaling).
---                      : Data become huge, system become more complex.
+-- Relational DBMS : Popularity & History : Relational databases have been widely used since the 1970s and continue to be popular. They use SQL for operations like create, read, update, and delete (CRUD).
+--                 : Data Structure : They store data in tables with rows and columns, and different tables can be linked using foreign keys. For example, a User table can be linked to a Purchases table using a user ID.
+--                 : Advantages : Highly optimized for structured data and well-suited for handling data that follows a clear, organized structure. Provide strong data normalization, ensuring data consistency and reducing redundancy. Use SQL, a standardized and widely known querying language.
+--                 : Disadvantages : Scalability issues : Relational databases often face challenges when it comes to horizontal scaling (scaling across multiple machines). As data grows, the system becomes more complex and harder to manage
 
--- Object oriented databases : The object-oriented data model, is based on the object-oriented-programming paradigm, which is now in wide use. Inheritance, object-identity, and encapsulation (information hiding), with methods to provide an interface to objects, are among the key concepts of object-oriented programming that have found applications in data modelling. The object-oriented data model also supports a rich type system, including structured and collection types. While inheritance and, to some extent, complex types are also present in the E-R model, encapsulation and object-identity distinguish the object-oriented data model from the E-R model.
---                           : Sometimes the database can be very complex, having multiple relations. So, maintaining a relationship between them can be tedious at times.
---                           : In Object-oriented databases data is treated as an object.
---                           : All bits of information come in one instantly available object package instead of multiple tables.
---                           : Adavantages : Data storage and retrieval is easy and quick.
---                                         : Can handle complex data relations and more variety of data types that standard relational databases.
---                                         : Relatively friendly to model the advance real world problems
---                                         : Works with functionality of OOPs and Object Oriented languages.
---                           : Disadvantages : High complexity causes performance issues like read, write, update and delete operations are slowed down.
---                                           : Not much of a community support as isn’t widely adopted as relational databases.
---                                           : Does not support views like relational databases.
---                                           : e.g., ObjectDB, GemStone etc.
+-- Object Oriented Databases : Based on the object-oriented programming (OOP) paradigm, where data is treated as objects, similar to how objects are handled in programming languages. Supports key OOP concepts like inheritance, encapsulation (information hiding), and object identity.
+--                           : Can handle complex data relationships and supports a rich type system (including structured and collection types).
+--                           : Advantages : Easy & Quick Data Storage/Retrieval, Handles Complex Data Relations, Real-World Problem Modeling and Integration with OOPS Languages.
+--                           : Disadvantages : Limited Community Support, Performance Issues and No Views Support.
+--                           : Example : ObjectDB, GemStone, etc.
 
--- NoSQL Databases : NoSQL databases (aka "not only SQL") are non-tabular databases and store data differently than relational tables. NoSQL databases come in a variety of types based on their data model. The main types are document, key-value, wide-column, and graph. They provide flexible schemas and scale easily with large amounts of data and high user loads.
---                 : They are schema free.
---                 : Data structures used are not tabular, they are more flexible, has the ability to adjust dynamically.
---                 : Can handle huge amount of data (big data).
---                 : Most of the NoSQL are open sources and has the capability of horizontal scaling.
---                 : It just stores data in some format other than relational.
---                 : Refer Lec 15 Notes...
+-- NoSQL Databases : Refer Lec 15 Notes.
 
--- Hierarchial Databases : As the name suggests, the hierarchical database model is most appropriate for use cases in which the main focus of information gathering is based on a concrete hierarchy, such as several individual employees reporting to a single department at a company.
---                       : The schema for hierarchical databases is defined by its tree-like organisation, in which there is typically a root “parent”  directory of data stored as records that links to various other subdirectory branches, and each subdirectory branch, or child record, may link to various other subdirectory branches.
---                       : The hierarchical database structure dictates that, while a parent record can have several child records, each child record can only have one parent record. Data within records is stored in the form of fields, and each field can only contain one value. Retrieving hierarchical data from a hierarchical database architecture requires traversing the entire tree, starting at the root node.
---                       : Since the disk storage system is also inherently a hierarchical structure, these models can also be used as physical models.
---                       : The key advantage of a hierarchical database is its ease of use. The one-to-many organisation of data makes traversing the database simple and fast, which is ideal for use cases such as website drop-down menus or computer folders in systems like Microsoft Windows OS. Due to the separation of the tables from physical storage structures, information can easily be added or deleted without affecting the entirety of the database. And most major programming languages offer functionality for reading tree structure databases.
---                       : The major disadvantage of hierarchical databases is their inflexible nature. The one-to-many structure is not ideal for complex structures as it cannot describe relationships in which each child node has multiple parents nodes. Also the tree-like organisation of data requires top-to-bottom sequential searching, which is time consuming, and requires repetitive storage of data in multiple different entities, which can be redundant.
---                       : e.g., IBM IMS.
---                       : So what its like is, suppose there is an orgamization, so there is a hierarchy is like ye chairperson hai ye vice chairperson hai and similarly kon kiske under hai kon konsa department handle krta hai and all these info is stored in form of Hierarchy database!
+-- Hierarchial Databases : A hierarchical database model is designed for use cases where information is organized in a structured hierarchy, making it an ideal choice for representing data that inherently follows a tree-like structure
+--                       : Data is organized in a tree structure, where there is a root "parent" node connected to various child nodes. Each child record can have only one parent, while a parent record can have multiple children.
+--                       : Data in records is stored in fields, and each field can hold only one value. Examples of this hierarchy : Organizational chart, File system directories.
+--                       : Traversal : Data retrieval requires traversing the tree from the root node to the desired record.
+--                       : Advantages : Ease of Use : The one-to-many relationship simplifies navigation and makes it easy to understand and implement. Fast and efficient for read-heavy operations such as drop-down menus or file systems.
+--                                    : Data Independence : Changes to specific tables or records do not affect the overall database structure.
+--                                    : Programming Support : Many programming languages natively support tree structures, enabling easy implementation and access.
+--                       : Disadvantages : Inflexibility : It does not support many-to-many relationships, where a child can have multiple parent nodes.
+--                                       : Inefficient Searching : Data retrieval requires sequential traversal from top to bottom, which can be slow.
+--                                       : Redundancy : The hierarchical design often leads to data duplication, resulting in higher storage requirements and potential inconsistencies.
 
--- Network Database : Extension of Hierarchical databases
---                  : The child records are given the freedom to associate with multiple parent records.
---                  : Organised in a Graph structure.
---                  : Can handle complex relations.
---                  : Maintenance is tedious.
---                  : M:N links may cause slow retrieval.
---                  : Not much web community support.
---                  : e.g., Integrated Data Store (IDS), IDMS (Integrated Database Management System), Raima Database Manager, TurboIMAGE etc.
+-- Network Databases : An extension of hierarchical databases that allows child records to associate with multiple parent records, organized in a graph structure.
+--                   : Key Features : Supports complex relationships. Enables M:N (many-to-many) connections.
+--                   : Advantages : Handles complex data relationships efficiently.
+--                   : Disadvantages : Tedious maintenance. Slower retrieval due to M:N links. Limited web community support.
+--                   : Example : IDS (Integrated Data Store), IDMS, Raima Database Manager, TurboIMAGE.
 
 -- ----------------------------------------------------------------------- Lecture 17 : Clustering in DBMS --------------------------------------------------------------------------------------------------------------------------------->
--- Clustering/Replica-Sets : Suppose there is a DB of Amazon and then there are millions of requests that are coming on that DB then it becomez very tough to full fill all those requests! and maanlo agar vo DB me koi khrabi aagyi ya vo hack hogya ya koi maintainence krni pad gyi! toh jo users uss DB se data retrieve krne ki koshih kr rhe the unko vo data nhi milega fir!
---                         : Isliye what we do is we make replicas of the DB, like we create more DBs with exact same data in them! and that groups of DBs carrying the same info is called Clusters! or Replica-Sets! isse kya hoga ki agar koi ek DB down hota hai toh baaki users baaki DBs ke through apna Data access kr payenge! users ko isse mtlb nhi ki unka data kahaa se aa rha hai konse DB se aa rha hai all they need is Data so, inn sab se ek Abstraction ki layer bhi ajaati hai!
---                         : More Formally, Database Clustering (making Replica-sets) is the process of combining more than one servers or instances connecting a single database. Sometimes one server may not be adequate to manage the amount of data or the number of requests, that is when a Data Cluster is needed. Database clustering, SQL server clustering, and SQL clustering are closely associated with SQL is the language used to manage the database information.
---                         : Replicate the same dataset on different servers.
+-- Clustering/Replica-Sets : Clustering or replica-sets involve creating multiple replicas of a database, where each replica contains the same data. This ensures high availability, fault tolerance, and scalability in handling large numbers of requests or failures.
+--                         : Need : Load Handling : A single database server may struggle to manage millions of requests simultaneously.
+--                                : Fault Tolerance : If one database goes down due to maintenance, hacking, or a system crash, other replicas can continue serving requests.
+--                                : Data Availability : Users get uninterrupted data access, regardless of which replica/cluster serves the request, as an abstraction layer ensures seamless access.
+--                         : Advantages : High Availability, Fault Tolerance, Scalability and Improved Read Performance.
+--                                      : Data Redudancy : Yes redudancy is not always bad, Clustering of databases helps with data redundancy, as we store the same data at multiple servers. Don’t confuse this data redundancy as repetition of the same data that might lead to some anomalies. The redundancy that clustering offers is required and is quite certain due to the synchronisation. In case any of the servers had to face a failure due to any possible reason, the data is available at other servers to access.
+--                         : Key Features : Abstraction Layer : Users remain unaware of which database replica serves their request.
+--                                        : Synchronous and Asynchronous Replication : Synchronous : Ensures all replicas have the same data at all times.
+--                                                                                   : Asynchronous : Updates replicas with slight delays, improving performance but potentially causing minor inconsistencies.
+--                         : Challenges : Replication Lag : In asynchronous replication, replicas may lag behind the main database, leading to inconsistent data for a short period.
+--                                      : Maintenance Complexity : Managing multiple replicas and ensuring their synchronization requires additional resources and expertise.
+--                                      : Resource Overhead : Clustering requires more hardware and storage.
+--                         : Example : E-commerce Platforms (e.g., Amazon), Banking Systems and Content Delivery Networks (CDNs)
 
--- Advantages : Data Redudancy : Yes redudancy is not always bad, also it is not that type of Redudancy ki ek hi DB pr multiple rows me same hi data stores hai! its like different DBs pr same data stored hai taaki koi ek server ya DB khrab hota hai toh dusre vaale server jahaa same data stored hai vahaa se data access kr sakte hai!
---                             : Formally, Clustering of databases helps with data redundancy, as we store the same data at multiple servers. Don’t confuse this data redundancy as repetition of the same data that might lead to some anomalies. The redundancy that clustering offers is required and is quite certain due to the synchronisation. In case any of the servers had to face a failure due to any possible reason, the data is available at other servers to access.
---            : Load Balancing : or scalability doesn’t come by default with the database. It has to be brought by clustering regularly. It also depends on the setup. Basically, what load balancing does is allocating the workload among the different servers that are part of the cluster. This indicates that more users can be supported and if for some reasons if a huge spike in the traffic appears, there is a higher assurance that it will be able to support the new traffic. One machine is not going to get all of the hits. This can provide scaling seamlessly as required. This links directly to high availability. Without load balancing, a particular machine could get overworked and traffic would slow down, leading to decrement of the traffic to zero.
---                             : Load jo pehle ek DB pr lag rha tha ab vo multiple DBs pr spread hogya!
---            : High Availabilty : When you can access a database, it implies that it is available. High availability refers the amount of time a database is considered available. The amount of availability you need greatly depends on the number of transactions you are running on your database and how often you are running any kind of analytics on your data. With database clustering, we can reach extremely high levels of availability due to load balancing and have extra machines. In case a server got shut down the database will, however, be available.
---                               : Agar multiple DBs pr data stored rahega toh data easily available hoga!
-
--- How does clustering work? In cluster architecture, all requests are split with many computers so that an individual user request is executed and produced by a number of computer systems. The clustering is serviceable definitely by the ability of load balancing and high-availability. If one node collapses, the request is handled by another node. Consequently, there are few or no possibilities of absolute system failures.
--- Try to study Content Delivery Network while revising in brief!
+-- Working of Clusters : Architecture Overview : In clustering, incoming user requests are distributed across multiple systems (nodes) within the cluster.
+--                                             : Execution by Nodes: Each request is processed by one or more nodes, ensuring that the workload is shared efficiently.
+--                                             : Failure Handling : If one node fails, another node in the cluster seamlessly takes over, preventing system downtime.
+--                     : Key Enablers : Load Balancing : Ensures that requests are evenly distributed across nodes, preventing overloading of any single system.
+--                                    : High Availability : Reduces the likelihood of total system failure by maintaining redundant nodes ready to handle requests.
 
 -- ----------------------------------------------------------------------- Lecture 18 : Partitioning and Sharding in DBMS --------------------------------------------------------------------------------------------------------------------------------->
 -- Suppose you have data and uss data ko store krna easy kon krta hai? DBMS! but now maanlo ab vo jo data hai vo bhott hi zyada amount me hai! aisa tab hota hai jab humara jo software hai uska purpose bhot bade large mass ko serve krna hai! ab maanlo iss bade data ko hum ek DB me store krdiye! but itna zyada data hai ki vo saara ek DB me aa nhi rha kyunki ab DB ki bhi hum kuch limit lagayenge! and maanlo 1TB storage thi vo sab full hogyi! also CPU ki bhi limit reach hogyi itna data hai! toh in that case our DB got exhausted!
