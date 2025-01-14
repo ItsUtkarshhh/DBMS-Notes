@@ -1123,102 +1123,96 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --          : It’s called dense indexing because every unique value (from the attribute) gets an entry in the index.
 
 -- ----------------------------------------------------------------------- Lecture 15 : SQL vs NoSQL --------------------------------------------------------------------------------------------------------------------------------->
--- NoSQL is Non-Relational Model! It means not only SQL, means zaruri nhi ki DB ko access krne ke liye hum SQL ka hi sahara le! hum Non-relational lang ka bhi use kr sakte hai! a good example is MongoDB!
--- The NoSQL languages are used to work on non-relational DBs!
--- NoSQL databases (aka "not only SQL") are non-tabular databases and store data differently than relational tables. NoSQL databases come in a variety of types based on their data model. The main types are document, key-value, wide-column, and graph.
+-- NoSQL : NoSQL stands for "Not Only SQL." It refers to databases that are non-relational and do not rely solely on SQL for data access.
+--       : Flexibility : These databases support various data models and provide flexibility in storing and accessing data, allowing the use of non-relational languages in addition to SQL.
+--       : Examples : MongoDB, Cassandra, CouchDB, Redis, Neo4j.
 
--- SQL : Works on Structured data, has constraints and has a fixed schema!
--- NoSQL : Works on Structured + Semi-Structured + Un-Structured Data! all of them! also this is more flexible! maanlo kisi student ki info store krni hai but we dont have all the details! then in that case this flexible schema helps! example of unstructured data : Some text files, some chats that we do on social media platforms and some emails, harr kisi ka email likhne ka style alag hota hai! so that is why these are all unstructured data!
---       : Now NoSQL me vertical and horizontal scaling dono practically possible hoti hai! kr sakte SQL me bhi hai but jo practically jo ki jaati hai scaling vertically and horizontally both, that is done in NoSQL!
---       : They are schema free.
---       : Data structures used are not tabular, they are more flexible, has the ability to adjust dynamically.
---       : Can handle huge amount of data (big data).
---       : Most of the NoSQL are open sources and has the capability of horizontal scaling.
---       : It just stores data in some format other than relational.
+-- NoSQL Characteristics : Data Storage : Non-tabular databases. Store data in diverse formats like documents, key-value pairs, wide-column stores, and graphs.
+--                       : Data Types Supported : Structured, Semi-Structured, and Unstructured Data. Examples of unstructured data: Text files, chat messages, emails, etc
+--                       : Schema : Schema-free or flexible schema design. Adapts to changes in data structure dynamically.
+--                       : Scalability : Supports both vertical and horizontal scaling effectively. Horizontal scaling (adding more servers) is more practical and commonly implemented in NoSQL compared to SQL.
+--                       : Big Data Handling : Capable of managing vast amounts of data (big data). Optimized for distributed systems.
+--                       : Open Source : Most NoSQL databases are open source, making them cost-effective and community-driven.
 
--- History of NoSQL
--- NoSQL databases emerged in the late 2000s as the cost of storage dramatically decreased. Gone were the days of needing to create a complex, difficult-to-manage data model in order to avoid data duplication. Developers (rather than storage) were becoming the primary cost of software development, so NoSQL databases optimised for developer productivity.
--- Data becoming unstructured more, hence structuring (defining schema in advance) them had becoming costly. 
--- NoSQL databases allow developers to store huge amounts of unstructured data, giving them a lot of flexibility.
--- Recognising the need to rapidly adapt to changing requirements in a software system. Developers needed the ability to iterate quickly and make changes throughout their software stack — all the way down to the database. NoSQL databases gave them this flexibility.
--- Cloud computing also rose in popularity, and developers began using public clouds to host their applications and data. They wanted the ability to distribute data across multiple servers and regions to make their applications resilient, to scale out instead of scale up, and to intelligently geo-place their data. Some NoSQL databases like MongoDB provide these capabilities.
+-- SQL Characteristics : Definition : SQL databases are relational databases that use Structured Query Language (SQL) for defining and manipulating data.
+--                     : Schema : Have a fixed schema with defined constraints. Suitable for structured data with strict relationships.
+--                     : Data Types Supported : Primarily handles structured data. Uses relational tables with rows and columns.
+--                     : Scalability : Primarily supports vertical scaling (adding more resources to a single server). Horizontal scaling is possible but less practical compared to NoSQL.
+--                     : Examples : MySQL, PostgreSQL, Oracle Database, Microsoft SQL Server.
 
--- Data Modelling in NoSQL vs SQL
--- In case of SQL, data is stored in form of rows and columns and we know kaise usme normalization applied rehti hai taaki data redudancy na ho! and so on and so forth wahtever we have studied till now!
--- in case of NoSQL data is stored in form of Key Value pairs, like we know about JSON files usme hum JavaScript ki help se data ko key value pairs ke form me store rakhte hai!
+-- History : NoSQL databases emerged in the late 2000s due to declining storage costs, enabling developers to handle unstructured data without complex schemas.
+--         : Optimized for developer productivity, NoSQL offered flexibility for storing vast amounts of unstructured data, adapting to changing software requirements, and facilitating rapid iteration.
+--         : With the rise of cloud computing, NoSQL databases supported distributed, scalable, and resilient applications across servers and regions, with capabilities like geo-placement of data, as seen in systems like MongoDB.
 
--- Now lets see some advantages of NoSQL
--- Flexible Schema : RDBMS has pre-defined schema, which become an issue when we do not have all the data with us or we need to change the schema. It's a huge task to change schema on the go.
--- Horizontal Scaling : Now the thing is, here we will understand the whole concept of scaling in SQL and NoSQL, so the thing is Scaling is increaing the efficiency or upgrading the system or the hardware so that we can retrieve the information more effectively!
---                    : Now scaling are of two types Vertical and Horizontal, In case of vertical scaling, jaise maanlo ek DB hai ab hum usme hi storage badhaate jaa rhe hai rows badhaate jaa rhe hai and RAM badhaate jaa rhe hai, CPU badhaate jaa rhe hai! in that case that is vertical scaling! after some point it becomes costly kyunki kab tak hi hum RAM ya Hardware ya CPU badhaate jayenge! so for that we have Horizontal Scaling, isme kya hota hai ki jaisehumare paas bhot saara data hai toh unn sab data ko ek hi DB pr store krne se better hai ki usko multiple DBs pr store krdo! this is horizonatly scaling, and then unn sab DBs pr individualy vertical scaling apply krdo! isse ye thora cost effiecient bhi hoga and fast retrieval of information bhi hoga! horizontal scaling means load share krna!
---                    : So in SQL we use Vertical Scaling and in NoSQL we use both types of scaling! and that is why NoSQL is fast kyunki usme dono tarah ki scaling practical hoti hai!
---                    : In SQL also horizontal scaling is possible but it is not practical! kyunki in SQL if a system stores has a DB and agar horizontal scaling krenge toh multiple system lagenge multiple DBs ko store krne me! and jab data retrieve krne ki baari ayegi toh ofc we will apply joins! so ab pehle toh data jo different DBs pr stored hai aur vo DBs jo different systems (server) pr stored hai toh pehle toh vo network ke thru ek system pr ayenge which will take time and then jab vo saara data aajaye uske baad unpr joins apply honge! jisme bhi time lagega and then uske baad data retrive krne me toh fir kaafi time lag jayega! and in the present times jahaa pr we want speed, storage ki itni chinta nhi hai we prefer NoSQL over SQL becoz of this factor!
---                    : In NoSQL, horizontal scaling is practical becoz isme hum JSON files ke formal me store kr rhe hai data toh even agar horizontal scaling lgaa ke data retrive krne ke try krenge it will be faster kyunki isme koi joins nhi honge, na koi relations honge kisi tables ke beech me! toh it will be fast in retriving information!
---                    : Horizontal Scaling is called Scale Out and Vertical Scaling is called Scale Up
---                    : In formal language, Horizontal scaling, also known as scale-out, refers to bringing on additional nodes to share the load. This is difficult with relational databases due to the difficulty in spreading out related data across nodes. With non-relational databases, this is made simpler since collections are self-contained and not coupled relationally. This allows them to be distributed across nodes more simply, as queries do not have to “join” them together across nodes. 
---                    : Scaling horizontally is achieved through Sharding OR Replica-sets.
--- High Availability : NoSQL databases are highly available due to its auto replication feature i.e. whenever any kind of failure happens data replicates itself to the preceding consistent state.
---                   : If a server fails, we can access that data from another server as well, as in NoSQL database data is stored at multiple servers.
--- Easy insert and read operations : Queries in NoSQL databases can be faster than SQL databases. Why? Data in SQL databases is typically normalised, so queries for a single object or entity require you to join data from multiple tables. As your tables grow in size, the joins can become expensive. However, data in NoSQL databases is typically stored in a way that is optimised for queries. The rule of thumb when you use MongoDB is data that is accessed together should be stored together. Queries typically do not require joins, so the queries are very fast.
--- Caching Mechanism
--- NoSQL use case is more for Cloud Applications!
+-- Data Modeling in SQL vs NoSQL : In SQL, data is stored in rows and columns with normalization to minimize redundancy. In NoSQL, data is stored as key-value pairs, similar to JSON files, allowing flexible data organization.
 
--- When to use NoSQL?
--- Fast-paced Agile development : Jaise jab TikTok ban hua tha toh Instagram ne very fast paces me Reels vaala feature le aaye the apne app pr! this is example of Fast paced development!
--- Storage of structured and semi-structured data
--- Huge volumes of data
--- Requirements for scale-out architecture
--- Modern application paradigms like micro-services and real-time streaming.
+-- Advantages of NoSQL Databases : Flexible Schema : Unlike RDBMS with predefined schemas, NoSQL allows dynamic schema changes, making it easier to handle evolving data structures.
+--                               : Horizontal Scaling (Scale-Out) : NoSQL supports both horizontal (distributing data across multiple servers) and vertical scaling (upgrading hardware), whereas SQL primarily relies on vertical scaling.
+--                                                                : Horizontal scaling is more practical in NoSQL due to the lack of joins and relational constraints, enabling faster data retrieval.
+--                                                                : Techniques like Sharding and Replica-sets facilitate horizontal scaling in NoSQL.
+--                               : High Availability : NoSQL databases ensure data availability through auto-replication, replicating data across servers. Even if a server fails, data remains accessible from other servers.
+--                               : Fast Insert and Read Operations : NoSQL queries are faster as data is typically stored together, avoiding costly joins required in SQL databases. This design optimizes query performance, especially in systems like MongoDB.
+--                               : Caching Mechanism : Enhances performance by storing frequently accessed data for quick retrieval.
+--                               : Cloud Application Use : NoSQL is well-suited for cloud applications due to its scalability and flexibility in handling distributed data.
 
--- NoSQL DB Misconceptions
--- Relationship data is best suited for relational databases : A common misconception is that NoSQL databases or non-relational databases don’t store relationship data well. NoSQL databases can store relationship data — they just store it differently than relational databases do. In fact, when compared with relational databases, many find modelling relationship data in NoSQL databases to be easier than in relational databases, because related data doesn’t have to be split between tables. NoSQL data models allow related data to be nested within a single data structure.
--- NoSQL databases don't support ACID transactions. aisa nhi hai pehle aisa hota tha, but ab some NoSQL databases like MongoDb uses this ACID properties!
+-- When to Use NoSQL : Fast-paced Agile Development : Ideal for rapidly evolving applications, like Instagram quickly launching Reels after TikTok's ban.
+--                   : Storage of Structured and Semi-structured Data : Handles diverse data formats flexibly.
+--                   : Huge Data Volumes : Efficient for managing and querying large-scale datasets.
+--                   : Scale-out Architecture : Supports horizontal scaling for cost-efficient performance.
+--                   : Modern Applications : Suited for microservices, real-time streaming, and other contemporary paradigms.
 
--- Types of NoSQL Data Models
--- Key-Value Stores : The simplest type of NoSQL database is a key-value store. Every data element in the database is stored as a key value pair consisting of an attribute name (or "key") and a value. In a sense, a key-value store is like a relational database with only two columns: the key or attribute name (such as "state") and the value (such as "Alaska").
---                  : Use cases include shopping carts, user preferences, and user profiles.
---                  : e.g., Oracle NoSQL, Amazon DynamoDB, MongoDB also supports Key-Value store, Redis.
---                  : A key-value database associates a value (which can be anything from a number or simple string to a complex object) with
---                  : a key, which is used to keep track of the object. In its simplest form, a key-value store is like a dictionary/array/map object as it exists in most programming paradigms, but which is stored in a persistent way and managed by a DBMS.
---                  : Key-value databases use compact, efficient index structures to be able to quickly and reliably locate a value by its key, making them ideal for systems that need to be able to find and retrieve data in constant time.
---                  : There are several use-cases where choosing a key value store approach is an optimal solution : Real time random data access, e.g., user session attributes in an online application such as gaming or finance.
---                                                                                                                 : Caching mechanism for frequently accessed data or configuration based on keys.
---                                                                                                                 : Application is designed on simple key-based queries.
--- Column-Oriented / Columnar / C-Store / Wide-Column : The data is stored such that each row of a column will be next to other rows from that same column.
---                                                    : While a relational database stores data in rows and reads data row by row, a column store is organised as a set of columns. This means that when you want to run analytics on a small number of columns, you can read those columns directly without consuming memory with the unwanted data. Columns are often of the same type and benefit from more efficient compression, making reads even faster. Columnar databases can quickly aggregate the value of a given column (adding up the total sales for the year, for example). Use cases include analytics.
---                                                    : Like suppose you have a data in form of rows and columns like there are three attributes Name City and Age, and imagine name ke under 2 rows hai where Utkarsh and Palak is stored, then under City there are 2 rows where Delhi and Lucknow is stored an then under age there are 2 rows where 22 and 20 is stored! now ye toh hogyi row and column way of storing data! now ab yhi data ab jab memory me store hota hai SQL ke through toh vo ofc aise rows and columns ke form me toh nhi hota toh ye Row wise store hota hai at the very basic level! toh vo aise dikhega, [Utkarsh|Delhi|22|Palak|Lucknow|20] isme har memory location ka alag alag memory address hoga jo uske data type pr depend krega ki vo memory location kitna space leta hai!...
---                                                    : Now upar vaale hi example me agar hum Column wise store krne ki koshish kre toh ye kuch aise hoga ki, [Utkarsh|Palak|Delhi|Lucknow|22|20], so yahaa column wise data store hua memory me! but now if we see in the row wise approach agar hum koi data add krna hai toh vo ek normaly Linkedlist ke through add krdenge kyunki usme ek particular insaan ka data ek saath hai! but agar hum column wise approach me koi changes krne ki koshish kre toh hume uss memory ke beech me kahin insert krna hoga, jaise agar ek aur name add krna hua Paresh then in that case hume row wise approach me toh chalo normally iss Paresh entity ka saara data laake ek node daal ke Linkedlist ke tail pr append krdenge! but in case of Column wise approach hume uss memory location me se Palak and Delhi ke beech ka link todna oadega and then koi value add hogi and similarly hume 3 baar in total vo memory location ko todna hoga! taaki Paresh ke corresponding saari values add ho sake! Hence this is a slow process! So it is understood that even through all this advantages, still in NoSQL read operations are faster than SQL but Write and Update and Delete operations are slow, reason aapke saamne!
---                                                    : So before using NoSQL, we first check our use case ki kya humare use case me Write Update Delete operations ke fast hone ki zarurat hai, agara haa toh NoSQL is not preferable! but agar sirf read operations fast hona hai toh koi dikkat nhi hai! we can use NoSQL!
---                                                    : Fayeda isme ye bhi hai ki maanlo ki hume average age nikalni ho kisi insaan ki upar vaale example me toh we will just normally go to a particular node jahaa se age store hona shuru hui hai and then vahaa se saari values ka average nikal lenge! but in case of SQL as we know, pehle hum vo saari rows select krte hai and then usme se jinn columns ka kaa nhi hai unko remove krte hai and then bachi hui rows ka average nikalte hai!s oyes isme ek jagah analytics me kaafi fast kaam krti hai NoSQL, so NoSQL is prefered when you need fast analytics! or fast read operations! 
--- Document Based Stores : Here comes the use of JSON files! use to transfer data here and there on web!
---                       : This DB store data in documents similar to JSON (JavaScript Object Notation) objects. Each document contains pairs of fields and values. The values can typically be a variety of types including things like strings, numbers, booleans, arrays, or objects!
---                       : Use cases include e-commerce platforms, trading platforms, and mobile app development across industries.
---                       : Supports ACID properties hence, suitable for Transactions.
---                       : e.g., MongoDB, CouchDB.
--- Graph Based Stores : So here the data is stored in form of Nodes which are Vertices and Edges which are Relationships! Nodes contains the information about the entity and Edges contains their relationship! A good example can be Friend feature in Facebook! like kon kiska friend hai ye kaafi easily and easy to understand way me store ki jaa sakti hai graph based structure se!
---                    : A graph database focuses on the relationship between data elements. Each element is stored as a node (such as a person in a social media graph). The connections between elements are called links or relationships. In a graph database, connections are first-class elements of the database, stored directly. In relational databases, links are implied, using data to express the relationships!
---                    : A graph database is optimised to capture and search the connections between data elements, overcoming the overhead associated with JOINing multiple tables in SQL.
---                    : Very few real-world business systems can survive solely on graph queries. As a result graph databases are usually run alongside other more traditional databases.
---                    : Use cases include fraud detection, social networks, and knowledge graphs.
+-- Short Use Cases : Key-Value Stores : Real-time data access (e.g., user sessions, caching).
+--                 : Column-Oriented Stores : When analytics is a priority.
+--                 : Document-Based Stores : Flexible data structures for web apps and mobile platforms.
+--                 : Graph-Based Stores : Applications requiring complex relationships, like social networks.
 
--- NoSQL Disadvantages : Data Redundancy, jo cheeze SQL me kab space me store ho jaa rhi thi vo yahaa kaafi space lengi!
---                     : Since data models in NoSQL databases are typically optimised for queries and not for reducing data duplication, NoSQL databases can be larger than SQL databases. Storage is currently so cheap that most consider this a minor drawback, and some NoSQL databases also support compression to reduce the storage footprint.
---                     : Update & Delete operations are costly.
---                     : All type of NoSQL Data model doesn’t fulfil all of your application needs. Depending on the NoSQL database type you select, you may not be able to achieve all of your use cases in a single database. For example, graph databases are excellent for analysing relationships in your data but may not provide what you need for everyday retrieval of the data such as range queries. When selecting a NoSQL database, consider what your use cases will be and if a general purpose database like MongoDB would be a better option.
---                     : Doesn’t support ACID properties in general.
---                     : Doesn’t support data entry with consistency constraints.
+-- NoSQL DB Misconceptions : Relationship Data : Misconception : NoSQL databases can't handle relationship data effectively.
+--                                             : Reality : NoSQL can handle relationship data, but it does so differently than SQL. Instead of using tables and joins, it nests related data in a single structure, which can simplify certain data models.
+--                         : ACID Transactions : Misconception : NoSQL databases don't support ACID transactions.
+--                                             : Reality : While this was true for early NoSQL databases, many modern NoSQL systems, such as MongoDB, now support ACID transactions, making them reliable for scenarios requiring strong consistency. But other's don't support!
+
+-- Types of NoSQL Data Models!
+-- Key Value Stores : Simplest type of NoSQL database where data is stored as a pair of a key and a value, like a dictionary in programming. Example : {"username": "Utkarsh"}
+--                  : Working : The key acts like an identifier (e.g., "username"), and the value is the data associated with it (e.g., "Utkarsh"). Uses compact and efficient indexing to quickly retrieve data using the key.
+--                  : Use Cases : Real-time systems like gaming or financial applications. Caching frequently accessed data. Storing user preferences, shopping carts, or profiles.
+--                  : Examples of Databases : Redis, Amazon DynamoDB, MongoDB (supports this), Oracle NoSQL.
+
+-- Column-Oriented (Wide-Column) Stores : Data is stored column by column instead of row by row (as in relational databases). Makes it fast to read specific columns (useful for analytics).
+--                                      : Data stored in memory looks like this in row-wise (SQL) : [Utkarsh | Delhi | 22 | Palak | Lucknow | 20]. After `22` its a new row. In column-wise (NoSQL) : [Utkarsh | Palak | Delhi | Lucknow | 22 | 20].
+--                                      : Column storage enables fast aggregation (like calculating the average of ages) because you can directly access and process only relevant columns.
+--                                      : Pros : Faster for analytics and read-heavy operations. Efficient compression for columns of the same data type.
+--                                      : Cons : Write, update, and delete operations are slower compared to row-wise storage.
+--                                      : Use if your application is focused on analytics or fast read operations. Avoid for applications needing frequent write or update operations.
+--                                      : Examples of Databases : Cassandra, HBase.
+
+-- Document Based Stores : Stores data in document format, similar to JSON objects, where each document contains fields (keys) and their values.
+--                       : Working : Documents can hold complex data like arrays and objects, making it flexible and ideal for modern applications. Supports ACID properties, making it suitable for transactional systems.
+--                       : Use Cases : E-commerce platforms, mobile apps, and trading platforms. Examples of Databases : MongoDB, CouchDB.
+
+-- Graph Based Stores : Data is stored as nodes (entities) and edges (relationships between entities). Example : Node : User (e.g., "Utkarsh"). Edge : Friendship (e.g., "Utkarsh is friends with Palak").
+--                    : Working : Relationships are treated as first-class elements, meaning they are directly stored and easily accessible (unlike SQL, where relationships are implied using JOINs). Optimized for querying connections between data.
+--                    : Use Cases : Social networks (friendship graphs like Facebook). Fraud detection (finding suspicious connections). Knowledge graphs.
+--                    : Cons : Not ideal for standalone use in real-world systems, often used alongside other databases.
+--                    : Examples of Databases : Neo4j, Amazon Neptune.
+
+-- NoSQL Disadvantages : Data Redundancy : NoSQL databases may require more storage compared to SQL because they prioritize query optimization over reducing data duplication. Data redundancy can lead to larger storage requirements.
+--                                       : However, storage costs are low, and some NoSQL databases offer compression to mitigate this.
+--                     : Expensive Update & Delete Operations : Performing update and delete operations can be costly in NoSQL due to the need to rewrite large portions of data (especially in column-based stores).
+--                     : Limited Use Case Coverage : Different NoSQL models (key-value, column, document, graph) are specialized for specific use cases. No single NoSQL database might support all application needs. For example, graph databases are good for analyzing relationships but may not be ideal for other operations like range queries.
+--                     : Lack of ACID Properties : NoSQL databases generally do not support ACID (Atomicity, Consistency, Isolation, Durability) properties, which can be crucial for transactional consistency.
+--                     : No Data Consistency Constraints : Many NoSQL databases do not support consistency constraints, which are important for ensuring that the data remains consistent across various operations.
 
 --                                                   SQL                         vs                      NoSQL
--- Data Storga Model        ->   Fixed Rows and Columns                          |   Document Based like JSON, Key Value Pairs, Column Store and Graph Based
--- Development History      ->   Developed in the 1970s with a                   |   Developed in the late 2000s with a focus on scaling and allowing for rapid application change driven by agile and DevOps practices.
---                               focus on reducing data duplication.             |   
--- Examples                 ->   Oracle, MySQL, Microsoft SQL Server and more    |   Document based : MongoDB & CouchDB, Key-value Pairs : Redis & Dynamo DB, Column Store : Kasandra & HBase, Graph Based : Amazon Neptune & Neo4J.
--- Primary Purpose          ->   General Purpose                                 |   Document : General purpose, Key-Value Pairs : large amounts of data with simple lookup queries, Column Store : Large amount of data with with predictable query patterns, Graph : analyzing and traversing analysing relationships between connected data!
--- Schema                   ->   Fixed                                           |   Flexible
--- Scaling                  ->   Vertical                                        |   Horizontal
--- ACID Properties          ->   Supported                                       |   Not Supported except DBs like MongoDB!
--- JOINS                    ->   Typically Required                              |   Typically not required!
--- Data to Object Mapping   ->   Required object relational mapping              |   Many do not require ORMs. MongoDB documents map directly to data structures in most popular programming languages!
+-- Data Storage Model        ->   Fixed Rows and Columns                          |   Document Based like JSON, Key Value Pairs, Column Store and Graph Based
+-- Development History       ->   Developed in the 1970s with a                   |   Developed in the late 2000s with a focus on scaling and allowing for rapid application change driven by agile and DevOps practices.
+--                                focus on reducing data duplication.             |   
+-- Examples                  ->   Oracle, MySQL, Microsoft SQL Server and more    |   Document based : MongoDB & CouchDB, Key-value Pairs : Redis & Dynamo DB, Column Store : Kasandra & HBase, Graph Based : Amazon Neptune & Neo4J.
+-- Primary Purpose           ->   General Purpose                                 |   Document : General purpose, Key-Value Pairs : large amounts of data with simple lookup queries, Column Store : Large amount of data with with predictable query patterns, Graph : analyzing and traversing analysing relationships between connected data!
+-- Schema                    ->   Fixed                                           |   Flexible
+-- Scaling                   ->   Vertical                                        |   Horizontal
+-- ACID Properties           ->   Supported                                       |   Not Supported except DBs like MongoDB!
+-- JOINS                     ->   Typically Required                              |   Typically not required!
+-- Data to Object Mapping    ->   Required object relational mapping              |   Many do not require ORMs. MongoDB documents map directly to data structures in most popular programming languages!
 
 -- ----------------------------------------------------------------------- Lecture 16 : Types of Databases --------------------------------------------------------------------------------------------------------------------------------->
 -- Relational Databases : Relational databases are quite popular, even though it was a system designed in the 1970s. Also known as relational database management systems (RDBMS), relational databases commonly use Structured Query Language (SQL) for operations such as creating, reading, updating, and deleting data. Relational databases store information in discrete tables, which can be JOINed together by fields known as foreign keys. For example, you might have a User table which contains information about all your users, and join it to a Purchases table, which contains information about all the purchases they’ve made. MySQL, Microsoft SQL Server, and Oracle are types of relational databases.
