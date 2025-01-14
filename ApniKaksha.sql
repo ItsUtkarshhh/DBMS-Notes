@@ -713,18 +713,33 @@ DROP VIEW view1; -- This removes the view but does not affect the original table
 -- Important Window Functions!
 -- ROW_NUMBER() : Assigns a unique number to each row within a partition, starting from 1. The rows are ordered based on the ORDER BY clause.
 --              : Use case : To rank rows uniquely, such as giving each customer in a dataset a unique ID.
+--              : Syntax : ROW_NUMBER() OVER (PARTITION BY partition_column ORDER BY order_column)
+
 -- RANK() : Similar to ROW_NUMBER(), but it allows for tied ranks. When rows have the same value, they receive the same rank, "but the next rank will be skipped". Analogy : If two people crossed a finish line together, they both be marked Rank 1, and next person to cross the finish line will be marked Rank 3, Rank 2 will be skipped!
 --        : To rank rows where ties are possible (like scores in a competition).
+
+--        : Syntax : RANK() OVER (PARTITION BY partition_column ORDER BY order_column)
 -- DENSE_RANK() : Similar to RANK(), but there is no gap in the rank. Even if rows are tied, the next rank number is not skipped. Analogy : If two people crossed a finish line together, they both be marked Rank 1, and next person to cross the finish line will this time be marked Rank 2, unlike Rank 3 in RANK()!
 --              : When you want to avoid skipping ranks even in the case of tied values.
+--              : Syntax : DENSE_RANK() OVER (PARTITION BY partition_column ORDER BY order_column)
+
 -- NTILE() : Divides the result set into a specified number of buckets (or tiles) and assigns each row to a bucket. Useful for grouping data into equal parts, like quartiles, deciles, etc.
 --         : Example : If there is an Employee table, and has attributes like, EmpID, Department, Salary, now if I apply, SELECT employee_id, department, salary, NTILE(4) OVER (PARTITION BY department ORDER BY salary DESC) AS quartile FROM employees; It will partition the rows on basis of groups that is Department in this case and order in DESC, now NTIL(4), will mark each row in a partition from 1-4 making quartiles and it will be follow in all the partitions!
+
 -- SUM() : Calculates the sum of a column's values within a window frame (partition).
 --       : Use case : To calculate the cumulative sum or total sales over a period.
+--       : Syntax : SUM(column_name) OVER (PARTITION BY partition_column ORDER BY order_column)
+
 -- AVG() : Calculates the average of a column’s values within a specified window.
 --       : Use Case : To calculate the average salary or average score within a partition.
+--       : Syntax : AVG(column_name) OVER (PARTITION BY partition_column ORDER BY order_column)
+
 -- MIN() & MAX() : MIN() returns the smallest value in a column within a window. MAX() returns the largest value in a column within a window.
 --               : To get the minimum or maximum value of a metric (like score or salary) within a partition.
+--               : Syntax : MIN(column_name) OVER (PARTITION BY partition_column ORDER BY order_column) and MAX(column_name) OVER (PARTITION BY partition_column ORDER BY order_column)
+
+-- LAG() : The LAG window function in SQL is used to retrieve the value of a column from a previous row within the same result set, based on the specified ordering. It is particularly useful for tasks involving comparisons or calculations between rows, such as finding differences between successive rows or identifying trends over time.
+--       : Syntax : LAG(column_name, offset, default_value) OVER (PARTITION BY partition_column ORDER BY order_column)
 
 -- Try examples to practice and get to know them!
 
