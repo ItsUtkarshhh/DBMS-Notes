@@ -1266,174 +1266,234 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                     : Key Enablers : Load Balancing : Ensures that requests are evenly distributed across nodes, preventing overloading of any single system.
 --                                    : High Availability : Reduces the likelihood of total system failure by maintaining redundant nodes ready to handle requests.
 
+-- To solve above problems, there are more concepts like Scale-Up and Scale-Out!
+-- Scale Up : It is also called Vertical Scaling, Adding more resources (CPU, RAM, storage) to a single server to improve its performance.
+--          : Working : Upgrading hardware (e.g., replacing a dual-core processor with a quad-core one). Increasing RAM or storage to handle larger workloads on a single database server.
+--          : Benefits : Easier to implement. No need for complex software changes. Suitable for applications with predictable growth.
+--          : Challenges : Limited by hardware constraints (e.g., max CPU or RAM capacity). Higher cost per additional resource. Single point of failure remains.
+--          : When to use : For small to medium workloads where a single server can handle the demand. Applications with high data consistency requirements.
+
+-- Scale Out : It is also called Horizontal Scaling, Adding more servers or nodes to distribute the workload across multiple machines.
+--           : Working : Adding more database servers and dividing data using techniques like sharding or replication. Workload is spread across servers for better performance and fault tolerance.
+--           : Benefits : Virtually unlimited scaling. High availability due to redundancy. Cost-effective with commodity hardware.
+--           : Challenges : Requires complex architecture (e.g., load balancers, distributed systems). Data consistency and synchronization issues may arise.
+--           : When to use : For large-scale systems like e-commerce websites or social networks. When high availability and fault tolerance are critical.
+
 -- ----------------------------------------------------------------------- Lecture 18 : Partitioning and Sharding in DBMS --------------------------------------------------------------------------------------------------------------------------------->
--- Suppose you have data and uss data ko store krna easy kon krta hai? DBMS! but now maanlo ab vo jo data hai vo bhott hi zyada amount me hai! aisa tab hota hai jab humara jo software hai uska purpose bhot bade large mass ko serve krna hai! ab maanlo iss bade data ko hum ek DB me store krdiye! but itna zyada data hai ki vo saara ek DB me aa nhi rha kyunki ab DB ki bhi hum kuch limit lagayenge! and maanlo 1TB storage thi vo sab full hogyi! also CPU ki bhi limit reach hogyi itna data hai! toh in that case our DB got exhausted!
--- So in this case we have two big issues! Huge Data and Large number of request! ab huge amount of data ke kaaran jo main issue ayega vo ayega Managebility ka! and then zyada request ke chakkar me CPU exhaust hojaata hai! toh hum kya krte hai Data ko distribute krdete hai! and multiple DB me store krdete hai isse ek Distributed Database bann jaata hai!
--- Ab dikkat vhi thi ki agar ek hi DB pr bhot saara data stored hai then yaa toh system hi crahs hojayega ya toh response time bhot badh jayega! Toh inn hi case me hum Data ko Distribute krdete hai! and ek Distributed Database bnaa dete hai!
--- So overall itne bade data ko handle krne ke liye hum Database optimization techniques use krte hai! like we have studied Scale up and Scale out previously!
+-- When data grows significantly due to serving a large user base, managing and storing it efficiently becomes challenging.
+-- Challenges with Large Data : Storage Limitations : A database has finite capacity (e.g., 1TB). When exceeded, storage and CPU get exhausted, leading to crashes or slow response times.
+--                            : Manageability : Huge data and increasing requests make it hard to maintain performance and reliability.
+--                            : To resolve these challenges, we use Database Optimization Techniques, such as Scaling and Data Distribution.
 
--- So, the Data Optimzation techniques like : Scale Up : In this case hume lgta hai ki agar hum storage ko double krde + CPU ko double krde + RAM ko double krde toh response time 1/2 hojayega but aisa practically nhi hota hai! even isse pehli baat toh cost itni badh jaati hai ki that is very high! so this is an expensive bet! so doing scaleup for DB Optimization is not practical!
---                                          : Clustering (Add-Replica Sets) : Ab isme ek master node hoti hai and uske replicas bane hue hote hai alag alag jagah! and jo bhi updates hai vo sab master pr aate hai and jo master hota hai vo ye updates replicas me propagate krta hai! but isse ye dikkat hoti hai isme delay hota hai! ek master se dusre replica tak jaana and all takes time.
---                                          : Partioning : But inn dono se better tareeka hai ye! ye ek scale-out ka tareeka hai, jo clustering bhi tha isme bhi hum new nodes add krte hai! but how this is different from clusterting, so this is how, ki like partioning are of two types! ek toh Horizontal and ek Vertical, Vertical me kya hai ki hum kuch group of columns bnaa ke unko alag alag nodes of DB me daaldete hai! and Horizontal me particular amount of tuples ko kisi aur node me daalke alag alag kr dete hai!
---                                                       : Vertical Partioning me ek ye dikkat hai ki agar vertically data different server/nodes me store hau toh kisi ek tuple ya instance ki saari info ke liye hum multiple servers ko access krna padd sakta hai! but yeah still DB is more optimized than before! and horizontal toh ptaa hi hai!
+-- Key Techniques for Database Optmization : Scale-Up (Vertical Scaling) : Involves upgrading hardware (e.g., doubling CPU, RAM, and storage).
+--                                                                       : : Challenge : Costly and doesn’t always proportionally improve performance.
+--                                         : Clustering (Replica Sets) : A Master Node handles updates and propagates them to Replica Nodes for load distribution.
+--                                                                     : Challenge : Delays in synchronization between master and replicas can occur.
+--                                         : Partitioning (Scale-Out) : Data is divided into smaller chunks and distributed across multiple nodes.
+--                                                                    : Types : Vertical Partitioning : Groups of columns are stored on different nodes.
+--                                                                                                    : Challenge : Accessing complete information for a record might require multiple nodes.
+--                                                                            : Horizontal Partitioning : Rows (tuples) are divided and stored across nodes.
+--                                                                                                      : Advantage : Often more efficient and balances load better.
+--                                                                    : Advantages : Parallelism, Availability, Performance, Managebility and Reduce cost, as scaling up or vertical scaling might be costly
 
--- Now lets do it in formal language!
--- A big problem can be solved easily when it is chopped into several smaller sub-problems. That is what the partitioning technique does. It divides a big database containing data metrics and indexes into smaller and handy slices of data called partitions. The partitioned tables are directly used by SQL queries without any alteration. Once the database is partitioned, the data definition language can easily work on the smaller partitioned slices, instead of handling the giant database altogether. This is how partitioning cuts down the problems in managing large database tables.
--- Partioning : Partitioning is the technique used to divide stored database objects into separate servers. Due to this, there is an increase in performance, controllability of the data. We can manage huge chunks of data optimally. When we horizontally scale our machines/servers, we know that it gives us a challenging time dealing with relational databases as it’s quite tough to maintain the relations. But if we apply partitioning to the database that is already scaled out i.e. equipped with multiple servers, we can partition our database among those servers and handle the big data easily.
--- Types of Partioning :
--- Vertical Partioning : Slicing relation vertically / column-wise.
---                     : Need to access different servers to get complete tuples.
+-- Distributed Database : A Distributed Database is a single logical database spread across multiple servers, interconnected via a network.
+--                      : It results from applying database optimization techniques like : Clustering : Adding replicas for load balancing.
+--                                                                                       : Partitioning : Dividing data into chunks (horizontal or vertical).
+--                                                                                       : Sharding : Splitting data based on specific criteria.
+--                      : Why Is It Needed? Handle Large Data, Load Distribution, Fault Tolerance, Improved Performance and Scalability.
 
--- Horizontal Partioning : Slicing relation horizontally / row-wise.
---                       : Independent chunks of data tuples are stored in different servers.
+-- Sharding!
+-- Sharding is a database optimization technique that applies horizontal partitioning, dividing data into smaller, independent pieces called shards.
+-- Working : Data Division : The database is split horizontally based on specific criteria (e.g., tuples 1-1000 on Node S1, 1001-2000 on Node S2). Each shard (e.g., S1 and S2) operates independently.
+--         : Routing Layer : To handle incoming requests, a routing layer determines which shard (S1 or S2) contains the requested data. This ensures the request is forwarded to the correct shard.
+-- Instead of storing all data on a single database instance, sharding distributes it across multiple nodes. The routing layer efficiently directs queries to the right shard, reducing bottlenecks and improving scalability.
+-- Practical Use : Sharding is widely used in systems with massive datasets, like social media platforms and e-commerce sites, to ensure smooth and scalable operations.
 
--- When Partitioning is Applied? : Dataset become much huge that managing and dealing with it become a tedious task.
---                               : The number of requests are enough larger that the single DB server access is taking huge time and hence the system’s response time become high.
+-- Partitioning Vs Sharding : Sharding is a type of Partitioning!
+--                          : Partitioning : General technique to divide a database into smaller, more manageable pieces. Types : Horizontal an Vertical!
+--                                         : Scope : Typically used within a single database system.
+--                          : Sharding : A specific implementation of horizontal partitioning across multiple independent databases (shards). Each shard is a fully independent database instance. Requires a routing layer to direct queries to the correct shard.
+--                                     : Scope : Used in distributed database systems where data and workloads are spread across multiple machines.
+--                          : Overall, Partitioning is a broad concept for dividing data within a database. Sharding takes horizontal partitioning further by distributing data across multiple servers for scalability and high availability in distributed systems.
 
--- Advantages of Partitioning : Parallelism
---                            : Availability
---                            : Performance
---                            : Managebility
---                            : Reduce cost, as scaling up or vertical scaling might be costly
-
--- Distributed Database : A single logical database that is, spread across multiple locations (servers) and logically interconnected by network.
---                      : This is the product of applying DB optimisation techniques like Clustering, Partitioning and Sharding.
---                      : Why this is needed? READ the point 'Why Partioning is Applied?'
-
--- Now lets see what is Sharding : So it is a technique to apply Horizontal Partioining!
---                               : Ab dekho maanlo ki koi DB hai uske 1-1000 tak ke tuples ko humne ek node S1 me store krdiya hai and 1001-2000 tak ke tuples ko S2 me store krdiya hai! and both of S1 and S2 are indepenedent of each other! these two S1 and S2 are also called Shards! Now, iss case me na jab bhi koi request aayegi tab hume ye dekhna hota hai ki iss request ko kahaa bheje? S1 pr ya S2 pr! toh uske liye we implement a routing layer! jo iss request ko route kregi ki isko jo data retreive krna hai isko vo S1 pr bhejne se milega ya S2 pr! so this adds another layer of implementation as Routing layer!
---                               : The fundamental idea of Sharding is the idea that instead of having all the data sit on one DB instance, we split it up and introduce a Routing layer so that we can forward the request to the right instances that actually contain the data.
-
--- Industries me Sharding and Partioning ek hi saath use hote hai generally! they are used interchangebly oftenly!
-
--- Pros of Sharding : Scalability & Availability
-
--- Cons of Sharding : Complexity increases due to making partition mapping and introducing routing layer into the system!
---                  : Non-uniformity that creates the necessity of Re-Sharding.
---                  : Not well suited for Analytical type of queries, as the data is spread across different DB instances. (Scatter-Gather problem)
-
--- To apply sharding there are queries! in DDL! so google it on your own while revising!
+-- Pros & Cons : Pros : Scalability : Easily handles growing data by distributing it across multiple shards.
+--                    : Availability : Ensures system reliability, as issues in one shard don't affect others.
+--             : Cons : Increased Complexity : Requires partition mapping and a routing layer, complicating the system.
+--                    : Re-Sharding Challenges : Non-uniform data distribution may necessitate re-sharding, which is resource-intensive.
+--                    : Not Ideal for Analytics : Analytical queries face inefficiencies due to the scatter-gather problem (data spread across multiple shards).
 
 -- ----------------------------------------------------------------------- Lecture 19 : DB Scaling Patterns --------------------------------------------------------------------------------------------------------------------------------->
--- Till now we have studied some topics which were more or less already taught us in the colleges! but now lets learn some more industry specific topics!
--- DB Scaling Patterns : Firstly hum scaling kyu kr rhe hai and that is becoz humara DB badhta jaa rha hai users badhte jaa rhe hai! toh hume DB ko optimized rakhne ke liye and aur data ko acquire krne ke liye scaling use krni hoti hai!
--- So initially toh DB hum itna badaa nhi bnaate hai jab company nayi nyi shuru krte hai toh kyunki need hi nhi hai! starting me ek DB chhota hi hoga and then agar users badhte jayenge uske according hum scaling krte jayenge!
+-- As a database grows with increasing data and users, scaling is needed to keep it optimized and capable of handling more load. When a company starts, the database is small, and scaling isn’t necessary. As the user base grows, scaling is introduced to accommodate the increasing data and traffic.
 
--- Lets see a case study! where you are making a Cab booking App! and you have a tiny startup! and initially you have only 10 customers and you DB is also on a small PC and also you are getting 1 request in 5 minutes! so abhi toh DB and application ekdum mast kaam krega!
--- But maanlo your startuo and app becomez famous! and now the customers increased to more than 10 and you are getting 10 reuqests per minute! then in that case humara DB toh ek normal se PC pr hai toh isme kaafi time lag sakta hai! and jo DB calls honge and then jo response time hoga vo kaafi ghat jayega! customer ka dis-satisfaction hoga! and jo transactions honge unme deadlock starvation and alag alag taah ke problems aane lagenge! API latency bhot badh jayegi! means vhi response time badh jayega! and overall perfomance slow down hogya!
--- So solution to this is, hume apne DB ko scale krna padega and optimize krna padega! 
+-- Case Study : Cab Booking App
+-- Initial Stage : With only 10 customers and 1 request every 5 minutes, the small database on a basic PC works perfectly fine.
+-- Growth Stage : As the customer base grows to over 10 and requests increase to 10 per minute, the small database starts facing issues, Slow response times, Increased transaction problems (deadlocks, starvation), API latency and performance degradation.
+-- Solution : To handle this growth, the database needs to be scaled and optimized to maintain smooth performance and avoid customer dissatisfaction.
 
--- So now, hum different different patterns use krenge DB ko scale krne ke liye, seedha hi DB badhaa nhi denge, as per need jayenge taaki cost ekdum se badh naa jaaye!
--- Query Optimization and Connection Pool Implementation! : First is cache memory is frequently uses non-dynamic data like, booking history, payment history and user profile! so non-dynamic data is that jo DB se fetch krne ki zarurat nhi hoti! like hum jo app hai usme recent ki jo payment history hoti hai and jo travel hostory hoti hai usko toh store kr hi sakte hai! isse customer ke liye easy hoga unn cheezo ko access krna! so cache stores all the non-dynamic data! dynamic data vo hua jaise Driver ki location, best route for travel, ye sab dynamic data hai ye sab chche me store hone ka koi fayeda nhi hai! So overall cache me non-dynamic data store krenge taaki baar baar kuch basic cheezo ke liye baar baar DB call na krna pade! and isse thora DB optimize hoga!
---                                                        : Ab dekho maanlo humne jo DB bnaa rakha hai iss app ke liye vo bhot hi heavly normalized hai! ab Normalization se kya hota tha ki data redudancy kam hoti thi! and isse multiple table banti thi and then jab jo data fetch krne hai uske liye DB calls jaati thi and then joins ki help se unn tables ko JOIN kiya jaata tha isse time lgta tha! so what we can do is ki hum thora Normalization kam krke and Data Redudancy badhaa ke DB optimize kr sakte hai kyunki JOINS queries kam hojayengi fir, so this is one way or the other is we can use NoSQL DBs like MongoDB uska yhi sabse badaa fayeda tha ki usme horizontal scaling kr sakte the and data redudancy hoti thi and also optimized hota tha!
---                                                        : Cache DB Connections! isme kya hota hai ki jaise humara ek DB hai and then ek application hai jahaa pr Code likha hua hai! and uss code me kaafi jagah DB connections ke liye call kri gyi hai! and harr call pr nayaa connection establish krna is a very costly thing! so what we do is, hum kuch DB Connections pehle se hi bnaa ke rakh lete hai! and then jab bhi connection calls aati hai toh unko hi reuse krte rehte hai! isse cost bachti hai and also jo time and cost lgti thi new connections establish krne me vo bhi kam hota tha! and overall DB calls fast hoti hai! so ye achieve krne ke liye jiss language me humne apna application code likha hai like for example : Spring, toh isme kuch aisi libraries hoti hai jo Cache DB connections krti hai toh hum unko use kr sakte hai!
---                                                        : But ab maanlo ki firse number of users of the app increased itna ki firse DB and application se handle nhi ho rhe! toh in that case we ye saari optimizations ek limited userbase tak theek thi but after a certain point of number of users, vhi API latency and all firse increase hone lagi! and vo saari problems firse raise hone lagi! so in that case we will use some more optimzations and scaling patterns!
+-- DB Scaling and Optimization Techniques for Cab Booking App :
+-- Scaling Gradually : Instead of expanding the database suddenly, scale it based on the app's needs to avoid unnecessary cost increases.
+-- Query Optimization and Connection Pool Implementation : Cache Memory : Stores non-dynamic data (e.g., booking history, user profile) that doesn't change frequently. This reduces repeated database calls and speeds up access.
+--                                                       : Dynamic Data : Things like driver location or best routes are dynamic and don't need to be cached.
+--                                                       : Normalization vs. Redundancy : Normalization reduces redundancy but requires multiple table joins, which can slow down database queries.
+--                                                                                      : Less Normalization or using NoSQL databases (like MongoDB) can increase data redundancy, making queries faster by reducing joins.
+--                                                       : Cache DB Connections/Connection Pool : Whenever your app needs to talk to the database, it must create a connection. If it keeps creating a new connection every time, it wastes a lot of time and resources because creating a new connection is costly (in terms of time and server load).
+--                                                                                              : Connection Pooling solves this problem by keeping a pool of pre-established database connections ready to be used whenever needed. Instead of creating a new connection each time, the app simply picks an available connection from the pool, uses it, and then returns it to the pool when it's done.
+--                                                                                              : This speeds up the process because reusing connections is much faster than creating new ones.
+--                                                                                              : In short, Connection Pooling makes the database interaction faster and more efficient by reusing existing connections instead of creating new ones every time.
+--                                                       : When User Numbers Grow : Despite optimizations, if the user base grows too large, API latency and other issues can resurface. At this point, more advanced scaling patterns and optimizations are necessary.
 
--- Vertical Scaling (Scaling-Up) : Now we will upgrade the system from that tiny PC to a better and string PC or System.
---                               : We will also increase the RAM by 2x and SSD by 3x.
---                               : But also scaling up is pocket friendly to a point only, toh hume jab lagega ki previous vaala pattern 1 me se kaam ban hi nhi rha hai! uske baad hum pattern 2 pr jayenge! More you scale-up more, the more the cost will increase!
---                               : Good Optimization as of now.
---                               : Now, after sometime the requests have increased even more! and now even this pattern is also not working very much... toh hum kuch aur optimizations krenge! after sometime hum aur scale up nhi kr paa rhe hai!
+-- Vertical Scaling (Scaling-Up) : After implementing DB connection pooling to optimize database calls, the system works well for a while. However, as the number of requests increases, even this optimization might not be enough.
+--                               : Upgrading the System : The next step involves upgrading the hardware of the server that runs the database. For example, moving from a small PC to a more powerful one.
+--                               : Increase in Resources : To handle more load, you can double the RAM (2x) and increase the SSD capacity by three times (3x). This helps the system perform better and manage more data.
+--                               : Cost Considerations : Initial Benefit : At first, vertical scaling is cost-effective and provides good performance.
+--                                                     : Limitations : However, there's a limit to how much you can scale up. More scaling = higher costs, and beyond a certain point, it becomes less efficient.
+--                               : When Vertical Scaling Reaches its Limits : After some time, the number of requests keeps increasing, and even with better hardware, the system might still start to slow down. You can't keep scaling up indefinitely due to both hardware limitations and cost issues.
+--                               : Need for Further Optimization!
 
--- Command Query Responsibility Segregation (CQRS) : Toh abhi upar vaale case me ye ho rha tha ki ab jo machine thi humari ab aur read and write requests ko handle nhi kr paa rhi hai! so now iss case me hum unko segregate krte hai!
---                                                 : So isme hum kya krte hai ki isme hum jo database hai uske replicas bnaa dete hai taaki jo read and write requests different different DBs pr jaaye and ek DB pr dono operations handle krne ka load na pade!
---                                                 : So hota kya hai ki jaise ek main DB thi jisko hum Primary Db bolte hai! and now jab bhi koi read request ayegi vo unn replica DBs pr jayengi and jab bhi koi write request ayengi vo Primary DB pr jayegi! aisa isliye kyunki we have studied in clustering that jo main DB hoti hai usme hi saare updates hote hai then vo updates replica DBs pr forward hote jaate hai! kyunki ofcourse agar replicas pr read operation ho rha hai toh unn replicas me vo saare updates hone chahiye jo main Primary DB pr ho rhe hai!
---                                                 : But also kya ptaa t=0 pr koi write operation (update) hua primary db pr and toh ofc thora toh time lagega usko replicas me replicate hone me toh in that case ye cheeze companies allow krti hai ki chalo koi baat nhi thora time lagega toh lgne do! tab hi you see, when you book a cab jo humae cab ka route dikh rha hota hai vo usme cab continously move nhi kr rhi hoti! vo harr kuch meters travel krne ke baad ek baar move krti hai kyunki yhi same reason se! kyunki thora time lgta hai primary DB se replica DBs me cheeze update hone me!
---                                                 : But, now again vhi same cheez, ki isme again number of users agar ek limit se upar chale jaye toh firse hume changes and optimization krna padega! kyunki write operation primary db me ho slow hogya and isse jo acceptable time tha ki itne time me data replicate hoga replicas DB me vo bhi out of acceptance limit se upar chalaa gya! and isse firse user experience khrab hogya!
+-- Command Query Responsibility Segregation (CQRS) : Vertical Scaling (upgrading hardware) can improve performance for a while, but it has its limits. a more advanced technique called Command Query Responsibility Segregation (CQRS) can be implemented.
+--                                                 : Segregating Read and Write Operations : Instead of using the same database for both read and write requests, CQRS separates them into two distinct systems : Read Requests : These are handled by replica databases. These databases are copies of the primary database, used specifically to handle queries (read operations).
+--                                                                                                                                                                                                              : Write Requests : These are directed to the primary database. All updates, inserts, and deletes happen here.
+--                                                 : Replication Process : In clustering, the main (primary) database handles all updates. These updates are then replicated across the replica databases so that the read operations can access the most recent data. However, there is a time lag in the replication process. This means that if a write operation happens at time t=0 on the primary database, it takes a moment for the change to reflect on the replica databases.
+--                                                 : Real-World Example : Think about a cab booking app. When you check the route of a cab, the location may not update instantly in real-time across all replicas. This happens because there’s a small delay in the replication of data from the primary database to the replicas.
+--                                                 : Challenges with Growth : As the number of users and requests grows, the write operations on the primary database become slower due to increased load. This leads to replication delays, causing the system to fall out of the acceptable time limits for syncing data between the primary and replica databases.
+--                                                                          : This leads to user experience issues, where the data shown (like cab location or booking history) might be outdated or inconsistent, as the replicas haven't updated yet.
+--                                                 : Optimization needs : Once the user base grows beyond a certain point, even CQRS might face scalability challenges. The write load on the primary database could cause delays in replication, requiring more optimizations or even a shift to other advanced patterns like sharding or horizontal scaling.
 
--- Multiple Primary Replication : Isme there is no DB is primary and no DB is replicas, all are primary and all are replicas! so, now isme kya hota hai ki isme multiple DB ki copies banti hai and sab ek circular form me data replicate krti rehti hai jab bhi koi update aaye DB me! like A->B->C->C->D->A... and so on...
---                              : Isse kya fayeda hai ki jab bhi koi write operation ayega toh vo kisi bhi ek Db pr jayegi and then uspr vo updates hojayenge and then vo updates baaki saari DBs pr carry forward hojayenge! but jab koi read reques ayegi toh vo broad cast hojayegi saare DBs pr and jo DB pehle reply krdega usko utha ke user ko show krdenge!
---                              : Again isme bhi kuch time lagega ki write operation me and then usko saari Dbs pr jald se jald replicate/carry forward hone me! so vo jo time lagega vo again acceptance limit se upar nhi hona chahiye!
---                              : Again same cheez ki no. of users firse badh gye and now firse scaling ki zarurat hai! like suppose kuch aisa ki iss level ki optimzation kuch 50 requests per second handle nhi kr paa rhi hai! toh iss case me again hume optimzation krna padega!
+-- Multiple Primary Replication : In Multiple Primary Replication, all databases are both primary and replicas. Data circulates through multiple databases in a cycle (A → B → C → D → A), and when a write operation occurs, it updates one DB and propagates to others. Read requests are broadcast to all databases, and the first one to respond is shown to the user.
+--                              : While this improves write and read operations, there can still be replication delays, and if the number of requests exceeds the system’s capacity (e.g., 50 requests per second), further optimization is required to handle the increased load effectively.
 
--- Partioning of Data by Functionality : Now isme hum jo Db hai usko functionality wise hi divide kr dete hai! like, jaise Cab App ka DB hai! toh isme jaise location ki info stored rehti hai + driver kon hai gaadi number and all... toh like suppose humne socha ki chalo jo location hai uska alag se hi DB schema bnaa dete hai! which will handle all the requests related to that!
---                                     : Toh yahaa humne vhi functionality wise DB schema change krdiya! or should say humne ek alag DB hi bnaa diya jo sirf particular uss tarah ki functionalities vaali requests ko handle krega! so now dekha jaaye iss example me humare paas 2 DBs hogye! and dono ka alag alag functions hogye! (Table nhi alag kiye hai Db hi alag krdi hai! dono ki alag alag functionalities hai!).
---                                     : And now ab hum inn dono Dbs pr individually primary-replica vaala pattern ya multiple-primary DB vaala pattern apply kr sakte hai requests handle krne ke liye!
---                                     : But isme ek ye cheez hume extra krni padegi ki jo requests hongi unko route krna hoga ki uss request ko kis DB pr jaana hai! agar like jo request aa rhi hai vo agar vo location ke liye hai toh DB2 pr jao, nhi toh DB1 pr! toh ye ek extra layer lgaani hogi routing ki! so overall jo query client bhejega usko ye layer dono DBs me requirement wise bhejegi! and then finally jo bhi data retrieve hua dono DBs se unko JOIN krke client ko vapis bhejdegi!
---                                     : Ab kya ho rha hai ki maanlo aapko apna Db jo hai usko apni country ke bahar bhi expand krna hai kyunki ek country me jitna business badhna tha badh gya but ab agar bahar bhi badhana hai toh uske liye jab bahar ke log jab aapka app use kr rhe hai toh unko dikkat aa rhi hai and latency ho rhi hai distance ke chalte! so ab humae apna DB expand krna hai! so for that we will use horizontal scaling or should say scale-out!
+-- Partioning of Data by Functionality : In Partitioning of Data by Functionality, the database is divided based on specific functionalities. For example, in a cab app, one database handles location-related data, while another manages driver information. Each database has its own set of functions and can apply primary-replica or multiple-primary patterns to optimize read and write operations.
+--                                     : An additional layer is introduced for request routing, ensuring that requests are sent to the correct database based on functionality. For instance, location requests go to the location DB, while others go to the driver DB.
+--                                     : If expansion is needed to handle users from different countries, horizontal scaling (scale-out) is applied to reduce latency and improve performance across regions.
 
--- Horizontal Scaling (Scale-Out) : Using Sharding (Creating multiple shards!)
---                                : Allocate 50 machines all having the same DB Schema but all having different parts of the data! each machine can have their own replicas so that they can handle and use that for recovery failure!
---                                : Sharding is genrally hard to apply!
---                                : Now your business has grown so strong that it can grow to different continents! so taaki across continent log bina kisi dikat ke Db use kr paaye toh uske liye we will scale more by creating different Data Centres in different countries!
+-- Horizontal Scaling (Scale-Out) : Horizontal Scaling (Scale-Out) involves creating multiple shards of the database, where each machine holds a part of the data with the same schema. These machines can have their own replicas for fault tolerance and recovery.
+--                                : Sharding is complex to implement but useful when the business grows and needs to scale across continents. By setting up data centers in different countries, users from around the world can access the database with minimal latency.
 
--- Establish Multiple Data Centres : As requests are now travelling across continents due to which it is having high latency! so what about distributing the traffic across Data centres!
---                                 : Now suppose humne multiple DCs khole some in Europe, India Singapore and USA, now jab koi request aati hai jo asia se hai toh vo india ya singapore ke DC pr jayegi jisse latency minimzize rahe! and isse worldwide humara data scaled hai and humara business bhi bhot bade level pr pohoch jayega! but now maanlo kisi ek country ka DC kharab ho jaata hai ya koi service ki requirement hai usko! toh uss case me hume uss jagah ka DC ko kuch der ke liye bnd krna pad rha hai! toh iss cheez se bachne ke liye humne aise banaya hua hota hai DCs ko ki harr kuch regular interval of time pr ye saare Dcs apas me Data replicate krte rehte hai! isse saara data sab jagah hai! isse kisi ek jagah ka DC khrab bhi hota hai toh, toh jo uss jagah ki requests hongi vo kisi aur jagah ke DC pr forward hojayengi! and isse thori latency ayegi! but atleast Availablity nhi khatam hogi! and inn DB Scaling patterns ka yhi motive that ki thori latency se koi dikkat nhi hai main is data ki availablity nhi rukni chahiye! so that is why cross data centre replication is important!
+-- Establish Multiple Data Centres : It helps in reducing latency by distributing traffic across various locations globally. For example, if requests come from Asia, they are routed to data centers in India or Singapore to minimize latency. This ensures the business can scale worldwide.
+--                                 : To maintain high availability, data centers replicate data regularly across regions. If one data center fails, requests from that region are forwarded to another, ensuring service continuity despite increased latency. This cross-data center replication ensures data availability even during regional failures.
 
 -- So ya now you business and its application + software is very optimzed and good to go! this is all for DB Scaling!
 
-
 -- ----------------------------------------------------------------------- Lecture 20 : CAP Theorem in DBMS --------------------------------------------------------------------------------------------------------------------------------->
--- Jab humare paas bhot saara data ho jaata hai toh hume Scale-Up ya Scale-Out krna pad jaata hai! toh uss case me jab bhi replicas ya distrbutes storage banti hai toh usme ek theorem bhot kaam aati hai which is CAP Theorem!
--- Here, C (Consistency) A (Availability) P (Partion Tolerance).
+-- The CAP Theorem is a fundamental concept in distributed databases that helps us understand the trade-offs between three core properties: Consistency (C), Availability (A), and Partition Tolerance (P).
+-- The CAP Theorem states that a distributed system can achieve at most two of these three properties at any given time, but not all three simultaneously.
 
--- Basic and one of the most important concept in Distributed Databases.
--- Useful to know this to design efficient distributed system for your given business logic.
+-- Consistency (C) : Consistency ensures that all nodes (servers) in a distributed system have the same data at any given point in time. In other words, when you read data from any node, it will always return the most recent write.
+--                 : Example : Imagine a system with two servers : Server A and Server B. If you update some data on Server A, Server B should instantly reflect the same update. If you read data from Server A or Server B, you’ll always get the same data, no matter which server you connect to.
+--                 : Challenge : Achieving consistency can cause delays, especially when data needs to be synchronized across multiple servers.
 
--- Let’s first breakdown CAP
--- Consistency : In a consistent system, all nodes see the same data simultaneously. If we perform a read operation on a consistent system, it should return the value of the most recent write operation. The read should cause all nodes to return the same data. All users see the same data at the same time, regardless of the node they connect to. When data is written to a single node, it is then replicated across the other nodes in the system.
--- Availability : When availability is present in a distributed system, it means that the system remains operational all of the time. Every request will get a response regardless of the individual state of the nodes. This means that the system will operate even if there are multiple nodes down. Unlike a consistent system, there’s no guarantee that the response will be the most recent write operation.
--- Partioning Tolerance : When a distributed system encounters a partition, it means that there’s a break in communication between nodes. If a system is partition-tolerant, the system does not fail, regardless of whether messages are dropped or delayed between nodes within the system. To have partition tolerance, the system must replicate records across combinations of nodes and networks.
+-- Availability (A) : Availability means that every request to the system will receive a response. Even if one or more servers are down, the system remains operational. It doesn’t guarantee that the response will be the most recent data, but it ensures that the system is always up and running.
+--                  : Example : Let's say a user makes a request to the system. The system might not get the latest update due to a delay or failure in synchronizing, but it will still return some response (it could be an outdated version of the data).
+--                  : Challenge : When a system focuses on availability, it might return older, less consistent data because the system prioritizes responding to requests rather than ensuring all nodes have the most up-to-date data.
 
--- What does the CAP Theorem says,
--- The CAP theorem states that a distributed system can only provide two of three properties simultaneously: consistency, availability, and partition tolerance. The theorem formalises the tradeoff between consistency and availability when there’s a partition.
--- Means aapke distributed system me kabhi bhi ye teeno properties ek saath nhi ho sakti! ya toh koi ek hogi ya toh do! but teeno ek saath nhi hongi!
+-- Partition Tolerance (P) : Partition tolerance means that the system can continue to function even if there are network partitions or communication failures between nodes. A partition can happen when one part of the system can’t communicate with another part due to network issues.
+--                         : Example : Imagine a network issue arises between Server A and Server B. Even though they can’t communicate, a partition-tolerant system will still work, and each server can handle requests independently.
+--                         : Challenge : Partition tolerance is vital in distributed systems, especially when scaling across regions or continents. It ensures the system doesn’t crash if part of it becomes unreachable.
 
--- Lets understand this with an example...
--- Suppose you are a user! and you are accessing a database jo bhot badaa hogya tha uske replicas bnaa diye gaye the! so the user is accessing the Node1 for write operations which is the primary node! and for read operations the user is accessing the Node2, Ab maanlo iss beech Database ki partioning hogyi backend pr... hum toh as a user isko access kr rhe hai! but backend pr jo developer hai usne socha ki partioning krni padegi DB ki toh usne vo krdi! now, toh ab partioning krdi hai toh ab kuch der ke liye jo dono Nodes ke beech ka connection that vo break hojayega! toh jo write operations hote the and vo jaake secondary node pr update hote the ye operations kuch time ke liye ruk jayenge!...
--- Toh ab agar user kuch updates krega using write operations ka use krke Node1 pr toh vo Node2 me update/replicate nhi honge! and iss kaaran se Consistency break hojayegi! means agar maanlo humne X = 10 update kiya tha DB me pr backend pr toh ye Node1 pr hua hai update, toh jab Db access krne ka try kiya jayega user ke dwara toh vo again backend pr toh Node2 ki help se hoga pr Node1 and Node2 me toh link toota hua hai partioning ke wajah se toh abhi value update nhi hogi! toh read operations pr jo reply milega user ko vo X ki previous value hi hogi suppose X ki value pehle 20 thi toh 20 hi return hogi!
--- Toh yahaa humne dekha ki Partioning toh krdi but Consistency lost hogyi (Agar dono nodes same time access krna ho toh, means agar write and read operations saath me krne ho toh) but availability toh lost nhi hui!
+-- Understand through example!
+-- Imagine you're a user accessing a large database. The database has replicas: Node1 is the primary node where you can perform write operations, and Node2 is the secondary node used for read operations.
+-- Now, the backend developers decide to partition the database to scale it. This means the database is divided into different parts and distributed across nodes. During this process, the connection between Node1 and Node2 gets temporarily broken due to the partitioning.
+-- Here's what happens : Write operations (like updating data) happen on Node1 (primary node).
+--                     : Normally, these updates should be replicated to Node2 (secondary node), but due to the partition, the nodes can't sync during the break.
+--                     : As a result, Consistency is lost. Let's say you update a value on Node1 (e.g., X = 10), but Node2 still has the old value (X = 20) because the connection is broken.
+--                     : When you perform a read operation through Node2, you will get the outdated value (X = 20) because the update from Node1 hasn't reached it yet.
+--                     : However, Availability is not lost. Even though the nodes aren’t synchronized, the system is still responding to requests (you can still read from Node2 and write to Node1).
+-- Key Insights from the Example : Partitioning : The system was partitioned, which means some nodes couldn’t communicate with others temporarily.
+--                               : Consistency Lost : During the partitioning, the data between Node1 and Node2 was not the same, meaning you didn’t get the most recent data on Node2.
+--                               : Availability Preserved : The system was still available for reading and writing, even though the data wasn't consistent across nodes.
 
--- Now, lets see how Availability will lost, Now suppose ki jo backend pr developer hai vo nhi chahta ki X ki galat value read ho toh uske aisa program krdiya ki jab write operations ho and partioning ho chuki ho toh reda operation krna hi allow na kre means Node2 fail hi ho jaye jiss time pr Write operation hua ho! isse Partioning hogyi! even consistency bhi lost nhi hui kyunki lost toh tab hoti jab write krne ke baad partioning ke chakkar me jab read kiya jaata Node2 me se toh galat value read hoti! but yahaa toh read operation ko hi fail krdiya taaki consistency break na ho! So this is how availability is lost!
+-- Why Study CAP Theorem!
+-- The CAP Theorem is important because it helps us understand the trade-offs between Consistency, Availability, and Partition Tolerance in distributed systems. Here’s why it matters:
+-- Why Not All Three? : The CAP Theorem tells us that in a distributed system, we can't have all three properties (Consistency, Availability, and Partition Tolerance) at the same time. This is because in some cases, prioritizing one property may negatively affect the others.
+--                    : Consistency : Ensures all nodes have the same data at the same time, but might cause delays.
+--                    : Availability : Ensures the system responds to every request, even if it means returning outdated data.
+--                    : Partition Tolerance : Ensures the system continues to function even if parts of the network go down, but it might not maintain consistency.
+-- Understanding Trade-offs : The CAP Theorem helps developers make decisions based on the needs of the business and the system, Like...
+--                          : If consistency is more important (e.g., banking systems where accurate data is crucial), you might choose a system that prioritizes Consistency and Partition Tolerance (CP).
+--                          : If availability is more important (e.g., social media platforms where users want constant access), you might prioritize Availability and Partition Tolerance (AP).
+--                          : If you're okay with occasional downtimes (e.g., some business analytics systems), you might prioritize Consistency and Availability (CA).
+-- Designing Scalable Systems : By understanding CAP, engineers can design distributed systems that match the specific needs of their applications. For example:
+--                            : Banking systems might prioritize consistency (CP) to ensure the correctness of financial data.
+--                            : E-commerce platforms might prioritize availability (AP) to ensure users can always browse and make purchases, even if some data is slightly outdated.
 
--- So here we have seen koi 2 hi properties establish ho paa rhi hai ek baar me!
--- But ye problem single node me ayengi hi nhi! kyunki vahaa pr partioning hogi hi nhi, jab ek hi node hai toh kya partioning!
+-- CAP Theorem NoSQL Databases : The CAP Theorem explains the trade-offs between three essential properties in distributed databases: Consistency, Availability, and Partition Tolerance. NoSQL databases are particularly suitable for distributed networks and horizontal scaling. Understanding the CAP theorem helps determine which database to choose based on the system's needs.
+-- CA Databases (Consistency + Availability) : Properties : Ensures Consistency (all nodes have the same data) and Availability (all nodes respond to requests).
+--                                           : Issue : They cannot handle partitioning, meaning in a distributed system, if there’s a network partition (communication failure between nodes), they won’t work efficiently.
+--                                           : Use Case : Single-node databases, like MySQL and PostgreSQL with replication, can offer consistency and availability, but they lack fault tolerance during partitioning.
+--                                           : Limitation : These databases are less practical in distributed systems since partitions will inevitably occur.
+-- CP Databases (Consistency + Partition Tolerance) : Properties : Ensures Consistency and Partition Tolerance, but sacrifices Availability.
+--                                                  : Working : When a partition happens (e.g., network failure), the system ensures data consistency across nodes but will stop serving requests to ensure no inconsistency occurs.
+--                                                  : Example : MongoDB (NoSQL). MongoDB uses a primary node that handles all writes, while secondary nodes replicate data. If the primary node fails, one of the secondary nodes can take over.
+--                                                  : Use Case : Useful for applications like banking systems where data consistency is paramount, and availability during partitioning can be sacrificed.
 
--- CAP Theorem NoSQL Databases: NoSQL databases are great for distributed networks. They allow for horizontal scaling, and they can quickly scale across multiple nodes. When deciding which NoSQL database to use, it’s important to keep the CAP theorem in mind.
--- CA Databases : It means databases which provides consistency and availability! but as we have seen ki jahaa partioning hoti hai vahaa ye dono saath ho hi nhi sakte! aur partioning kahaa nhi hoti? in single Node Databases! means CA chahiye toh single Node DBs me milega!
---              : CA databases enable consistency and availability across all nodes. Unfortunately, CA databases can’t deliver fault tolerance. In any distributed system, partitions are bound to happen, which means this type of database isn’t a very practical choice. That being said, you still can find a CA database if you need one. Some relational databases, such as MySQL or PostgreSQL, allow for consistency and availability. You can deploy them to nodes using replication.
+-- AP Databases (Availability + Partition Tolerance) : Properties : Ensures Availability and Partition Tolerance, but sacrifices Consistency.
+--                                                   : Working : In the event of partitioning, all nodes remain available and can serve requests, but some may return outdated data until the partition is resolved and nodes sync.
+--                                                   : Example : Apache Cassandra and Amazon DynamoDB (NoSQL). These databases allow each node to serve requests, and eventually, they sync their data to ensure consistency once the partition is resolved.
+--                                                   : Use Case : Ideal for applications like social media (e.g., Facebook) where availability is more important than ensuring the most up-to-date data at all times.
 
--- CP Databases : These tyoe of DBs provides Consistency and Partioning! but not Availibility. This we have just studied upar...
---              : CP databases enable consistency and partition tolerance, but not availability. When a partition occurs, the system has to turn off inconsistent nodes until the partition can be fixed. MongoDB is an example of a CP database. It’s a NoSQL database management system (DBMS) that uses documents for data storage. It’s considered schema-less, which means that it doesn’t require a defined database schema. It’s commonly used in big data and applications running in different locations. The CP system is structured so that there’s only one primary node that receives all of the write requests in a given replica set. Secondary nodes replicate the data in the primary nodes, so if the primary node fails, a secondary node can stand-in. In banking system Availability is not as important as consistency, so we can opt it (MongoDB).
+-- BASE Properties in Distributed Systems : BA (Basically Available) S (Soft State) E (Eventually Consistent)
+-- BASE is an acronym that describes the properties that social media networks and distributed systems prioritize. These properties provide flexibility and high availability while being more adaptable to network partitions and server failures.
+-- BA (Basically Available) : The system will always try to respond to a request, even if it doesn’t have the most up-to-date data or might not be able to respond immediately.
+--                          : Example : Imagine a store that promises to be open all the time. Sometimes, the product you want may not be available, or it may take a while to find it, but the store won’t close or stop serving you.
 
--- AP Databases : It provides Availability and Partioning but not Consistency, this also we have studied upar...
---              : AP databases enable availability and partition tolerance, but not consistency. In the event of a partition, all nodes are available, but they’re not all updated. For example, if a user tries to access data from a bad node, they won’t receive the most up-to-date version of the data. When the partition is eventually resolved, most AP databases will sync the nodes to ensure consistency across them. Apache Cassandra is an example of an AP database. It’s a NoSQL database with no primary node, meaning that all of the nodes remain available. Cassandra allows for eventual consistency because users can re-sync their data right after a partition is resolved. For apps like Facebook, we value availability more than consistency, we’d opt for AP Databases like Cassandra or Amazon DynamoDB.
+--  S (Soft State) : The system’s state can change over time even without new input. The data might not be immediately consistent because it’s still being updated across different servers.
+--                 : Example : A social media feed that constantly changes—new posts are added, old ones are removed—without you doing anything. The feed may not be the same for every user at the same moment, but it’s constantly evolving.
 
--- Ab jiss tarah se Banking system me ACID properties hona must hai! vaise hi Social Media Networking me BASE Properties hona must hai...
--- Lets see what are BASE properties...
--- BA (Basically Available) S (Soft State) E (Eventually Consistency) :
+-- E (Eventually Consistent) : The system will eventually become consistent after some time, but not instantly. All parts of the system will eventually have the same data once all updates have been propagated.
+--                           : Example : Think of a game of telephone where friends pass on a message. The message may get mixed up initially, but eventually, everyone will have the same message after a few rounds of correction.
 
--- Basically Available : The system guarantees that it will always try to respond to a request. It might not be an immediate response, and it might not always be the correct or most recent data, but the system will not simply fail to respond.
---                     : Imagine a store that guarantees it will always be open, but sometimes the shelves might not have the exact product you’re looking for, or it might take a while to find it.
+-- ACID vs BASE : ACID Properties (Atomicity, Consistency, Isolation, Durability) are for traditional relational databases and focus on strict consistency and reliability of data.
+--              : BASE Properties are more flexible and focus on providing high availability and partition tolerance, which are essential for distributed systems that need to continue functioning even if some nodes are down or there are network issues.
+--              : BASE systems are useful where immediate consistency isn't as important as making sure the system stays available and can recover after issues, which is common in social media applications and distributed environments.
 
--- Soft State : The state of the system can change over time, even without any new input. This happens because the system might be propagating changes across multiple servers, and the state isn’t immediately consistent.
---            : Think of a social media feed that changes as new posts are added and old ones are removed, even if you’re not actively refreshing the page.
-
--- Eventually Consistency : The system will eventually become consistent if no new updates are made. This means that all nodes in a distributed system will eventually hold the same data if given enough time, but they might not have the same data at any given moment.
---                        : Picture a group of friends playing a game of telephone. Initially, the message might be garbled, but if they keep passing the message around and correcting it, they will all end up with the same message eventually.
-
--- In contrast to ACID (Atomicity, Consistency, Isolation, Durability) properties, which emphasize strict data consistency and reliability in traditional relational databases, BASE properties are more flexible and are designed to provide high availability and partition tolerance, making them suitable for distributed systems where network partitions or server failures can occur.
--- These properties make BASE systems more adaptable to distributed environments where immediate consistency is less critical than availability and partition tolerance.
-
+-- Overall,
+-- BASE : Focuses on keeping the system available and able to respond, even if the data isn’t fully consistent right away. It ensures the system remains active and can eventually fix any inconsistencies over time.
+-- ACID : Makes sure the system is highly reliable and consistent, but doesn’t work as well in situations where there are network failures or multiple servers that need to stay in sync.
 
 -- ----------------------------------------------------------------------- Lecture 21 : Master Slave Architecture in DBMS --------------------------------------------------------------------------------------------------------------------------------->
--- So suppose there is one DB and kaafi saari requests aa rhi hai uss DB pr uss DB ko access krne ke liye! ab inn saare request ko balance krne ke liye ek Load balanecer bnaa diya gya! jo saari requests ko balance krke DB pr daalta rahega taaki Data access kr paaye! but now, maanlo agar vo jo ek akela DB hai vhi khrab hogya toh ya usme kuch errors aagye toh! then in that case our whole system will crash! and availability will be 0, so isse bachne ke liye hi we have done partioning and sharding as we have studied in Lec 19, now isme jo main DB hai usko hum Master/Primary/Original/Latest/Owner DB bhi bolte hai!
--- Toh as humne padhaa that Lec 19 me ki inn sab se bachne ke liye hi hum DB ki partioning ya Replcas bnaa dete hai! taaki kuch requests unn replicas pr bhi jaaye! and availability 0 na ho! and inn replicas pr sirf read operations hote hai! these replicas are called Slave, and jo bhi write operations hote hai vo sab Master Db pr hote hai! and then vo linkage ke through replicas pr update hote hai!
--- Now itna toh and all details humne Lec 19 me padhliye hai, but now the thing is ki replication hoti kaise hai? So there are ways :
--- Asynchronous Replication : Maanlo jo master Db hai usme kuch updates hui at T = 0 pr! and iss Master DB ke do replicas hai (Slaves hai) unn par updation hui T = 10 and T = 12 pr! ab iss beech koi bhi read operation aata hai toh vo old value hi show krega! and agar humara business logic isko support krta hai toh hume koi dikkat nhi hai thori delay se! for example jo Cab booking ki app hai uspr jo cab ka route hota hai vo kuch der baad update ho hume koi dikkat nhi hoti! similarly jaise FB/Insta pr jo comments ya Likes hote hai vo hum Like kre toh hume dikh gya vahi ke vahi! but poori duniya me jo Dbs hai un pr agar kuch der baad bhi show ho rha hai toh hume koi dikkat nhi hai! so this is Async Replication! But haa delay zyada bhi nhi hona chahiye like kuch sec ka is acceptable, ya jo bhi uss business logic ke according delay hai uske bahar nhi jaana chahiye time of replication!
--- Synchronous Replication : Ab isme jo Master Db pr jo updates hue vo T = 0 me hi Slaves vaale DB pr replicate bhi ho jaate hai! iski need padti hai Banking System me! kynki usme jo paise ek jagah se dusri jagah gya hai vo vhi ke vhi end user pr show hona chahiye!
+-- In a typical distributed database system, multiple requests can be sent to a database (DB) for data access. If there is only one DB and it receives many requests, the system could become overwhelmed and crash if the DB goes down or encounters errors. This results in unavailability of the system, and that's where load balancing and replication come into play to maintain high availability and reliability.
+-- Key Concepts : Load Balancer : A load balancer is introduced to distribute incoming requests to the DB evenly. This helps to prevent the DB from getting overloaded and ensures that all requests are handled efficiently.
+--              : Single Point of Failure : If there’s only one database (Master DB), any issues or failures with this DB will cause the entire system to crash. This leads to complete unavailability of the system. To prevent this, we use partitioning and sharding as discussed in previous lessons (e.g., Lecture 19).
+--              : Partitioning and Sharding : Partitioning and sharding involve splitting the data across multiple databases to distribute the load and avoid a single point of failure. However, we need to make sure that the system remains available even if one database fails.
 
--- Now what if Slave gets some Update requests? Then in that case you have 2 choices...
--- 1st : To simply ignore or never allow those requests!
--- 2nd : And if you allow those request, then make sure your propagate those updates to the Master! but in this case it wont be a Master Slave Architecture anymore! It will be more of a matser-master architecture!
+-- Master-Slave Replication : Master DB (also called Primary DB) holds the most up-to-date data, and all write operations (inserts, updates, deletes) are performed on it.
+--                          : Slave DBs (also called Replica DBs) are copies of the Master DB, and they handle read operations (queries) to reduce the load on the Master DB.
+--                          : This replication ensures that even if the Master DB goes down, the Slave DBs can continue to serve read requests, maintaining availability.
 
--- Advantages : We have a Backup! becoz of Replicas for read operations! ki chalo write nhi ho paa rha kuch issues ke chalte! but atleast read toh ho paa rha hai!
---            : It scales out read Op! read operation krna zyada easy ho jaata hai kyunki read ke liye multiple nodes hai! and if your appliaction is like jisme read ka zyada kaam hai then in that case it is helpful!
---            : Availability Increases
---            : More Reliable
---            : Reduce Latency
---            : Parallelism for read requests!
+-- Types of Replication!
+-- Asynchronous Replication : Working : In asynchronous replication, updates made to the Master DB are replicated to the Slave DBs with a delay. For example, if an update happens at T = 0 on the Master DB, the Slaves may reflect this update at T = 10 or T = 12.
+--                          : Effect on Read Operations : If a read request is made during this replication delay, it may show the old value until the replication process completes. This delay is acceptable in many cases, such as..
+--                                                      : Cab booking apps : The route information might be slightly delayed on some servers.
+--                                                      : Social media apps (like Facebook/Instagram) : Likes or comments may not update immediately across all servers, but the delay is not noticeable for most users.
+--                          : Business Logic : If the business can tolerate some delay (as long as it doesn’t exceed a specific time), asynchronous replication works well.
+--                          : Advantages : High availability due to the ability to continue serving read operations even during replication delays.
+-- Synchronous Replication : Working : In synchronous replication, updates made to the Master DB are immediately replicated to the Slave DBs. This ensures that all changes made to the Master DB are reflected in the Slave DBs in real-time.
+--                         : Use Case : Banking systems require synchronous replication, as it is critical that once money is transferred from one account to another, the transaction must be reflected immediately on all related databases. Any delay in showing the updated transaction can lead to incorrect or conflicting information.
+--                         : Advantages : Strict consistency between the Master DB and Slave DBs.
 
--- Master and Slave dono ke DBs alag alag ho sakte hai, like ek SQL ka ho sakta hai Master and Slaves MongoDb ke ho sakte hai! but isse ek ye dikkat ayegi ki hume alag alag interfaces likhne padenge updates krne ke liye Master se Slave me!
+-- Handling Update Requests on Slave DBs!
+-- In a Master-Slave architecture, typically, Slave DBs are only used for read operations. However, sometimes write requests might also reach the Slave DBs. There are two ways to handle this :
+-- Ignore or Disallow Write Requests on Slaves : In this case, Slave DBs will only handle read requests, and write operations will always be sent to the Master DB.
+--                                             : This ensures that the Master-Slave architecture remains intact.
+-- Allow Write Requests on Slaves : If write requests are allowed on Slaves, the updates made on the Slave DBs must be propagated to the Master DB. This will make the system more like a Master-Master architecture, where both the Master and Slave databases can handle write operations.
+--                                : However, this setup can introduce complexity and potential data conflicts because both Master and Slave databases can have conflicting updates.
+
+-- Overall, Master-Slave Architecture!
+-- Master-Slave architecture is a database setup where one Master DB (Primary Database) handles all write operations (inserts, updates, deletes) and manages the most up-to-date data, while Slave DBs (Replica Databases) handle read operations (queries).
+-- The goal of this architecture is to distribute the load and ensure high availability by reducing the pressure on the Master DB and making sure that read requests don't overload the system.
+-- Master-Slave architecture ensures high availability and reliability by using replicas for read operations, even if the master node faces issues. It scales read operations, reduces latency, and improves system performance through parallelism and backup.
+-- Case Study : Master-Slave Architecture cannot be used in Banking Systems,  because it relies on eventual consistency and does not ensure real-time synchronization of data between the master and replica nodes. In banking systems, strict consistency is crucial (e.g., for transactions), and synchronous replication or other mechanisms ensuring immediate consistency are preferred.
+-- That's why Master-Slave architecture is suitable for building software, platforms, or systems that are read-heavy and where eventual consistency is acceptable, with updates happening immediately. Examples include E-commerce platforms and social media. Hence, Master-Slave Arch.'s use case include the where system does'nt demand strong consistency!
+
+-- Real-World Example of Master-Slave Architecture!
+-- Imagine you’re using Facebook or Instagram : Master DB : When you post a photo, like something, or comment, the Master DB stores this update. It processes your write request. The Master DB is where this real-time data is saved.
+--                                            : Slave DBs : All your friends may see your new photo, likes, or comments, but not necessarily at the same instant. Slave DBs are responsible for serving the read requests (showing the post, likes, and comments on their timeline).
+--                                                        : These Slave DBs are copies of the Master DB, but there might be a small delay in showing the new updates because of replication.
+--                                                        : Example : You might see a post from a friend in your feed, but it may take a moment for their latest like or comment to appear on all users’ feeds due to this delay.
+
+-- Real-World Analogy : Think of it like a restaurant, Master DB is the chef who prepares all the food (writes the data). Slave DBs are the waiters who serve the food to customers (handle read operations).
+--                    : The chef (Master) is the only one who can cook the dishes (write data), but the waiters (Slaves) take orders and serve customers (read data), making the service faster and more efficient.
+
+-- Master and Slave databases can be different types, like the Master could be an SQL database and the Slaves could be MongoDB. However, this creates a challenge because you would need to write separate interfaces for updating data from the Master to the Slaves. Explore it during practical implementation!
 
 ------------------------------------------------------------------------------------- Complete -------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
