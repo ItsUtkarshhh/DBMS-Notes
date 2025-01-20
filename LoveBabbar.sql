@@ -813,10 +813,10 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                                        : Problem 1 : Adding Partial Information, Imagine a new student enrolls in the college. We know : Name, Roll Number (ID), and Age. But Branch_Code, Branch_Name, and Branch_HOD are not decided yet. To insert this student's data, we would have to leave the branch-related attributes as NULL until the information is available.
 --                                                    : This results in incomplete records and forces extra updates later to fill the missing information, which is inefficient.
 --                                        : Problem 2 : Adding Branch Details, Now suppose the college opens a new branch (e.g., IT). To add the branch's details (Branch_Code, Branch_Name, Branch_HOD), we face a problem : The database design requires a Student ID (PK) to insert any row, but there are no students in the IT branch yet.
---                                                    : Issue : We cannot add information about the new branch because student-related data is missing.
+--                                                    : Hence, We cannot add information about the new branch because student-related data is missing.
 
 -- Deletion Anomalies : A deletion anomaly occurs when deleting some data unintentionally removes other important information due to poor database design.
---                    : Example Scenario : Considering the same table, If a branch has only one student and that student graduates (leaves the college), their data will be deleted from the table. Unintended Consequence: The branch information (e.g., Branch_Code, Branch_Name, Branch_HOD) will also be deleted, even though the branch still exists in the college.
+--                    : Example Scenario : Considering the same table, If a branch has only one student and that student graduates (leaves the college), their data will be deleted from the table. Unintended Consequence : The branch information (e.g., Branch_Code, Branch_Name, Branch_HOD) will also be deleted, even though the branch still exists in the college.
 --                                       : Solution : Normalize the database by splitting the data into two tables : Student Table for student-specific details. Branch Table for branch-related details.
 
 -- Updation Anomalies : An updation anomaly occurs when updating a single piece of information requires changes in multiple rows, leading to inefficiency and potential data inconsistency if all updates are not made correctly.
@@ -843,9 +843,8 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                                                    : Solution : To ensure uniqueness for each row, we need a composite primary key or a surrogate key (a new unique identifier).
 
 -- 2NF (2nd Normal Form) : Pre-requisite : To implement 2NF, the table must already be in 1NF. Main Idea is to Eliminate Partial Dependency!
---                       : Partial Dependency : Partial Dependency happens when a non-prime attribute (a non-key attribute) depends on only part of a composite primary key (instead of the whole composite key).
---                       : 2NF Condition : To satisfy 2NF, every non-prime attribute must depend on the entire primary key, not just part of it.
---                       : Non Prime Attribute : Non-prime Attribute: Attributes that aren't part of the primary key. In a table where the primary key is composed of multiple attributes (like A and B), anything other than A and B would be a non-prime attribute.
+--                       : Partial Dependency : Partial Dependency happens when a non-prime attribute (a non-key attribute) depends on only part of a composite primary key (instead of the whole composite key). To satisfy 2NF, every non-prime attribute must depend on the entire primary key, not just part of it.
+--                       : Non Prime Attribute : Non-prime Attribute : Attributes that aren't part of the primary key. In a table where the primary key is composed of multiple attributes (like A and B), anything other than A and B would be a non-prime attribute.
 --                       : Problem : Partial Dependency : Let’s consider a table R(A, B, C, D) where, Primary Key : (A, B) — meaning that the combination of A and B uniquely identifies each row. Non-prime Attributes : C and D.
 --                                 : Now, suppose there's a functional dependency B -> C, which means B determines C. This is a partial dependency, because B is only part of the composite primary key (A, B), but C depends on just B, not the entire primary key. In this case, C depends on part of the composite primary key (B), which violates 2NF.
 --                                 : Why its a problem : If B is part of the primary key but is allowed to be NULL, we could have an issue. For example, if B is NULL, it doesn’t make sense for B to determine C. So, partial dependency could lead to inconsistent data or make the data difficult to manage. That's why it is important to eliminate it!
@@ -865,7 +864,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                                                         | g | 3 | z |
 --                                                       : A is the Primary Key (PK). B and C are non-prime attributes (they are not part of the primary key).
 --                                                       : From the given table, we can observe the following functional dependencies (FDs) : A → B : Attribute A determines B. B → C : Attribute B determines C. From the above, using the Transitivity Rule of functional dependencies, we can also say : A → C : Because A → B and B → C, we get that A indirectly determines C.
---                                                       : Problem with it : Transitive Dependency: We have a transitive dependency between A and C via B. Even though A directly determines B, and B directly determines C, the primary key (A) is still indirectly determining C, which makes the relationship redundant.
+--                                                       : Problem with it : Transitive Dependency : We have a transitive dependency between A and C via B. Even though A directly determines B, and B directly determines C, the primary key (A) is still indirectly determining C, which makes the relationship redundant.
 --                                                                         : Why is this a problem? This causes redundancy in the data (repeated values), as B is already determining C. We don't need B → C in this case, because A → C already exists. Redundant Data : You can see that values in column C are repeated for each corresponding value in column B, even though A can determine C.
 --                                                       : Solution : To eliminate this transitive dependency, we need to decompose the table into two smaller tables. The goal is to remove the dependency of a non-prime attribute on another non-prime attribute.
 --                                                                  : Procedure : Identify Redundant Dependency, In this case, the dependency B → C is creating redundancy. We will split the original table into two : A table where A → B holds. A table where B → C holds.
@@ -1088,7 +1087,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                                                                        : Advantages : Faster Query Processing, Efficient Storage & Supports Duplicate Values.
 --                                                                        : Disadvantages : Static Structure & Limited use cases!
 -- Multi-Level Indexing : (In Extension of Primary Indexing) Multi-level indexing is a technique used to optimize the performance of indexing when the size of a single index becomes too large, and even binary search on that index takes too much time. To break it down, multi-level indexing creates an additional layer (or multiple layers) of indexes to make searching even faster by reducing the number of entries that need to be searched at each level.
---                      : Key Points : Problem with Single-Level Indexing : In single-level indexing, all data entries are stored in one index file. Binary Search is used on this index to find the required record quickly. But when the data set grows very large (i.e., when there are a lot of records), even searching the index using binary search can take significant time because the index itself becomes large.
+--                      : Key Points : Problem with Single-Level Indexing : In single-level indexing, all data entries are stored in one index file. Binary Search is used on this index to find the required record quickly. But when the data set grows very large (i.e., when there are a lot of records), even searching through index table using binary search can take significant time because the index table itself becomes large.
 --                                   : For example, if there are millions of records, the index can become very long, and binary search on such a large index might still take considerable time.
 --                      : Solution is Multi-Level Indexing : Multi-level indexing works by breaking down the large index into smaller sub-indexes (i.e., creating additional levels of indexing). Instead of searching through a massive single index, you search through a smaller index first (the first level) and then use that smaller index to find the actual record.
 --                      : How It Works : Level 1 Index : This is your first level of index, which could contain pointers to blocks in your data file (or to the second-level indexes).
@@ -1218,7 +1217,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 -- Relational DBMS : Popularity & History : Relational databases have been widely used since the 1970s and continue to be popular. They use SQL for operations like create, read, update, and delete (CRUD).
 --                 : Data Structure : They store data in tables with rows and columns, and different tables can be linked using foreign keys. For example, a User table can be linked to a Purchases table using a user ID.
 --                 : Advantages : Highly optimized for structured data and well-suited for handling data that follows a clear, organized structure. Provide strong data normalization, ensuring data consistency and reducing redundancy. Use SQL, a standardized and widely known querying language.
---                 : Disadvantages : Scalability issues : Relational databases often face challenges when it comes to horizontal scaling (scaling across multiple machines). As data grows, the system becomes more complex and harder to manage
+--                 : Disadvantages : Scalability issues : Relational databases often face challenges when it comes to horizontal scaling (scaling across multiple machines). As data grows, the system becomes more complex and harder to manage.
 
 -- Object Oriented Databases : Based on the object-oriented programming (OOP) paradigm, where data is treated as objects, similar to how objects are handled in programming languages. Supports key OOP concepts like inheritance, encapsulation (information hiding), and object identity.
 --                           : Can handle complex data relationships and supports a rich type system (including structured and collection types).
@@ -1261,7 +1260,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                         : Example : E-commerce Platforms (e.g., Amazon), Banking Systems and Content Delivery Networks (CDNs)
 
 -- Working of Clusters : Architecture Overview : In clustering, incoming user requests are distributed across multiple systems (nodes) within the cluster.
---                                             : Execution by Nodes: Each request is processed by one or more nodes, ensuring that the workload is shared efficiently.
+--                                             : Execution by Nodes : Each request is processed by one or more nodes, ensuring that the workload is shared efficiently.
 --                                             : Failure Handling : If one node fails, another node in the cluster seamlessly takes over, preventing system downtime.
 --                     : Key Enablers : Load Balancing : Ensures that requests are evenly distributed across nodes, preventing overloading of any single system.
 --                                    : High Availability : Reduces the likelihood of total system failure by maintaining redundant nodes ready to handle requests.
@@ -1286,7 +1285,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                            : To resolve these challenges, we use Database Optimization Techniques, such as Scaling and Data Distribution.
 
 -- Key Techniques for Database Optmization : Scale-Up (Vertical Scaling) : Involves upgrading hardware (e.g., doubling CPU, RAM, and storage).
---                                                                       : : Challenge : Costly and doesn’t always proportionally improve performance.
+--                                                                       : Challenge : Costly and doesn’t always proportionally improve performance.
 --                                         : Clustering (Replica Sets) : A Master Node handles updates and propagates them to Replica Nodes for load distribution.
 --                                                                     : Challenge : Delays in synchronization between master and replicas can occur.
 --                                         : Partitioning (Scale-Out) : Data is divided into smaller chunks and distributed across multiple nodes.
@@ -1294,7 +1293,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                                                                                                    : Challenge : Accessing complete information for a record might require multiple nodes.
 --                                                                            : Horizontal Partitioning : Rows (tuples) are divided and stored across nodes.
 --                                                                                                      : Advantage : Often more efficient and balances load better.
---                                                                    : Advantages : Parallelism, Availability, Performance, Managebility and Reduce cost, as scaling up or vertical scaling might be costly
+--                                                                    : Advantages : Parallelism, Availability, Performance, Managebility and Reduce cost, as scaling up or vertical scaling might be costly.
 
 -- Distributed Database : A Distributed Database is a single logical database spread across multiple servers, interconnected via a network.
 --                      : It results from applying database optimization techniques like : Clustering : Adding replicas for load balancing.
@@ -1340,7 +1339,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                                                                                              : Connection Pooling solves this problem by keeping a pool of pre-established database connections ready to be used whenever needed. Instead of creating a new connection each time, the app simply picks an available connection from the pool, uses it, and then returns it to the pool when it's done.
 --                                                                                              : This speeds up the process because reusing connections is much faster than creating new ones.
 --                                                                                              : In short, Connection Pooling makes the database interaction faster and more efficient by reusing existing connections instead of creating new ones every time.
---                                                       : When User Numbers Grow : Despite optimizations, if the user base grows too large, API latency and other issues can resurface. At this point, more advanced scaling patterns and optimizations are necessary.
+--                                                       : When User Numbers Grow : Despite optimizations, if the user base grows too large, API latency and other issues can re-surface. At this point, more advanced scaling patterns and optimizations are necessary.
 
 -- Vertical Scaling (Scaling-Up) : After implementing DB connection pooling to optimize database calls, the system works well for a while. However, as the number of requests increases, even this optimization might not be enough.
 --                               : Upgrading the System : The next step involves upgrading the hardware of the server that runs the database. For example, moving from a small PC to a more powerful one.
@@ -1375,7 +1374,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 -- So ya now you business and its application + software is very optimzed and good to go! this is all for DB Scaling!
 
 -- ----------------------------------------------------------------------- Lecture 20 : CAP Theorem in DBMS --------------------------------------------------------------------------------------------------------------------------------->
--- The CAP Theorem is a fundamental concept in distributed databases that helps us understand the trade-offs between three core properties: Consistency (C), Availability (A), and Partition Tolerance (P).
+-- The CAP Theorem is a fundamental concept in distributed databases that helps us understand the trade-offs between three core properties : Consistency (C), Availability (A), and Partition Tolerance (P).
 -- The CAP Theorem states that a distributed system can achieve at most two of these three properties at any given time, but not all three simultaneously.
 
 -- Consistency (C) : Consistency ensures that all nodes (servers) in a distributed system have the same data at any given point in time. In other words, when you read data from any node, it will always return the most recent write.
@@ -1391,7 +1390,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                         : Challenge : Partition tolerance is vital in distributed systems, especially when scaling across regions or continents. It ensures the system doesn’t crash if part of it becomes unreachable.
 
 -- Understand through example!
--- Imagine you're a user accessing a large database. The database has replicas: Node1 is the primary node where you can perform write operations, and Node2 is the secondary node used for read operations.
+-- Imagine you're a user accessing a large database. The database has replicas, Node1 is the primary node where you can perform write operations, and Node2 is the secondary node used for read operations.
 -- Now, the backend developers decide to partition the database to scale it. This means the database is divided into different parts and distributed across nodes. During this process, the connection between Node1 and Node2 gets temporarily broken due to the partitioning.
 -- Here's what happens : Write operations (like updating data) happen on Node1 (primary node).
 --                     : Normally, these updates should be replicated to Node2 (secondary node), but due to the partition, the nodes can't sync during the break.
@@ -1403,7 +1402,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                               : Availability Preserved : The system was still available for reading and writing, even though the data wasn't consistent across nodes.
 
 -- Why Study CAP Theorem!
--- The CAP Theorem is important because it helps us understand the trade-offs between Consistency, Availability, and Partition Tolerance in distributed systems. Here’s why it matters:
+-- The CAP Theorem is important because it helps us understand the trade-offs between Consistency, Availability, and Partition Tolerance in distributed systems. Here’s why it matters :
 -- Why Not All Three? : The CAP Theorem tells us that in a distributed system, we can't have all three properties (Consistency, Availability, and Partition Tolerance) at the same time. This is because in some cases, prioritizing one property may negatively affect the others.
 --                    : Consistency : Ensures all nodes have the same data at the same time, but might cause delays.
 --                    : Availability : Ensures the system responds to every request, even if it means returning outdated data.
@@ -1416,7 +1415,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --                            : Banking systems might prioritize consistency (CP) to ensure the correctness of financial data.
 --                            : E-commerce platforms might prioritize availability (AP) to ensure users can always browse and make purchases, even if some data is slightly outdated.
 
--- CAP Theorem NoSQL Databases : The CAP Theorem explains the trade-offs between three essential properties in distributed databases: Consistency, Availability, and Partition Tolerance. NoSQL databases are particularly suitable for distributed networks and horizontal scaling. Understanding the CAP theorem helps determine which database to choose based on the system's needs.
+-- CAP Theorem NoSQL Databases : The CAP Theorem explains the trade-offs between three essential properties in distributed databases : Consistency, Availability, and Partition Tolerance. NoSQL databases are particularly suitable for distributed networks and horizontal scaling. Understanding the CAP theorem helps determine which database to choose based on the system's needs.
 -- CA Databases (Consistency + Availability) : Properties : Ensures Consistency (all nodes have the same data) and Availability (all nodes respond to requests).
 --                                           : Issue : They cannot handle partitioning, meaning in a distributed system, if there’s a network partition (communication failure between nodes), they won’t work efficiently.
 --                                           : Use Case : Single-node databases, like MySQL and PostgreSQL with replication, can offer consistency and availability, but they lack fault tolerance during partitioning.
@@ -1447,8 +1446,8 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 --              : BASE systems are useful where immediate consistency isn't as important as making sure the system stays available and can recover after issues, which is common in social media applications and distributed environments.
 
 -- Overall,
--- BASE : Focuses on keeping the system available and able to respond, even if the data isn’t fully consistent right away. It ensures the system remains active and can eventually fix any inconsistencies over time.
 -- ACID : Makes sure the system is highly reliable and consistent, but doesn’t work as well in situations where there are network failures or multiple servers that need to stay in sync.
+-- BASE : Focuses on keeping the system available and able to respond, even if the data isn’t fully consistent right away. It ensures the system remains active and can eventually fix any inconsistencies over time.
 
 -- ----------------------------------------------------------------------- Lecture 21 : Master Slave Architecture in DBMS --------------------------------------------------------------------------------------------------------------------------------->
 -- In a typical distributed database system, multiple requests can be sent to a database (DB) for data access. If there is only one DB and it receives many requests, the system could become overwhelmed and crash if the DB goes down or encounters errors. This results in unavailability of the system, and that's where load balancing and replication come into play to maintain high availability and reliability.
@@ -1489,7 +1488,7 @@ select first_name, salary from worker where salary = (select max(Salary) from wo
 -- Imagine you’re using Facebook or Instagram : Master DB : When you post a photo, like something, or comment, the Master DB stores this update. It processes your write request. The Master DB is where this real-time data is saved.
 --                                            : Slave DBs : All your friends may see your new photo, likes, or comments, but not necessarily at the same instant. Slave DBs are responsible for serving the read requests (showing the post, likes, and comments on their timeline).
 --                                                        : These Slave DBs are copies of the Master DB, but there might be a small delay in showing the new updates because of replication.
---                                                        : Example : You might see a post from a friend in your feed, but it may take a moment for their latest like or comment to appear on all users’ feeds due to this delay.
+--                                                        : Example : You might see a post from a friend in your feed, but it may take a moment for their latest like or comment to appear on all users’ feeds due to this delay.                                                                     
 
 -- Real-World Analogy : Think of it like a restaurant, Master DB is the chef who prepares all the food (writes the data). Slave DBs are the waiters who serve the food to customers (handle read operations).
 --                    : The chef (Master) is the only one who can cook the dishes (write data), but the waiters (Slaves) take orders and serve customers (read data), making the service faster and more efficient.

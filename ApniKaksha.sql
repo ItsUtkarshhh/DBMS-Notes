@@ -186,7 +186,7 @@ Select distinct city from Student; -- It will only display pune mumbai and delhi
 -- Example : Select * from Student where marks > 80;
 --         : Select * from Student where city="Delhi";
 Select * from Student where marks > 80;
-Select * from Student where marks > 80 and city="Mumbai"; -- Here we have used the logical operater and, similarly we can use or not and rest of them!
+Select * from Student where marks > 80 and city = "Mumbai"; -- Here we have used the logical operater and, similarly we can use or not and rest of them!
 
 -- Operators in SQL : Arithmatic Operators, Logical Operators, Bitwise Operators and Relational Operators!
 -- Arithematic Operators : +, -, *, / and %(modulo)
